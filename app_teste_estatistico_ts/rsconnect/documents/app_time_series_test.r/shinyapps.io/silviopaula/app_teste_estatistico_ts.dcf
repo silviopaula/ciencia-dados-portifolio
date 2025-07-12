@@ -1,0 +1,12 @@
+name: app_teste_estatistico_ts
+title: app_teste_estatistico_ts
+username: silviopaula
+account: silviopaula
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15067866
+bundleId: 10606672
+url: https://silviopaula.shinyapps.io/app_teste_estatistico_ts/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
