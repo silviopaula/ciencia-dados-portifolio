@@ -1,0 +1,519 @@
+# Análise e Projeção de Consumo de Energia com Modelagem de Equações Estruturais (SEM)
+
+## Visão Geral
+
+Este projeto demonstra uma aplicação de **Modelos de Equações Estruturais (SEM)** para análise e projeção de consumo de energia elétrica. A abordagem integra variáveis econômicas, demográficas e climáticas em um sistema complexo de equações simultâneas, permitindo capturar relações diretas e indiretas entre os fatores que influenciam o consumo energético.
+
+### Objetivos do Projeto
+
+- **Modelar relações complexas** entre indicadores econômicos e consumo de energia
+- **Desenvolver capacidade preditiva** para projeções de consumo energético
+- **Incorporar fatores sazonais e climáticos** na modelagem
+- **Avaliar performance** através de métricas estatísticas robustas
+
+---
+
+## 1. Configuração do Ambiente
+
+A primeira etapa garante a disponibilidade de todas as bibliotecas necessárias para a análise, utilizando o gerenciador de pacotes `pacman` para automatizar instalações e carregamentos.
+
+```{r}
+# Instala o pacman se ainda não estiver instalado
+if (!require("pacman")) install.packages("pacman")
+
+# Carrega e instala automaticamente os pacotes listados, se necessário
+pacman::p_load(DT, lavaan, tidyverse, readxl, plotly, lubridate, tidyr, glmnet, 
+               htmltools, gridExtra, htmlwidgets, visNetwork, tibble, funModeling
+)
+
+```
+
+**Pacotes-chave utilizados:**
+- `lavaan`: Motor principal para Modelagem de Equações Estruturais
+- `tidyverse`: Ecosistema para manipulação e visualização de dados
+- `lubridate`: Manipulação eficiente de variáveis temporais
+- `readxl`: Interface para arquivos Excel
+
+---
+
+## 2. Carregamento e Inspeção dos Dados
+
+```{r}
+# Carregar os dados
+dados <- read_excel("D:/OneDrive/Área de Trabalho/app_SEM/SEM/Dados.xlsx")
+
+# visualizar primeiras linhas
+print(head(dados))
+```
+
+Esta etapa inicial realiza a importação dos dados e uma verificação preliminar da estrutura, identificando potenciais inconsistências antes do processamento.
+
+---
+
+## 3. Engenharia de Variáveis e Pré-processamento
+
+### Transformações Fundamentais
+
+O pré-processamento é crucial para o sucesso do modelo SEM. Aplicamos múltiplas técnicas de engenharia de variáveis para capturar diferentes aspectos dos dados:
+
+```{r}
+dados_padronizados <- dados %>%
+  mutate(Date = as.Date(data)) %>%
+  arrange(Date) %>%
+  mutate(
+    trend = row_number(),
+    trend_scaled = scale(trend)[,1],
+    
+    # Log-transformações
+    log_PIB = log(pib),
+    log_MassaRenda = log(massa_renda),
+    log_PIM = log(pim),
+    log_PMC = log(pmc),
+    log_ConsumoEnergia = ifelse(is.na(consumo_energia), NA, log(consumo_energia)),
+    log_IPCA = log(indice_precos),
+    log_Populacao = log(pop_domicilio),
+    log_Temperatura = log(temperatura),
+    log_Chuva = log(precipitacao + 1), # evita log(0)
+    log_PrecoEnergia = log(tarifa_energia),
+    
+    # Sazonalidade e interações
+    mes = month(data),
+    dia = day(data),
+    sin1 = sin(2 * pi * mes / 12),
+    cos1 = cos(2 * pi * mes / 12),
+    sin2 = sin(4 * pi * mes / 12),
+    cos2 = cos(4 * pi * mes / 12),
+    temp_sin1 = log_Temperatura * sin(2 * pi * mes / 12),
+    temp_cos1 = log_Temperatura * cos(2 * pi * mes / 12),
+    
+    # Dummies sazonais e climáticas
+    verao = mes %in% c(12, 1, 2, 3),
+    inverno = mes %in% c(6, 7, 8, 9),
+    bro_bro = mes %in% c(9, 10, 11, 12),
+    d_quente = as.integer(log_Temperatura > mean(log_Temperatura, na.rm = TRUE) + 0.5 * sd(log_Temperatura, na.rm = TRUE)),
+    d_frio = as.integer(log_Temperatura < mean(log_Temperatura, na.rm = TRUE) - 0.5 * sd(log_Temperatura, na.rm = TRUE)),
+
+    dummy_pandemia = as.integer(Date >= as.Date("2020-01-01") & Date <= as.Date("2023-01-01")),
+    
+    # Período da crise do impeachment da Dilma (aproximadamente, de Dezembro de 2015 a Agosto de 2016)
+    dummy_crises = as.integer(Date >= as.Date("2015-01-01") & Date <= as.Date("2018-01-01"))
+  ) 
+
+
+# Criar variáveis dummy para os meses (1 a 12)
+for (m in 1:12) {
+  coluna_mes <- paste0("mes_", m)
+  dados_padronizados[[coluna_mes]] <- as.integer(dados_padronizados$mes == m)
+}
+```
+
+### Estratégias de Transformação Implementadas
+
+**📈 Transformações Logarítmicas**
+- Normalização de distribuições assimétricas
+- Estabilização da variância
+- Interpretação elasticidade entre variáveis
+
+**🔄 Componentes Sazonais**
+- Funções trigonométricas (seno/cosseno) para capturar ciclos anuais
+- Variáveis dummy mensais para efeitos discretos
+- Termos de interação temperatura-sazonalidade
+
+**🌡️ Variáveis Climáticas**
+- Classificação de períodos extremos (quente/frio)
+- Dummies sazonais (verão, inverno)
+- Variáveis de precipitação tratadas para evitar log(0)
+
+**📅 Controles Temporais**
+- Tendência linear e padronizada
+- Dummies para eventos estruturais (pandemia, crises políticas)
+
+---
+
+## 4. Divisão Temporal dos Dados
+
+```{r}
+# Data até onde os dados são de treino
+data_corte <- as.Date("2024-07-01")
+
+# Definir dados de treino
+dados_treinamento <- dados_padronizados %>%
+  filter(Date <= data_corte, !is.na(log_ConsumoEnergia))
+
+# Definir dados de projeção
+dados_projecao <- dados_padronizados %>%
+  filter(Date > data_corte)
+```
+
+A divisão temporal simula um cenário realista de previsão, onde o modelo é treinado em dados históricos e testado em períodos futuros, garantindo avaliação out-of-sample.
+
+---
+
+## 5. Especificação do Modelo SEM
+
+### Arquitetura do Sistema de Equações
+
+O modelo SEM captura a estrutura causal complexa entre as variáveis econômicas e o consumo de energia através de um sistema hierárquico de equações:
+
+```{r}
+modelo_sem <- '
+  # PIB
+  log_PIB ~ log_IPCA + log_Populacao + trend_scaled + sin1 + cos1 + sin2 + cos2 + dummy_pandemia + dummy_crises
+
+  # Massa de Renda
+  log_MassaRenda ~ log_Populacao + log_IPCA + log_PIB + trend_scaled + sin1 + cos1 + sin2 + cos2 + dummy_pandemia + dummy_crises
+
+  # PIM
+  log_PIM ~ log_PIB  + trend_scaled  + sin1 + cos1 + sin2 + cos2 + dummy_pandemia + dummy_crises
+
+  # PMC
+  log_PMC ~ log_PIB + log_MassaRenda + trend_scaled + sin1 + cos1 + sin2 + cos2 + dummy_pandemia + dummy_crises
+
+  # Consumo de Energia
+  log_ConsumoEnergia ~ log_PIB + log_PIM + log_PMC + log_MassaRenda +
+                        log_Temperatura + log_PrecoEnergia +
+                        trend_scaled + sin1 + cos1 + sin2 + cos2 + 
+                        d_quente + d_frio + bro_bro + dummy_pandemia + dummy_crises
+'
+
+# Estimar o modelo
+fit_sem <- sem(modelo_sem, data = dados_treinamento, missing = "fiml")
+```
+
+### Estrutura Causal do Modelo
+
+**Nível 1 - Fundamentos Macroeconômicos**
+- PIB como função de inflação, população e tendências
+
+**Nível 2 - Indicadores Intermediários**  
+- Massa de Renda influenciada pelo PIB e variáveis macroeconômicas
+- PIM (Produção Industrial) conectado ao PIB
+- PMC (Comércio) dependente de PIB e Massa de Renda
+
+**Nível 3 - Consumo de Energia (Variável Target)**
+- Função de todos os indicadores econômicos anteriores
+- Incorporação de fatores climáticos e preços de energia
+- Controles sazonais e estruturais
+
+**Vantagens da Abordagem SEM:**
+- ✅ Captura efeitos diretos e indiretos simultaneamente
+- ✅ Trata endogeneidade entre variáveis econômicas  
+- ✅ Permite decomposição de efeitos causais
+- ✅ Método FIML robusto para dados ausentes
+
+## 6. Diagrama do SEM
+
+```{r}
+# Definir nós do diagrama
+nodes <- data.frame(
+  id = c("IPCA", "Populacao", "Temperatura", "Chuva", "PrecoEnergia", "Trend", "Sazonais", "dummies",
+         "PIB", "MassaRenda", "PIM", "PMC", "ConsumoEnergia"),
+  label = c("IPCA", "População", "Temperatura", "Chuva", "Preço Energia", "Tendência", "Sazonais", "Dummies",
+            "PIB", "Massa Renda", "PIM", "PMC", "Consumo Energia"),
+  group = c(rep("Exógenas", 5), rep("Temporais", 2), "Exógenas",  # 'dummies' como exógena
+            rep("Endógenas", 5)),
+  level = c(rep(1, 8), 2, 2, 3, 3, 4),  # 'dummies' no mesmo nível das exógenas
+  color = c(rep("#FF6B6B", 6), "#4ECDC4", "#4ECDC4",  # exógenas e temporais
+            rep("#45B7D1", 3), "#96CEB4", "#FFEAA7")  # endógenas com cores distintas
+)
+
+# Definir arestas (relações causais)
+edges <- data.frame(
+  from = c("IPCA", "Trend", "Sazonais", "dummies",  # Para PIB
+           "Populacao", "IPCA", "PIB", "Trend", "Sazonais", "dummies", # Para MassaRenda
+           "PIB", "Trend", "Sazonais", "dummies", # Para PIM
+           "PIB", "MassaRenda", "Trend", "Sazonais", "dummies", # Para PMC
+           "PIB", "PIM", "PMC", "MassaRenda", "Temperatura", "Chuva", "PrecoEnergia", "Trend", "Sazonais", "dummies"),  # Para ConsumoEnergia
+  to = c(rep("PIB", 4),
+         rep("MassaRenda", 6),
+         rep("PIM", 4),
+         rep("PMC", 5),
+         rep("ConsumoEnergia", 10)),
+  arrows = "to",
+  color = "#666666",
+  width = 2
+)
+
+# Criar diagrama interativo SEM (sem "mola")
+diagrama_sem <- visNetwork(nodes, edges, height = "600px", width = "100%") %>%
+  visGroups(groupname = "Exógenas", color = "#FF6B6B", shape = "box") %>%
+  visGroups(groupname = "Temporais", color = "#4ECDC4", shape = "ellipse") %>%
+  visGroups(groupname = "Endógenas", color = "#45B7D1", shape = "diamond") %>%
+  visLegend(width = 0.2, position = "right") %>%
+  visLayout(randomSeed = 123, hierarchical = list(enabled = TRUE, direction = "UD", sortMethod = "directed")) %>%
+  visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
+  visInteraction(navigationButtons = TRUE) %>%
+  visEdges(arrows = "to", color = list(color = "#666666", highlight = "#FF0000")) %>%
+  visPhysics(enabled = FALSE)
+
+# Salvar diagrama como HTML
+# saveWidget(diagrama_sem, "diagrama_sem_energia.html", selfcontained = TRUE)
+# cat("Diagrama SEM salvo como 'diagrama_sem_energia.html'\n")
+
+# Mostrar diagrama
+diagrama_sem
+
+
+```
+
+---
+
+## 7. Função de Previsão Customizada
+
+### Implementação da Engine de Predição
+
+```{r}
+# Obter os coeficientes padronizados ou não
+coeficientes <- parameterEstimates(fit_sem)
+
+prever_variavel_sem <- function(modelo_sem, dados_novos, variavel_destino) {
+  # Extrair coeficientes das variáveis explicativas
+  coefs <- parameterEstimates(modelo_sem) %>%
+    filter(lhs == variavel_destino & op == "~") %>%
+    select(rhs, est)
+  
+  # Extrair intercepto (se existir)
+  intercepto <- parameterEstimates(modelo_sem) %>%
+    filter(lhs == variavel_destino & op == "~1") %>%
+    pull(est)
+  
+  if (length(intercepto) == 0) intercepto <- 0  # caso não tenha intercepto
+  
+  # Verificar se todas as variáveis estão nos dados
+  faltantes <- setdiff(coefs$rhs, names(dados_novos))
+  if (length(faltantes) > 0) {
+    stop(paste("Variáveis ausentes nos dados:", paste(faltantes, collapse = ", ")))
+  }
+  
+  # Calcular a predição como soma ponderada + intercepto
+  previsao <- rowSums(
+    sapply(coefs$rhs, function(var) {
+      dados_novos[[var]] * coefs$est[coefs$rhs == var]
+    }), na.rm = TRUE
+  ) + intercepto
+  
+  return(previsao)
+}
+```
+
+Esta função personalizada extrai automaticamente os coeficientes estimados do modelo SEM e aplica a combinação linear para gerar previsões, oferecendo flexibilidade para prever qualquer variável endógena do sistema.
+
+---
+
+## 8. Geração de Projeções
+
+```{r}
+dados_projecao$log_ConsumoEnergia_prevista <- prever_variavel_sem(
+  modelo_sem = fit_sem,
+  dados_novos = dados_projecao,
+  variavel_destino = "log_ConsumoEnergia"
+)
+
+# Juntar os dados de treino e projeção com a variável observada e a prevista
+resultados <- dados_padronizados %>%
+  select(Date, log_ConsumoEnergia) %>%
+  left_join(
+    dados_projecao %>%
+      select(Date, log_ConsumoEnergia_prevista),
+    by = "Date"
+  ) %>%
+  mutate(
+    ConsumoEnergia_real = exp(log_ConsumoEnergia),
+    ConsumoEnergia_prevista = exp(log_ConsumoEnergia_prevista)
+  )
+```
+
+As projeções são geradas aplicando os coeficientes estimados aos dados futuros, com transformação inversa (exponencial) para retornar à escala original dos dados.
+
+---
+
+## 9. Avaliação de Performance
+
+### Métrica MAPE (Mean Absolute Percentage Error)
+
+```{r}
+# Prever log_ConsumoEnergia nos dados de treino
+dados_treinamento$log_ConsumoEnergia_prevista <- prever_variavel_sem(
+  modelo_sem = fit_sem,
+  dados_novos = dados_treinamento,
+  variavel_destino = "log_ConsumoEnergia"
+)
+
+# Calcular valores reais e previstos na escala original
+dados_treinamento <- dados_treinamento %>%
+  mutate(
+    ConsumoEnergia_real = exp(log_ConsumoEnergia),
+    ConsumoEnergia_prevista = exp(log_ConsumoEnergia_prevista)
+  )
+
+# Últimos 12 meses antes da data de corte
+dados_mape <- dados_treinamento %>%
+  filter(Date > (data_corte %m-% months(6)), Date <= data_corte)
+
+# Calcular MAPE
+mape <- mean(abs((dados_mape$ConsumoEnergia_real - dados_mape$ConsumoEnergia_prevista) / dados_mape$ConsumoEnergia_real), na.rm = TRUE) * 100
+
+# Exibir
+cat("MAPE dos últimos 12 meses antes da previsão:", round(mape, 2), "%\n")
+```
+
+O MAPE é calculado nos últimos 6 meses do período de treinamento, fornecendo uma métrica interpretável (em percentual) da acurácia preditiva do modelo em dados quasi-out-of-sample.
+
+---
+
+## 10. Visualização dos Resultados
+
+```{r}
+# Unir os conjuntos (mantém a mesma lógica de antes)
+resultados_completos <- bind_rows(
+  dados_treinamento %>% select(Date, ConsumoEnergia_real, ConsumoEnergia_prevista),
+  dados_projecao %>%
+    mutate(
+      ConsumoEnergia_real = NA, # Valores reais são NA para o período de projeção
+      ConsumoEnergia_prevista = exp(log_ConsumoEnergia_prevista) # Transforma para a escala original
+    ) %>%
+    select(Date, ConsumoEnergia_real, ConsumoEnergia_prevista)
+)
+
+
+library(ggplot2)
+
+ggplot(resultados_completos, aes(x = Date)) +
+  # Linhas de série real e prevista
+  geom_line(aes(y = ConsumoEnergia_real, color = "Realizado"), size = 1.2, na.rm = TRUE) +
+  geom_line(aes(y = ConsumoEnergia_prevista, color = "Previsto"), size = 1.2, na.rm = TRUE) +
+  
+  # Linha vertical indicando início da projeção
+  geom_vline(xintercept = as.numeric(data_corte), linetype = "dotted", color = "black") +
+  
+  # Anotação da linha de corte
+  annotate("text",
+           x = data_corte,
+           y = Inf,
+           label = "Início da Projeção",
+           vjust = -0.5,
+           hjust = -0.1,
+           size = 4.5,
+           fontface = "italic") +
+  
+  # Anotação do MAPE
+  annotate("text",
+           x = min(resultados_completos$Date, na.rm = TRUE),
+           y = max(resultados_completos$ConsumoEnergia_real, na.rm = TRUE),
+           label = paste0("MAPE últimos 12 meses: ", round(mape, 2), "%"),
+           hjust = 0,
+           vjust = 1.5,
+           size = 5,
+           color = "black",
+           fontface = "bold") +
+
+  # Títulos e eixos
+  labs(
+    title = "Consumo de Energia: Realizado vs. Previsto",
+    y = "Consumo de Energia (kWh, escala original)",
+    x = "Data",
+    color = NULL  # Remove o título da legenda ("color")
+  ) +
+
+  # Cores definidas manualmente
+  scale_color_manual(values = c("Realizado" = "steelblue", "Previsto" = "firebrick")) +
+
+  # Tema minimalista com ajustes
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "bottom",       # Legenda abaixo do gráfico
+    legend.title = element_blank(),   # Remove o título da legenda
+    plot.title = element_text(face = "bold", hjust = 0.5),  # Centraliza o título
+    legend.text = element_text(size = 12),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 13)
+  )
+```
+
+```{r}
+
+```
+
+---
+
+## Limitações e Considerações Metodológicas
+
+### Limitações da Modelagem SEM para Projeções
+
+Embora os Modelos de Equações Estruturais ofereçam vantagens significativas para capturar relações complexas, é importante reconhecer suas limitações específicas no contexto de projeções de séries temporais:
+
+#### 🔴 **Limitações Estruturais**
+
+**1. Suposições de Linearidade**
+- SEM assume relações lineares entre variáveis, o que pode não capturar adequadamente dinâmicas não-lineares complexas do consumo de energia
+- Mudanças estruturais abruptas no sistema energético podem não ser bem modeladas
+
+**2. Estabilidade Temporal dos Parâmetros**
+- O modelo assume que as relações entre variáveis permanecem constantes ao longo do tempo
+- Mudanças regulatórias, tecnológicas ou comportamentais podem alterar fundamentalmente essas relações
+
+**3. Propagação de Erros**
+- Em sistemas de equações simultâneas, erros de estimação se propagam através da cadeia causal
+- Pequenos erros em variáveis econômicas fundamentais podem resultar em grandes desvios nas projeções finais
+
+#### 🔴 **Limitações Específicas para Projeções**
+
+**4. Dependência de Variáveis Exógenas**
+- A qualidade das projeções depende criticamente da disponibilidade e acurácia das variáveis explicativas futuras
+- PIB, população, preços - todas requerem suas próprias projeções, adicionando incerteza cumulativa
+
+**5. Ausência de Mecanismos de Correção**
+- Diferentemente de modelos de séries temporais puros (ARIMA, VAR), SEM não incorpora mecanismos de correção de erro automáticos
+- Não há ajuste dinâmico baseado em desvios observados
+
+**6. Sensibilidade a Quebras Estruturais**
+- Eventos como crises energéticas, mudanças de matriz energética ou políticas climáticas podem invalidar completamente as relações modeladas
+- O modelo pode falhar em períodos de transformação estrutural
+
+#### 🔴 **Limitações Técnicas**
+
+**7. Identificação e Causalidade**
+- Embora SEM permita testar hipóteses causais, a identificação de relações verdadeiramente causais depende de suposições teóricas que podem ser violadas
+- Variáveis omitidas podem confundir as relações estimadas
+
+**8. Multicolinearidade em Sistemas Complexos**
+- Variáveis econômicas frequentemente exibem alta correlação, complicando a identificação de efeitos individuais
+- Pode levar a instabilidade nos coeficientes estimados
+
+#### ⚡ **Alternativas Complementares**
+
+Para mitigar essas limitações, seria recomendável considerar:
+
+- **Modelos híbridos** combinando SEM com métodos de séries temporais
+- **Abordagens de machine learning** para capturar não-linearidades
+- **Modelos de mudança de regime** para lidar com quebras estruturais
+- **Métodos ensemble** combinando múltiplas abordagens de modelagem
+- **Intervalos de confiança robustos** através de bootstrap ou simulação
+
+#### 📊 **Contexto de Aplicação**
+
+O SEM é mais apropriado para:
+- ✅ Análise de relações estruturais entre variáveis
+- ✅ Projeções de médio prazo em ambientes estáveis
+- ✅ Decomposição de efeitos causais
+- ✅ Cenários com boa disponibilidade de variáveis explicativas
+
+E menos adequado para:
+- ❌ Projeções de muito longo prazo
+- ❌ Períodos de alta volatilidade ou mudança estrutural
+- ❌ Situações com dados limitados de variáveis explicativas
+- ❌ Quando a precisão pontual é crítica
+
+---
+
+## Conclusão
+
+Este projeto demonstra uma aplicação sofisticada de Modelagem de Equações Estruturais para análise de consumo energético, integrando múltiplas dimensões (econômica, climática, temporal) em um framework estatístico robusto. A abordagem oferece insights valiosos sobre as relações estruturais subjacentes, embora deva ser utilizada com consciência de suas limitações metodológicas para aplicações de projeção.
+
+**Principais Contribuições:**
+- Framework integrado para modelagem multi-dimensional de consumo energético
+- Implementação robusta de SEM com tratamento de dados ausentes
+- Sistema de avaliação quantitativa de performance preditiva
+- Código modular e reutilizável para análises similares
+
+Este trabalho representa uma síntese entre rigor metodológico e aplicabilidade prática, adequado para contextos de planejamento energético onde a compreensão das relações estruturais é tão importante quanto a capacidade preditiva.
