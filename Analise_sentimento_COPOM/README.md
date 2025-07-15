@@ -33,3 +33,22 @@ Este projeto aplica técnicas de **Processamento de Linguagem Natural (NLP)** e 
 
 ## 📂 Estrutura do Projeto
 
+Analise_sentimento_COPOM/
+│
+├── Análise de sentimentos atas do COPOM.ipynb   # Notebook principal com todo o fluxo de análise
+├── functions.py                                 # Funções auxiliares utilizadas no notebook
+├── atas_progresso.pkl                           # Arquivo de dados processados (pickle)
+├── selic_historico_completo.csv                 # Base de dados histórica da taxa Selic
+│
+├── imagens/                                     # (Opcional) Pasta para imagens utilizadas no projeto
+│     └── capa.jpg
+│
+├── dados/                                       # (Opcional) Pasta para armazenar dados brutos
+│     └── atas_copom_brutas.csv
+│
+├── resultados/                                  # (Opcional) Pasta para salvar gráficos e resultados finais
+│     └── grafico_sentimento_selic.png
+│
+├── README.md                                    # (Opcional) Descrição do projeto, instruções de uso e objetivos
+├── requirements.txt                             # (Opcional) Lista de dependências do projeto
+└── .gitignore                                   # (Opcional) Arquivos e pastas a serem ignorados pelo git
