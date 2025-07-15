@@ -1,4 +1,4 @@
-# 📊 Dashboard Premium de Análise de Séries Temporais
+# 📊 Dashboard de Análise de Séries Temporais
 
 Este projeto é um aplicativo interativo desenvolvido em R com Shiny, focado em análise estatística completa de séries temporais. Ele oferece uma interface moderna, intuitiva e responsiva, ideal para profissionais, pesquisadores e estudantes que desejam explorar, diagnosticar e prever séries temporais de forma prática e visual.
 
