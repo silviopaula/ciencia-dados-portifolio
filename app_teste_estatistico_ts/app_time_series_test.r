@@ -2,7 +2,7 @@
 # DASHBOARD DE ANÁLISE DE SÉRIES TEMPORAIS 
 # ====================================================================
 # 
-# Dashboard profissional para análise estatística completa de séries temporais
+# Dashboard para análise estatística completa de séries temporais
 # 
 # FUNCIONALIDADES PRINCIPAIS:
 # ✓ Suporte a múltiplos formatos: Excel (.xlsx), CSV (vírgula/ponto e vírgula)
@@ -17,9 +17,7 @@
 # ✓ Exportação completa para Excel
 # ✓ Interface moderna e intuitiva
 #
-# Autor: [Seu Nome]
-# Data: [Data Atual]
-# Versão: 2.0 Premium
+
 # ====================================================================
 
 # ====================================================================
