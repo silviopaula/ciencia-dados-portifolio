@@ -27,14 +27,6 @@ Este projeto é um aplicativo interativo desenvolvido em R com Shiny, focado em 
   - Guias explicativos e dicas de interpretação
 
 
-3. **Execute o app no RStudio ou no console R:**
-
-```r
-shiny::runApp("app_time_series_test.r")
-```
-
-Ou simplesmente abra o arquivo `app_time_series_test.r` no RStudio e clique em "Run App".
-
 ## 🖥️ Como Usar
 
 1. **Escolha a fonte de dados:**
