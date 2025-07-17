@@ -1,0 +1,12 @@
+name: app_forecast_ARIMA
+title: app_forecast_ARIMA
+username: silviopaula
+account: silviopaula
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15090945
+bundleId: 10633071
+url: https://silviopaula.shinyapps.io/app_forecast_ARIMA/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

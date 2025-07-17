@@ -8,7 +8,7 @@ p_load(shiny, shinydashboard, tidyverse, lubridate, plotly, readxl, DT,
        forecast, writexl, shinyWidgets, shinythemes, RColorBrewer, zoo, stringr, shinyjs)
 
 # Aumentar limite máximo de upload de arquivos para 100 MB
-options(shiny.maxRequestSize = 100 * 1024^2)
+options(shiny.maxRequestSize = 100 * 1024^5)
 
 # Caminho do arquivo de exemplo (corrigido)
 EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
@@ -1551,10 +1551,31 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
           available_sheets <- readxl::excel_sheets(EXAMPLE_DATA_PATH)
           sheet_names(available_sheets)
           first_sheet_data <- readxl::read_excel(EXAMPLE_DATA_PATH, sheet = available_sheets[1])
+          
+          # Tenta identificar a coluna de data automaticamente
+          possiveis_nomes_data <- c("Data", "data", "DATA", "date", "Date")
+          nome_coluna_data <- names(first_sheet_data)[tolower(names(first_sheet_data)) %in% tolower(possiveis_nomes_data)]
+          
+          if (length(nome_coluna_data) == 1) {
+            names(first_sheet_data)[names(first_sheet_data) == nome_coluna_data] <- "Data"
+          } else if (length(nome_coluna_data) > 1) {
+            # Se houver mais de uma, pega a primeira
+            names(first_sheet_data)[names(first_sheet_data) == nome_coluna_data[1]] <- "Data"
+          } else {
+            showNotification("Não foi encontrada uma coluna de data no arquivo de exemplo.", type = "error")
+          }
+          
           raw_df(first_sheet_data)
           file_type("xlsx")
           example_loaded(TRUE)
-          showNotification("Dados de exemplo carregados!", type = "message")
+          # Processa automaticamente os dados de exemplo
+          processed_data <- first_sheet_data
+          # Supondo que a coluna de data se chame "Data" e formato seja "ymd"
+          if ("Data" %in% names(processed_data)) {
+            processed_data$Data <- lubridate::ymd(processed_data$Data)
+          }
+          df(processed_data)
+          showNotification("Dados de exemplo carregados e processados!", type = "message")
         } else {
           showNotification("Arquivo de exemplo não encontrado.", type = "error")
         }
@@ -1564,6 +1585,7 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
         raw_df(NULL)
         sheet_names(NULL)
         file_type(NULL)
+        df(NULL)
       }
     })
 
@@ -1658,10 +1680,14 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
     })
     
     observeEvent(input$process_data, {
-      req(input$file, input$date_column, input$date_format)
-      
-      if (file_type() == "xlsx") {
-        req(input$selected_sheet)
+      if (input$data_source == "upload") {
+        req(input$file, input$date_column, input$date_format)
+        if (file_type() == "xlsx") {
+          req(input$selected_sheet)
+        }
+      } else {
+        req(input$date_column, input$date_format)
+        req(raw_df())
       }
       
       withProgress(message = 'Processando dados...', value = 0.5, {
