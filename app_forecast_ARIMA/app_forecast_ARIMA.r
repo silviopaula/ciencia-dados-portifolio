@@ -662,7 +662,7 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
         ) %>%
         group_by(Ano, Mes) %>%
         summarise(Valor = sum(get(variable), na.rm = TRUE), .groups = "drop") %>%
-        pivot_wider(names_from = Mes, values_from = Valor, values_fill = 0)
+        pivot_wider(names_from = Mes, values_from = Valor, values_fill = NA)  # Mudança: usar NA ao invés de 0
       return(Tabela_1)
     }
     
@@ -687,7 +687,7 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
         ) %>%
         group_by(Ano, Trimestre) %>%
         summarise(Valor_Trimestral = sum(get(variable), na.rm = TRUE), .groups = "drop") %>%
-        pivot_wider(names_from = Trimestre, values_from = Valor_Trimestral, values_fill = 0)
+        pivot_wider(names_from = Trimestre, values_from = Valor_Trimestral, values_fill = NA)  # Mudança: usar NA ao invés de 0
       return(Tabela_Trimestral)
     }
     
@@ -701,7 +701,7 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
         ) %>%
         group_by(Ano, Semestre) %>%
         summarise(Valor_Semestral = sum(get(variable), na.rm = TRUE), .groups = "drop") %>%
-        pivot_wider(names_from = Semestre, values_from = Valor_Semestral, values_fill = 0)
+        pivot_wider(names_from = Semestre, values_from = Valor_Semestral, values_fill = NA)  # Mudança: usar NA ao invés de 0
       return(Tabela_Semestral)
     }
     
@@ -788,7 +788,8 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
       
       # Transformar 'Valor' para formato longo (Jan a Dez)
       valor_long <- df %>% 
-        pivot_longer(cols = Jan:Dez, names_to = "Month", values_to = "Valor")
+        pivot_longer(cols = Jan:Dez, names_to = "Month", values_to = "Valor") %>%
+        filter(!is.na(Valor))  # Filtrar valores NA para evitar zeros no gráfico
       
       # Transformar 'Taxa_Crescimento' para formato longo
       tx_long <- df %>% 
@@ -817,7 +818,8 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
           Data = as.Date(paste0(Ano, "-", sprintf("%02d", Month_Num), "-01")),
           .before = "Valor"
         ) %>%
-        select(Data, Valor, Taxa_Crescimento, Variacao_Valor)
+        select(Data, Valor, Taxa_Crescimento, Variacao_Valor) %>%
+        filter(!is.na(Valor))  # Garantir que não há valores NA no resultado final
       
       return(Tabela_Mensal_long)
     }
@@ -831,7 +833,8 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
           cols = starts_with("Q"), 
           names_to = "Quarter", 
           values_to = "Valor"
-        )
+        ) %>%
+        filter(!is.na(Valor))  # Filtrar valores NA para evitar zeros no gráfico
       
       # Transformar 'Taxa_Crescimento' para formato longo (colunas que contêm "Taxa")
       tx_long <- df %>%
@@ -859,7 +862,8 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
           Quarter = as.integer(gsub("Q", "", Quarter)), 
           Data = as.yearqtr(paste0(Ano, " Q", Quarter), format = "%Y Q%q")
         ) %>%
-        select(Data, Valor, Taxa_Crescimento, Variacao_Valor)
+        select(Data, Valor, Taxa_Crescimento, Variacao_Valor) %>%
+        filter(!is.na(Valor))  # Garantir que não há valores NA no resultado final
       
       return(Tabela_Trimestral_long)
     }
@@ -867,9 +871,15 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
     ########### Definir a função para processar o dataframe semestral  ###########
     
     transformar_semestral_long <- function(df) {
-      # Criar as tabelas de valores para os dois semestres
-      S_1 <- df %>% select(Ano, Valor = S1) %>% mutate(Semestre = 1)
-      S_2 <- df %>% select(Ano, Valor = S2) %>% mutate(Semestre = 2)
+      # Criar as tabelas de valores para os dois semestres - apenas se não for NA
+      S_1 <- df %>% 
+        select(Ano, Valor = S1) %>% 
+        filter(!is.na(Valor)) %>%  # Filtrar valores NA
+        mutate(Semestre = 1)
+      S_2 <- df %>% 
+        select(Ano, Valor = S2) %>% 
+        filter(!is.na(Valor)) %>%  # Filtrar valores NA
+        mutate(Semestre = 2)
       SEM <- bind_rows(S_1, S_2)
       
       # Criar as tabelas de taxas de crescimento para os dois semestres
@@ -893,10 +903,9 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
             Semestre == 2 ~ as.Date(paste0(Ano, "-07-01"))
           )
         ) %>% 
-        arrange(Data)
-      
-      joined <- joined %>% 
-        select(Data, Valor, Taxa_Crescimento_Semestral, Variacao_Semestral)
+        arrange(Data) %>%
+        select(Data, Valor, Taxa_Crescimento_Semestral, Variacao_Semestral) %>%
+        filter(!is.na(Valor))  # Garantir que não há valores NA no resultado final
       
       return(joined)
     }
@@ -905,6 +914,7 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
     
     transformar_anual_long <- function(df) {
       Tabela_Anual_long <- df %>%
+        filter(!is.na(Valor_Anual)) %>%  # Filtrar valores NA
         mutate(Data = as.Date(paste0(Ano, "-01-01"))) %>%
         select(Data, everything()) %>%
         rename(Taxa_Crescimento_Anual = Anual_Taxa_Crescimento_Valor_Anual,
@@ -2386,6 +2396,11 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
           filter(year(Data) >= input$range_anos[1] & year(Data) <= input$range_anos[2])
       }
       
+      # Garantir que não há valores NA ou zeros indesejados nos dados
+      df_viz <- df_viz %>%
+        filter(!is.na(Valor) & Valor != 0) %>%  # Filtrar valores NA e zeros
+        arrange(Data)  # Ordenar por data
+      
       # Determinar qual coluna usar com base no tipo de gráfico
       if (input$tipo_grafico == "valores") {
         y_col <- "Valor"
@@ -2393,6 +2408,8 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
                                           ifelse(input$periodo_analise == "trimestral", "Trimestrais",
                                                  ifelse(input$periodo_analise == "semestral", "Semestrais", "Anuais"))))
         y_label <- "Valor"
+        # Para valores, filtramos apenas valores positivos
+        df_viz <- df_viz %>% filter(get(y_col) > 0)
       } else if (input$tipo_grafico == "taxas") {
         if (input$periodo_analise == "mensal") {
           y_col <- "Taxa_Crescimento"
@@ -2407,6 +2424,8 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
                                                        ifelse(input$periodo_analise == "trimestral", "Trimestrais",
                                                               ifelse(input$periodo_analise == "semestral", "Semestrais", "Anuais"))), "(%)")
         y_label <- "Taxa de Crescimento (%)"
+        # Para taxas, filtramos valores NA
+        df_viz <- df_viz %>% filter(!is.na(get(y_col)))
       } else {  # variações
         if (input$periodo_analise == "mensal") {
           y_col <- "Variacao_Valor"
@@ -2421,6 +2440,16 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
                                                       ifelse(input$periodo_analise == "trimestral", "Trimestrais",
                                                              ifelse(input$periodo_analise == "semestral", "Semestrais", "Anuais"))))
         y_label <- "Variação Absoluta"
+        # Para variações, filtramos valores NA
+        df_viz <- df_viz %>% filter(!is.na(get(y_col)))
+      }
+      
+      # Verificar se ainda há dados após a filtragem
+      if (nrow(df_viz) == 0) {
+        return(plot_ly() %>% 
+                 layout(title = "Não há dados disponíveis para o período selecionado",
+                        xaxis = list(title = "Data"),
+                        yaxis = list(title = y_label)))
       }
       
       # Gerar gráfico de acordo com o tipo selecionado
