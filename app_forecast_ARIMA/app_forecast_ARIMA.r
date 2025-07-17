@@ -1588,12 +1588,12 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
         df(NULL)
       }
     })
-
+    
     # Ajusta a visibilidade do fileInput
     observe({
       shinyjs::toggleState("file", condition = input$data_source == "upload")
     })
-
+    
     output$fileUploaded <- reactive({
       if (input$data_source == "exemplo") {
         return(!is.null(raw_df()))
@@ -1602,17 +1602,17 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
       }
     })
     outputOptions(output, "fileUploaded", suspendWhenHidden = FALSE)
-
+    
     output$isExcelFile <- reactive({
       return(file_type() == "xlsx")
     })
     outputOptions(output, "isExcelFile", suspendWhenHidden = FALSE)
-
+    
     output$isCsvFile <- reactive({
       return(file_type() == "csv")
     })
     outputOptions(output, "isCsvFile", suspendWhenHidden = FALSE)
-
+    
     # Lógica de upload de arquivo (mantém igual)
     observeEvent(input$file, {
       req(input$file)
@@ -1662,7 +1662,41 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
         showNotification("Por favor, carregue um arquivo XLSX ou CSV.", type = "error")
       }
     })
-
+    
+    # ADICIONANDO AS FUNÇÕES FALTANTES DO SERVIDOR
+    
+    # Seletor de aba do Excel
+    output$sheet_selector <- renderUI({
+      req(sheet_names())
+      if (file_type() == "xlsx") {
+        selectInput("selected_sheet", "Selecione a Aba do Excel:",
+                    choices = sheet_names(),
+                    selected = sheet_names()[1])
+      } else {
+        NULL
+      }
+    })
+    
+    # Seletor de coluna de data
+    output$date_column_selector <- renderUI({
+      req(raw_df())
+      column_names <- names(raw_df())
+      
+      # Tentar identificar automaticamente colunas que possam ser datas
+      possible_date_cols <- column_names[grepl("data|date|periodo|mes|ano|year|month|time", 
+                                               tolower(column_names))]
+      
+      if (length(possible_date_cols) > 0) {
+        selected_col <- possible_date_cols[1]
+      } else {
+        selected_col <- column_names[1]
+      }
+      
+      selectInput("date_column", "Coluna que contém as Datas:",
+                  choices = column_names,
+                  selected = selected_col)
+    })
+    
     # Atualizar dados quando aba selecionada mudar (mantém igual)
     observeEvent(input$selected_sheet, {
       req(input$data_source == "upload" || input$data_source == "exemplo")
