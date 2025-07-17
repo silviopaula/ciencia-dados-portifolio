@@ -5,7 +5,7 @@ account: silviopaula
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 15090945
-bundleId: 10633071
+bundleId: 10633563
 url: https://silviopaula.shinyapps.io/app_forecast_ARIMA/
 version: 1
 asMultiple: FALSE

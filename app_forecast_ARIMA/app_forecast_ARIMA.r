@@ -976,7 +976,9 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
       sidebarMenu(
         menuItem("Upload e Configuração", tabName = "upload", icon = icon("upload")),
         menuItem("Modelos ARIMA", tabName = "arima", icon = icon("chart-area")),
-        menuItem("Análise de Crescimento", tabName = "crescimento", icon = icon("percentage"))
+        menuItem("Coeficientes dos Modelos", tabName = "coeficientes", icon = icon("cogs")),
+        menuItem("Análise de Crescimento", tabName = "crescimento", icon = icon("percentage")),
+        menuItem("Sobre & Ajuda", tabName = "ajuda", icon = icon("question-circle"))
       ),
       tags$div(
         style = "padding: 20px; margin-top: 20px; border-top: 1px solid #34495e; text-align: center;",
@@ -1418,6 +1420,96 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
                 )
         ),
         
+        # Aba para Coeficientes dos Modelos
+        tabItem(tabName = "coeficientes",
+                fluidRow(
+                  column(12,
+                         box(
+                           title = span(icon("cogs"), "Análise de Coeficientes dos Modelos ARIMA"), 
+                           status = "primary", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           div(class = "info-box",
+                               icon("info-circle"), " Esta seção permite analisar os coeficientes estimados e as configurações dos modelos ARIMA. Selecione um modelo para visualizar seus parâmetros detalhados."
+                           ),
+                           
+                           fluidRow(
+                             column(6,
+                                    uiOutput("coef_model_selector")
+                             ),
+                             column(6,
+                                    div(style = "margin-top: 25px;",
+                                        actionButton("analisar_coeficientes", "Analisar Coeficientes", 
+                                                     icon = icon("search"), 
+                                                     class = "btn-primary")
+                                    )
+                             )
+                           )
+                         )
+                  )
+                ),
+                
+                fluidRow(
+                  column(6,
+                         box(
+                           title = span(icon("sliders-h"), "Configuração do Modelo"), 
+                           status = "info", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           tableOutput("model_configuration")
+                         )
+                  ),
+                  column(6,
+                         box(
+                           title = span(icon("calculator"), "Métricas de Qualidade"), 
+                           status = "info", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           tableOutput("model_metrics")
+                         )
+                  )
+                ),
+                
+                fluidRow(
+                  column(12,
+                         box(
+                           title = span(icon("table"), "Coeficientes Estimados"), 
+                           status = "primary", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           DTOutput("model_coefficients")
+                         )
+                  )
+                ),
+                
+                fluidRow(
+                  column(12,
+                         box(
+                           title = span(icon("download"), "Exportar Informações do Modelo"), 
+                           status = "primary", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           fluidRow(
+                             column(6,
+                                    div(style = "padding: 25px; text-align: center;",
+                                        downloadButton("download_model_info", "Baixar Informações Completas em Excel", 
+                                                       class = "btn-success")
+                                    )
+                             ),
+                             column(6,
+                                    div(style = "padding: 25px; text-align: center;",
+                                        downloadButton("download_model_summary", "Baixar Resumo do Modelo", 
+                                                       class = "btn-info")
+                                    )
+                             )
+                           )
+                         )
+                  )
+                )
+        ),
+        
         # Aba para Análise de Crescimento
         tabItem(tabName = "crescimento",
                 fluidRow(
@@ -1531,6 +1623,279 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
                                                        class = "btn-info")
                                     )
                              )
+                           )
+                         )
+                  )
+                )
+        ),
+        
+        # Aba Sobre & Ajuda
+        tabItem(tabName = "ajuda",
+                fluidRow(
+                  column(12,
+                         box(
+                           title = span(icon("info-circle"), "Sobre o Sistema de Análise de Séries Temporais"), 
+                           status = "primary", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           div(style = "padding: 20px;",
+                               h4("📊 O que é este aplicativo?", style = "color: #2c3e50; margin-bottom: 15px;"),
+                               p(style = "font-size: 16px; line-height: 1.6; text-align: justify;",
+                                 "Este é um sistema avançado para análise de séries temporais usando modelos ARIMA (AutoRegressive Integrated Moving Average). 
+                                 O aplicativo permite carregar dados históricos, ajustar múltiplos modelos ARIMA automaticamente, 
+                                 comparar diferentes configurações e gerar previsões futuras com intervalos de confiança."
+                               ),
+                               
+                               h4("🎯 Principais Funcionalidades:", style = "color: #2c3e50; margin-top: 25px; margin-bottom: 15px;"),
+                               tags$ul(style = "font-size: 15px; line-height: 1.6;",
+                                       tags$li("Análise automática e manual de modelos ARIMA"),
+                                       tags$li("Suporte a modelos univariados e multivariados"),
+                                       tags$li("Detecção automática de sazonalidade"),
+                                       tags$li("Comparação de múltiplos modelos com métricas de erro"),
+                                       tags$li("Visualização interativa de previsões"),
+                                       tags$li("Análise detalhada de coeficientes e significância"),
+                                       tags$li("Análise de crescimento em diferentes períodos"),
+                                       tags$li("Exportação completa em Excel")
+                               )
+                           )
+                         )
+                  )
+                ),
+                
+                fluidRow(
+                  column(6,
+                         box(
+                           title = span(icon("table"), "Estrutura dos Dados"), 
+                           status = "info", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           div(style = "padding: 15px;",
+                               h5("📋 Formato Requerido:", style = "color: #2c3e50; margin-bottom: 10px;"),
+                               p("Os dados devem estar em formato Excel (.xlsx) ou CSV com as seguintes características:"),
+                               
+                               tags$ul(style = "margin-bottom: 20px;",
+                                       tags$li(strong("Coluna de Data:"), " Uma coluna contendo datas em formato reconhecível"),
+                                       tags$li(strong("Variáveis Numéricas:"), " Uma ou mais colunas com valores numéricos"),
+                                       tags$li(strong("Periodicidade:"), " Dados mensais são ideais (mínimo 24 observações)"),
+                                       tags$li(strong("Sem Lacunas:"), " Evite grandes intervalos sem dados")
+                               ),
+                               
+                               h5("📅 Formatos de Data Aceitos:", style = "color: #2c3e50; margin-bottom: 10px;"),
+                               tags$ul(
+                                 tags$li("2023-01-15 (yyyy-mm-dd)"),
+                                 tags$li("15/01/2023 (dd/mm/yyyy)"),
+                                 tags$li("01/15/2023 (mm/dd/yyyy)"),
+                                 tags$li("15-Jan-2023 (dd-mmm-yyyy)")
+                               ),
+                               
+                               div(class = "info-box", style = "margin-top: 15px;",
+                                   icon("lightbulb"), strong(" Dica:"), 
+                                   " Nomeie suas colunas de forma clara. O sistema tentará detectar automaticamente a coluna de data."
+                               )
+                           )
+                         )
+                  ),
+                  
+                  column(6,
+                         box(
+                           title = span(icon("play-circle"), "Como Usar - Passo a Passo"), 
+                           status = "success", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           div(style = "padding: 15px;",
+                               h5("🚀 Guia Rápido:", style = "color: #2c3e50; margin-bottom: 15px;"),
+                               
+                               div(style = "margin-bottom: 15px;",
+                                   span(style = "background: #3498db; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold;", "1"),
+                                   span(style = "margin-left: 10px; font-weight: 500;", "Faça upload do arquivo na aba 'Upload e Configuração'")
+                               ),
+                               
+                               div(style = "margin-bottom: 15px;",
+                                   span(style = "background: #3498db; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold;", "2"),
+                                   span(style = "margin-left: 10px; font-weight: 500;", "Selecione a aba do Excel e a coluna de data")
+                               ),
+                               
+                               div(style = "margin-bottom: 15px;",
+                                   span(style = "background: #3498db; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold;", "3"),
+                                   span(style = "margin-left: 10px; font-weight: 500;", "Clique em 'Processar Dados'")
+                               ),
+                               
+                               div(style = "margin-bottom: 15px;",
+                                   span(style = "background: #27ae60; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold;", "4"),
+                                   span(style = "margin-left: 10px; font-weight: 500;", "Vá para 'Modelos ARIMA' e configure os parâmetros")
+                               ),
+                               
+                               div(style = "margin-bottom: 15px;",
+                                   span(style = "background: #27ae60; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold;", "5"),
+                                   span(style = "margin-left: 10px; font-weight: 500;", "Selecione a variável para previsão")
+                               ),
+                               
+                               div(style = "margin-bottom: 15px;",
+                                   span(style = "background: #27ae60; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold;", "6"),
+                                   span(style = "margin-left: 10px; font-weight: 500;", "Clique em 'Executar Análise ARIMA'")
+                               ),
+                               
+                               div(style = "margin-bottom: 15px;",
+                                   span(style = "background: #f39c12; color: white; padding: 5px 10px; border-radius: 15px; font-weight: bold;", "7"),
+                                   span(style = "margin-left: 10px; font-weight: 500;", "Analise os resultados e exporte conforme necessário")
+                               )
+                           )
+                         )
+                  )
+                ),
+                
+                fluidRow(
+                  column(12,
+                         box(
+                           title = span(icon("chart-line"), "Interpretação dos Resultados"), 
+                           status = "warning", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           div(style = "padding: 20px;",
+                               fluidRow(
+                                 column(6,
+                                        h5("📊 Métricas de Erro:", style = "color: #2c3e50; margin-bottom: 15px;"),
+                                        tags$ul(style = "line-height: 1.8;",
+                                                tags$li(strong("RMSE:"), " Raiz do Erro Quadrático Médio - quanto menor, melhor"),
+                                                tags$li(strong("MAPE:"), " Erro Percentual Absoluto Médio - em %"),
+                                                tags$li(strong("MAE:"), " Erro Absoluto Médio - em unidades originais")
+                                        ),
+                                        
+                                        h5("🏆 Seleção do Melhor Modelo:", style = "color: #2c3e50; margin-top: 20px; margin-bottom: 10px;"),
+                                        p("Os modelos são ordenados por RMSE (menor é melhor). 
+                                          Considere também MAPE para interpretação percentual e 
+                                          verifique a significância dos coeficientes.")
+                                 ),
+                                 
+                                 column(6,
+                                        h5("🔧 Configurações ARIMA:", style = "color: #2c3e50; margin-bottom: 15px;"),
+                                        tags$ul(style = "line-height: 1.8;",
+                                                tags$li(strong("p, d, q:"), " Parâmetros não-sazonais (AR, Diferenciação, MA)"),
+                                                tags$li(strong("P, D, Q:"), " Parâmetros sazonais"),
+                                                tags$li(strong("Período:"), " Frequência da sazonalidade (12 para mensal)")
+                                        ),
+                                        
+                                        h5("⭐ Significância dos Coeficientes:", style = "color: #2c3e50; margin-top: 20px; margin-bottom: 10px;"),
+                                        tags$ul(
+                                          tags$li(span(style = "color: #d32f2f; font-weight: bold;", "*** p < 0.001"), " - Altamente significante"),
+                                          tags$li(span(style = "color: #f57c00; font-weight: bold;", "** p < 0.01"), " - Muito significante"),
+                                          tags$li(span(style = "color: #fbc02d; font-weight: bold;", "* p < 0.05"), " - Significante")
+                                        )
+                                 )
+                               )
+                           )
+                         )
+                  )
+                ),
+                
+                fluidRow(
+                  column(6,
+                         box(
+                           title = span(icon("lightbulb"), "Dicas & Melhores Práticas"), 
+                           status = "success", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           div(style = "padding: 15px;",
+                               h5("💡 Recomendações:", style = "color: #2c3e50; margin-bottom: 15px;"),
+                               
+                               tags$ul(style = "line-height: 1.8;",
+                                       tags$li(strong("Volume de Dados:"), " Use pelo menos 24 observações (2 anos de dados mensais)"),
+                                       tags$li(strong("Qualidade:"), " Verifique outliers e valores inconsistentes antes da análise"),
+                                       tags$li(strong("Sazonalidade:"), " Para dados mensais, sempre teste com sazonalidade ativada"),
+                                       tags$li(strong("Variáveis Exógenas:"), " Use variáveis explicativas relacionadas ao fenômeno"),
+                                       tags$li(strong("Período de Teste:"), " Reserve 10-20% dos dados mais recentes para validação"),
+                                       tags$li(strong("Múltiplos Modelos:"), " Compare pelo menos 5-10 configurações diferentes")
+                               ),
+                               
+                               div(class = "info-box", style = "margin-top: 15px; background-color: #e8f5e8;",
+                                   icon("check-circle"), strong(" Lembre-se:"), 
+                                   " O melhor modelo estatístico pode não ser o melhor para seu contexto de negócio!"
+                               )
+                           )
+                         )
+                  ),
+                  
+                  column(6,
+                         box(
+                           title = span(icon("question"), "Perguntas Frequentes (FAQ)"), 
+                           status = "info", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           div(style = "padding: 15px;",
+                               div(style = "margin-bottom: 20px;",
+                                   h6(strong("❓ Posso usar dados diários?"), style = "color: #2c3e50;"),
+                                   p("Sim, mas ajuste o período sazonal (365 para anual, 7 para semanal).")
+                               ),
+                               
+                               div(style = "margin-bottom: 20px;",
+                                   h6(strong("❓ O que fazer se nenhum modelo convergir?"), style = "color: #2c3e50;"),
+                                   p("Verifique a qualidade dos dados, reduza o número de variáveis exógenas ou use o modo manual.")
+                               ),
+                               
+                               div(style = "margin-bottom: 20px;",
+                                   h6(strong("❓ Como interpretar intervalos de confiança?"), style = "color: #2c3e50;"),
+                                   p("Mostram a incerteza da previsão. Intervalos maiores indicam maior incerteza.")
+                               ),
+                               
+                               div(style = "margin-bottom: 20px;",
+                                   h6(strong("❓ Posso usar múltiplas variáveis dependentes?"), style = "color: #2c3e50;"),
+                                   p("Não simultaneamente. Analise uma variável por vez, mas pode usar várias como explicativas.")
+                               ),
+                               
+                               div(style = "margin-bottom: 10px;",
+                                   h6(strong("❓ O app funciona offline?"), style = "color: #2c3e50;"),
+                                   p("Sim, após carregado no navegador, funciona sem internet.")
+                               )
+                           )
+                         )
+                  )
+                ),
+                
+                fluidRow(
+                  column(12,
+                         box(
+                           title = span(icon("cog"), "Informações Técnicas"), 
+                           status = "primary", 
+                           solidHeader = TRUE, 
+                           width = 12,
+                           
+                           div(style = "padding: 20px;",
+                               fluidRow(
+                                 column(6,
+                                        h5("🔧 Tecnologias Utilizadas:", style = "color: #2c3e50; margin-bottom: 15px;"),
+                                        tags$ul(style = "line-height: 1.8;",
+                                                tags$li(strong("R Shiny:"), " Framework web interativo"),
+                                                tags$li(strong("Forecast Package:"), " Modelos ARIMA avançados"),
+                                                tags$li(strong("Plotly:"), " Visualizações interativas"),
+                                                tags$li(strong("DT:"), " Tabelas dinâmicas"),
+                                                tags$li(strong("Tidyverse:"), " Manipulação de dados"),
+                                                tags$li(strong("Lubridate:"), " Processamento de datas")
+                                        )
+                                 ),
+                                 
+                                 column(6,
+                                        h5("📊 Algoritmos:", style = "color: #2c3e50; margin-bottom: 15px;"),
+                                        tags$ul(style = "line-height: 1.8;",
+                                                tags$li(strong("Auto.ARIMA:"), " Seleção automática de parâmetros"),
+                                                tags$li(strong("Hyndman-Khandakar:"), " Algoritmo de busca inteligente"),
+                                                tags$li(strong("AIC/BIC:"), " Critérios de seleção de modelo"),
+                                                tags$li(strong("Box-Jenkins:"), " Metodologia clássica"),
+                                                tags$li(strong("Maximum Likelihood:"), " Estimação de parâmetros")
+                                        ),
+                                        
+                                        div(class = "info-box", style = "margin-top: 15px; background-color: #f0f8ff;",
+                                            icon("info-circle"), 
+                                            p(style = "margin: 0;", strong("Versão: "), "0.1 | ", 
+                                              strong("Desenvolvido em R"))
+                                        )
+                                 )
+                               )
                            )
                          )
                   )
@@ -2066,6 +2431,236 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
         df_export <- df_export %>% arrange(Data)
         write_xlsx(df_export, path = file)
         cat("Exportação concluída para:", file, "\n")
+      }
+    )
+    
+    ####### ABA COEFICIENTES DOS MODELOS ########
+    
+    # Armazenar os resultados da análise de coeficientes
+    model_analysis_results <- reactiveVal(NULL)
+    
+    # Seletor de modelo para análise de coeficientes
+    output$coef_model_selector <- renderUI({
+      req(arima_results())
+      model_choices <- unique(arima_results()$errors$model)
+      # Ordenar por RMSE para mostrar os melhores modelos primeiro
+      best_models <- arima_results()$errors %>%
+        arrange(RMSE) %>%
+        pull(model)
+      
+      selectInput("coef_model", "Selecione o Modelo para Análise:",
+                  choices = best_models,
+                  selected = best_models[1])
+    })
+    
+    # Função para extrair informações detalhadas do modelo
+    extract_model_info <- function(model_obj, model_name, target_var) {
+      
+      # Extrair ordem do modelo
+      model_order <- arimaorder(model_obj)
+      
+      # Configuração do modelo
+      config <- data.frame(
+        Parametro = c("Ordem AR (p)", "Ordem Diferenciação (d)", "Ordem MA (q)",
+                      "Ordem AR Sazonal (P)", "Ordem Diferenciação Sazonal (D)", "Ordem MA Sazonal (Q)",
+                      "Período Sazonal", "Variável Dependente", "Tipo de Modelo"),
+        Valor = c(model_order[1], model_order[2], model_order[3],
+                  model_order[4], model_order[5], model_order[6],
+                  ifelse(length(model_order) >= 7, model_order[7], "Não Sazonal"),
+                  target_var,
+                  ifelse(grepl("multi", model_name), "Multivariado (com variáveis exógenas)", "Univariado"))
+      )
+      
+      # Métricas de qualidade
+      metrics <- data.frame(
+        Metrica = c("AIC", "BIC", "Log-likelihood", "Sigma²"),
+        Valor = c(round(model_obj$aic, 4), 
+                  round(model_obj$bic, 4),
+                  round(model_obj$loglik, 4),
+                  round(model_obj$sigma2, 6))
+      )
+      
+      # Coeficientes
+      if (length(model_obj$coef) > 0) {
+        coef_names <- names(model_obj$coef)
+        coef_values <- as.numeric(model_obj$coef)
+        
+        # Calcular erros padrão se disponíveis
+        if (!is.null(model_obj$var.coef)) {
+          std_errors <- sqrt(diag(model_obj$var.coef))
+          t_values <- coef_values / std_errors
+          p_values <- 2 * (1 - pt(abs(t_values), df = model_obj$nobs - length(coef_values)))
+          
+          coefficients <- data.frame(
+            Coeficiente = coef_names,
+            Valor = round(coef_values, 6),
+            Erro_Padrao = round(std_errors, 6),
+            Estatistica_t = round(t_values, 4),
+            Valor_p = round(p_values, 4),
+            Significancia = ifelse(p_values < 0.001, "***",
+                                   ifelse(p_values < 0.01, "**",
+                                          ifelse(p_values < 0.05, "*",
+                                                 ifelse(p_values < 0.1, ".", ""))))
+          )
+        } else {
+          coefficients <- data.frame(
+            Coeficiente = coef_names,
+            Valor = round(coef_values, 6),
+            Erro_Padrao = NA,
+            Estatistica_t = NA,
+            Valor_p = NA,
+            Significancia = ""
+          )
+        }
+      } else {
+        coefficients <- data.frame(
+          Coeficiente = "Nenhum coeficiente estimado",
+          Valor = NA,
+          Erro_Padrao = NA,
+          Estatistica_t = NA,
+          Valor_p = NA,
+          Significancia = ""
+        )
+      }
+      
+      return(list(
+        configuration = config,
+        metrics = metrics,
+        coefficients = coefficients,
+        model_name = model_name
+      ))
+    }
+    
+    # Executar análise de coeficientes quando o botão for clicado
+    observeEvent(input$analisar_coeficientes, {
+      req(arima_results(), input$coef_model, input$target_var)
+      
+      withProgress(message = 'Analisando coeficientes do modelo...', value = 0.3, {
+        
+        # Obter o modelo selecionado
+        selected_model <- arima_results()$models[[input$coef_model]]
+        
+        if (is.null(selected_model)) {
+          showNotification("Modelo selecionado não encontrado.", type = "error")
+          return()
+        }
+        
+        incProgress(0.4, detail = "Extraindo informações...")
+        
+        # Extrair informações do modelo
+        model_info <- tryCatch({
+          extract_model_info(selected_model, input$coef_model, input$target_var)
+        }, error = function(e) {
+          showNotification(paste("Erro ao analisar modelo:", e$message), type = "error")
+          NULL
+        })
+        
+        if (!is.null(model_info)) {
+          model_analysis_results(model_info)
+          showNotification("Análise de coeficientes concluída com sucesso!", type = "message")
+        }
+      })
+    })
+    
+    # Renderizar tabela de configuração do modelo
+    output$model_configuration <- renderTable({
+      req(model_analysis_results())
+      model_analysis_results()$configuration
+    }, striped = TRUE, hover = TRUE, bordered = TRUE)
+    
+    # Renderizar tabela de métricas do modelo
+    output$model_metrics <- renderTable({
+      req(model_analysis_results())
+      model_analysis_results()$metrics
+    }, striped = TRUE, hover = TRUE, bordered = TRUE)
+    
+    # Renderizar tabela de coeficientes
+    output$model_coefficients <- renderDT({
+      req(model_analysis_results())
+      
+      coef_table <- model_analysis_results()$coefficients
+      
+      DT::datatable(
+        coef_table,
+        caption = paste("Coeficientes do Modelo:", model_analysis_results()$model_name),
+        rownames = FALSE,
+        options = list(
+          pageLength = -1,  # Mostrar todas as linhas
+          scrollX = TRUE,
+          dom = 'Bfrtip',
+          buttons = c('copy', 'csv'),
+          columnDefs = list(
+            list(className = 'dt-center', targets = '_all')
+          )
+        ),
+        extensions = 'Buttons'
+      ) %>%
+        DT::formatRound(columns = c("Valor", "Erro_Padrao", "Estatistica_t", "Valor_p"), digits = 6) %>%
+        DT::formatStyle(
+          "Significancia",
+          color = styleEqual(c("***", "**", "*", "."), 
+                             c('#d32f2f', '#f57c00', '#fbc02d', '#689f38')),
+          fontWeight = styleEqual(c("***", "**", "*"), 
+                                  c('bold', 'bold', 'bold'))
+        )
+    })
+    
+    # Handler para download das informações completas do modelo
+    output$download_model_info <- downloadHandler(
+      filename = function() {
+        paste("modelo-", input$coef_model, "-informacoes-completas-", Sys.Date(), ".xlsx", sep = "")
+      },
+      content = function(file) {
+        req(model_analysis_results())
+        
+        # Obter informações do modelo selecionado
+        selected_model <- arima_results()$models[[input$coef_model]]
+        model_errors <- arima_results()$errors %>% filter(model == input$coef_model)
+        
+        # Criar lista de planilhas para o arquivo Excel
+        sheets <- list(
+          "Configuracao" = model_analysis_results()$configuration,
+          "Metricas_Qualidade" = model_analysis_results()$metrics,
+          "Coeficientes" = model_analysis_results()$coefficients,
+          "Metricas_Erro" = model_errors,
+          "Resumo_Modelo" = data.frame(
+            Informacao = c("Nome do Modelo", "Data da Análise", "Variável Dependente", 
+                           "Número de Observações", "Número de Coeficientes"),
+            Valor = c(input$coef_model, 
+                      as.character(Sys.Date()),
+                      input$target_var,
+                      ifelse(!is.null(selected_model$nobs), selected_model$nobs, "N/A"),
+                      length(selected_model$coef))
+          )
+        )
+        
+        # Exportar para Excel
+        write_xlsx(sheets, path = file)
+      }
+    )
+    
+    # Handler para download do resumo do modelo
+    output$download_model_summary <- downloadHandler(
+      filename = function() {
+        paste("modelo-", input$coef_model, "-resumo-", Sys.Date(), ".xlsx", sep = "")
+      },
+      content = function(file) {
+        req(model_analysis_results())
+        
+        # Criar resumo consolidado
+        summary_df <- data.frame(
+          Secao = c(rep("Configuração", nrow(model_analysis_results()$configuration)),
+                    rep("Métricas", nrow(model_analysis_results()$metrics)),
+                    rep("Coeficientes", nrow(model_analysis_results()$coefficients))),
+          rbind(
+            model_analysis_results()$configuration,
+            model_analysis_results()$metrics,
+            model_analysis_results()$coefficients[, 1:2]  # Apenas nome e valor dos coeficientes
+          )
+        )
+        
+        # Exportar para Excel
+        write_xlsx(list("Resumo_Modelo" = summary_df), path = file)
       }
     )
     
