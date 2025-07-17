@@ -1273,8 +1273,10 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
                                div(class = "param-title", "Período Temporal"),
                                uiOutput("arima_date_range_ui"),
                                dateInput("end_predict_arima", "Data Final da Previsão:", 
-                                         value = Sys.Date() + years(1),
-                                         format = "yyyy-mm-dd")
+                                         value = Sys.Date() + lubridate::years(2),
+                                         format = "yyyy-mm-dd"),
+                               tags$p(class = "help-text", icon("info-circle"), 
+                                      " Esta data é automaticamente definida como 2 anos após a data final do período de análise.")
                            ),
                            
                            div(class = "param-group",
@@ -1826,8 +1828,15 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
       if (length(dates_available) > 0) {
         min_date <- min(dates_available, na.rm = TRUE)
         max_date <- max(dates_available, na.rm = TRUE)
+        
+        # Calcular data final da previsão como 2 anos após a data máxima
+        prediction_end_date <- max_date + lubridate::years(2)
+        
+        # Atualizar a data final da previsão
+        updateDateInput(session, "end_predict_arima", value = prediction_end_date)
+        
       } else {
-        min_date <- Sys.Date() - years(10)
+        min_date <- Sys.Date() - lubridate::years(10)
         max_date <- Sys.Date()
       }
       tagList(
@@ -1847,6 +1856,18 @@ EXAMPLE_DATA_PATH <- normalizePath("www/dados.xlsx", mustWork = FALSE)
       req(input$arima_date_range)
       updateTextInput(session, "arima_data_inicial", value = as.character(input$arima_date_range[1]))
       updateTextInput(session, "arima_data_atual", value = as.character(input$arima_date_range[2]))
+    })
+    
+    # Observer para atualizar automaticamente a data final da previsão
+    # baseada em 2 anos após a data final do período de análise
+    observe({
+      req(input$arima_date_range)
+      end_analysis_date <- input$arima_date_range[2]
+      if (!is.null(end_analysis_date)) {
+        # Calcular 2 anos após a data final do período de análise
+        new_prediction_end <- end_analysis_date + lubridate::years(2)
+        updateDateInput(session, "end_predict_arima", value = new_prediction_end)
+      }
     })
     
     arima_results <- reactiveVal(NULL)
