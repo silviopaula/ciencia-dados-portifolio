@@ -1,13 +1,68 @@
-👨‍💼 Sobre mim
-Sou Silvio da Rosa Paula, doutor em Economia Aplicada pela Universidade Federal de Pelotas (UFPel), com forte atuação nas áreas de ciência de dados, econometria, inteligência artificial e inferência causal. Tenho experiência prática e acadêmica em projetos de análise quantitativa.
+# 📂 Portfólio de Projetos — Silvio da Rosa Paula
 
-⚙️ Habilidades Técnicas
-Linguagens: R (principal), Python, SQL, Stata
+## 👨‍💼 Sobre Mim
 
-Áreas de foco: Modelagem estatística, aprendizado de máquina, econometria aplicada, séries temporais, inferência causal, otimização de processos.
+Sou **Silvio da Rosa Paula**, **Doutor em Economia Aplicada** pela Universidade Federal de Pelotas (UFPel), com sólida atuação na interface entre **ciência de dados, econometria, inferência causal** e **aprendizado de máquina**. Ao longo da minha carreira, tenho aplicado métodos quantitativos avançados para resolver desafios reais, especialmente no **setor elétrico**, em **políticas públicas** e na **pesquisa aplicada**.
 
-⚡ Portfólio de Projetos
-Este repositório reúne projetos desenvolvidos em diferentes contextos — tanto profissionais quanto acadêmicos — que demonstram minha capacidade de aplicar métodos quantitativos avançados à solução de problemas reais. Aqui você encontrará exemplos de:
+Minhas competências unem o rigor técnico à capacidade de transformar dados complexos em decisões estratégicas — sempre com foco em impacto.
 
-🚀 Objetivos com este portfólio
-Meu objetivo é compartilhar conhecimentos, colaborar com outros profissionais da área e manter um repositório de aprendizado contínuo e boas práticas em ciência de dados aplicada à economia e ao setor elétrico.
+---
+
+## ⚙️ Habilidades Técnicas
+
+**Linguagens e Ferramentas:**  
+- R (principal), Python, SQL, Stata  
+- Power BI, Git, Jupyter, RMarkdown, Shiny, Streamlit  
+- SQLite, Spark, Arrow, Dask, APIs e Web Scraping  
+
+**Análise e Modelagem de Dados:**  
+- Manipulação, limpeza e padronização de dados  
+- ETL e integração de microdados governamentais  
+- Séries temporais (ARIMA, Prophet, Sktime, Modeltime)  
+- Modelagem estatística e machine learning (caret, Scikit-learn, XGBoost, redes neurais)  
+- Inferência causal: DiD, PSM, IV, RD, Synthetic Control, CausalImpact  
+- Visualização de dados interativa e dashboards  
+
+**Temas de Atuação:**  
+- Projeção e monitoramento de consumo de energia  
+- Avaliação de impacto de políticas públicas  
+- Seguro e crédito rural, agricultura familiar, saúde, educação, inovação  
+- Gestão de dados e repositórios analíticos  
+
+---
+
+## 📌 Destaques Profissionais
+
+- **Grupo Equatorial Energia:** Criação do fluxo automatizado de projeções para +150 séries temporais, com forte redução de erros e custos operacionais.  
+- **IPEA:** Avaliação de políticas públicas usando inferência causal, construção de bases integradas e padronizadas a partir de grandes bases governamentais.  
+- **IDP e Deltainfra:** Apoio técnico em programação aplicada à análise de dados e projetos econométricos voltados ao setor elétrico e desenvolvimento econômico.  
+
+---
+
+## ⚡ Sobre este Portfólio
+
+Este repositório reúne projetos desenvolvidos em contextos **corporativos e de pesquisa aplicada**, com foco em demonstrar minha capacidade de:
+
+- Traduzir perguntas econômicas em problemas de dados  
+- Aplicar metodologias estatísticas e computacionais de ponta  
+- Gerar insights práticos a partir de dados reais  
+- Produzir soluções reprodutíveis, explicáveis e interativas  
+
+---
+
+## 🚀 Objetivos com este Repositório
+
+- 📚 Compartilhar boas práticas em ciência de dados aplicada  
+- 🤝 Colaborar com profissionais e pesquisadores da área  
+- 🔄 Manter um acervo vivo de aprendizado contínuo  
+- ⚡ Promover o uso de dados para gerar impacto em setores críticos como energia, políticas públicas e desenvolvimento econômico  
+
+---
+
+## 📬 Contato
+
+- 🔗 [LinkedIn](https://www.linkedin.com/in/silvio-paula)  
+- 🌐 [Website pessoal](https://silviopaula.github.io/)  
+- ✉️ silvio.rosa.paula@gmail.com  
+
+---
