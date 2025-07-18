@@ -2,7 +2,7 @@
 
 ## 👨‍💼 Sobre Mim
 
-Sou **Silvio da Rosa Paula**, **Doutor em Economia Aplicada** pela Universidade Federal de Pelotas (UFPel), com sólida atuação na interface entre **ciência de dados, econometria, inferência causal** e **aprendizado de máquina**. Ao longo da minha carreira, tenho aplicado métodos quantitativos avançados para resolver desafios reais, especialmente no **setor elétrico**, em **políticas públicas** e na **pesquisa aplicada**.
+Sou **Silvio da Rosa Paula**, **Doutor em Economia Aplicada** pela Universidade Federal de Pelotas (UFPel), com sólida atuação entre **ciência de dados, econometria, inferência causal**. Ao longo da minha carreira, tenho aplicado métodos quantitativos avançados para resolver desafios reais, especialmente no **setor elétrico**, em **políticas públicas** e na **pesquisa aplicada**.
 
 Minhas competências unem o rigor técnico à capacidade de transformar dados complexos em decisões estratégicas — sempre com foco em impacto.
 
