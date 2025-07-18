@@ -12,8 +12,7 @@ Minhas competências unem o rigor técnico à capacidade de transformar dados co
 
 **Linguagens e Ferramentas:**  
 - R (principal), Python, SQL, Stata  
-- Power BI, Git, Jupyter, RMarkdown, Shiny, Streamlit  
-- SQLite, Spark, Arrow, Dask, APIs e Web Scraping  
+- Git, Jupyter, RMarkdown, Shiny, Streamlit, Power BI, Excel  
 
 **Análise e Modelagem de Dados:**  
 - Manipulação, limpeza e padronização de dados  
