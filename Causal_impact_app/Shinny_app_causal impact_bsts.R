@@ -1,22 +1,21 @@
-# app.R - Versão Completa com Desazonalização, Opções Avançadas (BSTS manual),
+########################################################################
+#                CAUSAL IMPACT COM BSTS
+########################################################################
 
-
+# Carregar packages
 if (!require(pacman)) install.packages("pacman")
 p_load(shiny, tidyverse, lubridate, plotly, zoo, CausalImpact, DT, htmltools, readxl, shinythemes,
-       shinyjs, shinydashboard, shinyWidgets, data.table, openxlsx) 
+       shinyjs, shinydashboard, shinyWidgets, data.table, openxlsx, tidyverse, lubridate, plotly, 
+       zoo, CausalImpact, ggplot2, data.table) 
 
 # Aumentar limite máximo de upload de arquivos para 100 MB
 options(shiny.maxRequestSize = 100 * 1024^2)
 
+#--------------------------------------------------
+#    Função causal impact
+#--------------------------------------------------
 
-########################################################################
-#        FUNÇÃO PARA APLICAR O PACOTE CAUSAL IMPACT
-########################################################################
-if(!require(pacman)){install.packages("pacman")}
-pacman::p_load(tidyverse, lubridate, plotly, zoo, CausalImpact, ggplot2, data.table)
-
-## Função para gerar a base 
-# O período pré-intervenção é de data_inicio até (data_inicio_evento - 1 dia)
+## Função para gerar dados de exemplo
 generate_df_causal_impact <- function(data_frame, data_inicio, data_fim, data_inicio_evento, 
                                       var_Y, var_Xs, deseasonalize = "none", freq_sazonal = 12) {
   # Validações
@@ -294,7 +293,10 @@ summary_pt_br <- function(ci_result, type = "summary") {
   }
 }
 
+#------------------------------------------------------------------------
 # Função auxiliar para formatar tabelas
+#------------------------------------------------------------------------
+
 format_table <- function(table_lines) {
   if (length(table_lines) < 2) return(table_lines)
   headers <- table_lines[!grepl("^-+", table_lines) & !grepl("^\\s*$", table_lines)]
@@ -1273,6 +1275,6 @@ server <- function(input, output, session) {
 }
 
 ########################################################################
-#                 Inicialização do App
+#  Inicialização do App
 ########################################################################
 shinyApp(ui, server)
