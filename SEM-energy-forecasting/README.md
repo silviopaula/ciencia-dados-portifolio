@@ -1,6 +1,3 @@
-Com certeza! Baseado no conteúdo do arquivo HTML, preparei um `README.md` completo e bem estruturado. Este README destaca os objetivos, a metodologia, os resultados e as considerações importantes do seu projeto de modelagem SEM.
-
----
 
 # Análise e Projeção de Consumo de Energia com Modelagem de Equações Estruturais (SEM)
 
