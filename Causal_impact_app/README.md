@@ -1,71 +1,69 @@
-# 🚀 Análise Causal com CausalImpact: Seu Guia para Entender o Impacto de Eventos em Séries Temporais
+# Causal_impact_app
 
-## ✨ Transforme Dados em Insights Acionáveis\!
+**Descrição para o repositório no GitHub:**
 
-Este aplicativo Shiny, construído com a poderosa metodologia do pacote `CausalImpact` do Google, permite que você analise o verdadeiro impacto de eventos e intervenções em suas séries temporais de forma intuitiva, sem escrever uma única linha de código. Diga adeus à complexidade e olá à clareza\!
+Análise Causal com CausalImpact
+Um aplicativo Shiny para análise de impacto causal em séries temporais utilizando a metodologia do pacote CausalImpact do Google.
+Sobre o projeto
+Este aplicativo facilita a implementação da metodologia de inferência causal em séries temporais desenvolvida pelo Google, proporcionando uma interface gráfica intuitiva que elimina a necessidade de codificação para realizar análises sofisticadas.
+O CausalImpact utiliza modelos bayesianos de séries temporais estruturais (BSTS) para estimar o impacto causal de uma intervenção, comparando a série observada após o evento com uma contrafactual projetada.
+Funcionalidades
+Entrada de dados
 
-## 💡 Sobre o Projeto
+Carregamento de arquivos CSV e XLSX
+Seleção flexível de colunas para análise
+Definição personalizada do período de análise e data de intervenção
 
-O `CausalImpact` utiliza modelos bayesianos de séries temporais estruturais (BSTS) para desvendar o efeito causal de uma intervenção. Ele faz isso comparando o que realmente aconteceu após um evento com o que *teria acontecido* se o evento nunca tivesse ocorrido (o cenário contrafactual). Nosso aplicativo encapsula essa sofisticação em uma interface gráfica amigável, tornando a inferência causal acessível a todos.
+**Tratamento de séries temporais**
 
-## 🎯 Funcionalidades que Vão Impulsionar Suas Análises
+Opções de desazonalização via decomposição STL
+Extração de componentes de tendência
+Configuração da frequência sazonal (mensal, trimestral, semanal)
 
-### 📁 Entrada de Dados Simplificada
+**Modelagem avançada**
 
-  * **Compatibilidade Ampla:** Carregue seus dados sem esforço em formatos CSV ou XLSX.
-  * **Seleção Flexível:** Escolha facilmente a coluna de data, a variável resposta (Y) e as variáveis explicativas (Xs) para sua análise.
-  * **Controle Total de Período:** Defina com precisão o período de análise e a data exata da sua intervenção.
+Configuração manual de parâmetros BSTS
+Controle do nível de significância (alpha)
+Ajuste do número de iterações MCMC
+Especificação de desvios-padrão para priors
 
-### 📈 Tratamento Inteligente de Séries Temporais
+**Visualização de resultados**
 
-  * **Desazonalização Avançada:** Utilize a decomposição STL para remover a sazonalidade e obter uma visão mais clara da tendência.
-  * **Foco na Tendência:** Opção para extrair apenas o componente de tendência da sua série.
-  * **Frequência Personalizada:** Configure a frequência sazonal (mensal, trimestral, semanal) para se adequar perfeitamente aos seus dados.
+Gráficos interativos da série real vs. contrafactual
+Visualização de coeficientes do modelo
+Intervalo de confiança configurável
+Tabelas de impacto agregadas por diferentes períodos
 
-### ⚙️ Modelagem Avançada ao Seu Alcance
+**Exportação e relatórios**
 
-  * **Parâmetros BSTS:** Ajuste manualmente os parâmetros do modelo BSTS para análises mais aprofundadas.
-  * **Controle de Significância:** Defina o nível de significância ($\\alpha$) desejado.
-  * **Iterações MCMC:** Configure o número de iterações MCMC para maior precisão.
-  * **Priors Configuráveis:** Especifique desvios-padrão para os priors do modelo.
+Download de relatórios completos em formato Excel
+Exportação de relatórios textuais detalhados
+Tabelas de impacto agrupadas por diferentes frequências temporais
+Métricas-chave como efeito absoluto, relativo e probabilidade causal
 
-### 📊 Visualização de Resultados Imersiva
+**Como usar**
 
-  * **Gráficos Interativos:** Compare dinamicamente a série real com a contrafactual projetada.
-  * **Coeficientes do Modelo:** Entenda a contribuição de cada covariável com a visualização dos coeficientes.
-  * **Intervalo de Confiança:** Monitore a incerteza da sua previsão contrafactual com intervalos de confiança configuráveis.
-  * **Tabelas de Impacto:** Veja o impacto agregado por diferentes períodos.
+Carregue um arquivo CSV ou XLSX contendo seus dados
+Selecione a coluna de data e as variáveis para análise
+Defina o período de análise e a data do evento
+Configure as opções avançadas, se necessário
+Clique em "Executar Análise" para gerar resultados
+Explore os resultados nas diferentes abas
+Exporte relatórios para documentação e apresentações
 
-### 📤 Exportação e Relatórios Completos
+**Requisitos**
 
-  * **Relatórios em Excel:** Baixe um relatório abrangente em formato XLSX, consolidando todas as suas análises.
-  * **Relatórios Textuais Detalhados:** Obtenha resumos e relatórios detalhados em texto.
-  * **Métricas Chave:** Acesse métricas cruciais como efeito absoluto, efeito relativo e a probabilidade causal.
+R versão 3.6 ou superior
+Pacotes: shiny, tidyverse, lubridate, plotly, zoo, CausalImpact, DT, htmltools, readxl, shinythemes, shinyjs, shinydashboard, shinyWidgets, data.table, openxlsx
 
-## 🚀 Como Usar (Guia Rápido)
+**Limitações e considerações**
 
-1.  **Carregue seus Dados:** Faça o upload de um arquivo CSV ou XLSX contendo seus dados.
-2.  **Configure as Colunas:** Selecione a coluna de data e as variáveis para análise.
-3.  **Defina os Períodos:** Defina o período de análise e a data do evento.
-4.  **Ajustes Avançados (Opcional):** Configure as opções avançadas, se necessário.
-5.  **Execute a Análise:** Clique em "Executar Análise" para gerar resultados.
-6.  **Explore e Exporte:** Explore os resultados nas diferentes abas e exporte relatórios para documentação e apresentações.
+A inferência causal depende da qualidade das covariáveis selecionadas
+Resultados robustos geralmente requerem períodos pré-intervenção suficientemente longos
+A análise pressupõe que o modelo contrafactual seja adequado
+Em séries muito curtas, a desazonalização pode ser menos confiável
 
-## 🛠️ Requisitos
+**Referências**                                          
 
-  * **R:** Versão 3.6 ou superior.
-  * **Pacotes Essenciais:** `shiny`, `tidyverse`, `lubridate`, `plotly`, `zoo`, `CausalImpact`, `DT`, `htmltools`, `readxl`, `shinythemes`, `shinyjs`, `shinydashboard`, `shinyWidgets`, `data.table`, `openxlsx`.
-
-## ⚠️ Limitações e Considerações Importantes
-
-  * A inferência causal depende da qualidade das covariáveis selecionadas.
-  * Resultados robustos geralmente requerem períodos pré-intervenção suficientemente longos.
-  * A análise pressupõe que o modelo contrafactual seja adequado.
-  * Em séries muito curtas, a desazonalização pode ser menos confiável.
-
-## 📚 Referências
-
-  * [**Documentação Oficial do CausalImpact**](https://google.github.io/CausalImpact/CausalImpact.html)
-  * [**Artigo Científico: Brodersen et al. (2015)**](https://projecteuclid.org/journals/annals-of-applied-statistics/volume-9/issue-1/Inferring-causal-impact-using-Bayesian-structural-time-series-models/10.1214/14-AOAS788.full)
-
------
+[Documentação oficial do CausalImpact](https://google.github.io/CausalImpact/CausalImpact.html)                                                                        
+[Brodersen et al. (2015)](https://projecteuclid.org/journals/annals-of-applied-statistics/volume-9/issue-1/Inferring-causal-impact-using-Bayesian-structural-time-series-models/10.1214/14-AOAS788.full)

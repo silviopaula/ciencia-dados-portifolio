@@ -1,21 +1,48 @@
+# app.R - Revised version with:
+# - Example dataset added
+# - Fixed class parameter in selectInput
+# - Added introductory text to homepage
+
 ########################################################################
-#                CAUSAL IMPACT COM BSTS
+#        FUNÇÃO PARA APLICAR O PACOTE CAUSAL IMPACT
 ########################################################################
 
-# Carregar packages
-if (!require(pacman)) install.packages("pacman")
-p_load(shiny, tidyverse, lubridate, plotly, zoo, CausalImpact, DT, htmltools, readxl, shinythemes,
-       shinyjs, shinydashboard, shinyWidgets, data.table, openxlsx, tidyverse, lubridate, plotly, 
-       zoo, CausalImpact, ggplot2, data.table) 
-
-# Aumentar limite máximo de upload de arquivos para 100 MB
-options(shiny.maxRequestSize = 100 * 1024^2)
+if(!require(pacman)){install.packages("pacman")}
+pacman::p_load(tidyverse, lubridate, plotly, zoo, CausalImpact, ggplot2, data.table, shiny, zoo, DT,
+               htmltools, readxl, shinythemes, shinyjs, shinydashboard, shinyWidgets, data.table, openxlsx)
 
 #--------------------------------------------------
-#    Função causal impact
+## Funçao para gerar dados de exemplo (o mesmo exemplo do package )
 #--------------------------------------------------
 
-## Função para gerar dados de exemplo
+generate_example_data <- function() {
+  # Create example based on the provided code
+  set.seed(1)
+  # Create a weekly time series starting from 2022-01-01
+  dates <- seq.Date(from = as.Date("2022-01-01"), by = "week", length.out = 52)
+  
+  # Generate x1 and y variables
+  x1 <- 100 + arima.sim(model = list(ar = 0.999), n = 52)
+  y <- 1.2 * x1 + rnorm(52)
+  
+  # Add effect to the last 12 observations (simulating intervention)
+  y[41:52] <- y[41:52] + 10
+  
+  # Create a data frame with proper date column
+  example_df <- data.frame(
+    Data = dates,
+    y = y,
+    x1 = x1
+  )
+  
+  return(example_df)
+}
+
+#--------------------------------------------------
+## Função para gerar a base 
+#--------------------------------------------------
+
+# O período pré-intervenção é de data_inicio até (data_inicio_evento - 1 dia)
 generate_df_causal_impact <- function(data_frame, data_inicio, data_fim, data_inicio_evento, 
                                       var_Y, var_Xs, deseasonalize = "none", freq_sazonal = 12) {
   # Validações
@@ -194,154 +221,6 @@ modify_plot <- function(p, title = "title", title_y = "title_y", data_inicio_eve
   return(p_plotly)
 }
 
-#------------------------------------------------------------------------
-#    Função para traduzir o report (retorna string)
-#------------------------------------------------------------------------
-summary_pt_br <- function(ci_result, type = "summary") {
-  if(type == "summary") {
-    output_english <- capture.output(summary(ci_result))
-    output_portuguese <- gsub("Posterior inference", "Inferência Posterior", output_english)
-    output_portuguese <- gsub("Average", "Média", output_portuguese)
-    output_portuguese <- gsub("Cumulative", "Acumulado", output_portuguese)
-    output_portuguese <- gsub("Actual", "Real", output_portuguese)
-    output_portuguese <- gsub("Prediction", "Projetado", output_portuguese)
-    output_portuguese <- gsub("Absolute effect", "Efeito Absoluto", output_portuguese)
-    output_portuguese <- gsub("Relative effect", "Efeito Relativo", output_portuguese)
-    output_portuguese <- gsub("Posterior tail-area probability p", "Probabilidade do efeito ser de origem aleatória", output_portuguese)
-    output_portuguese <- gsub("Posterior prob. of a causal effect", "Probabilidade do efeito ser causal", output_portuguese)
-    output_portuguese <- gsub("For more details, type", "Para mais detalhes, digite", output_portuguese)
-    paste(output_portuguese, collapse = "\n")
-  } else if(type == "report") {
-    output_english <- capture.output(summary(ci_result, "report"))
-    output_formatted <- c()
-    in_table <- FALSE
-    table_content <- c()
-    
-    for (line in output_english) {
-      if (grepl("^\\s*[A-Za-z]+\\s+[A-Za-z]+\\s+[A-Za-z]+\\s+|^\\s*-----", line)) {
-        in_table <- TRUE
-        table_content <- c(table_content, line)
-        next
-      }
-      if (in_table && (line == "" || grepl("^[A-Za-z]", line) && !grepl("^\\s+[0-9]", line))) {
-        in_table <- FALSE
-        if (length(table_content) > 0) {
-          table_formatted <- format_table(table_content)
-          output_formatted <- c(output_formatted, table_formatted, "")
-          table_content <- c()
-        }
-      }
-      if (in_table) {
-        table_content <- c(table_content, line)
-        next
-      }
-      if (nchar(line) > 80) {
-        words <- unlist(strsplit(line, " "))
-        current_line <- ""
-        for (word in words) {
-          if (nchar(current_line) + nchar(word) + 1 > 80) {
-            output_formatted <- c(output_formatted, current_line)
-            current_line <- word
-          } else {
-            if (current_line == "") {
-              current_line <- word
-            } else {
-              current_line <- paste(current_line, word)
-            }
-          }
-        }
-        if (current_line != "") {
-          output_formatted <- c(output_formatted, current_line)
-        }
-      } else {
-        output_formatted <- c(output_formatted, line)
-      }
-    }
-    if (length(table_content) > 0) {
-      table_formatted <- format_table(table_content)
-      output_formatted <- c(output_formatted, table_formatted)
-    }
-    output_portuguese <- gsub("Analysis report", "RELATÓRIO DE ANÁLISE", output_formatted)
-    output_portuguese <- gsub("Posterior inference", "INFERÊNCIA POSTERIOR", output_portuguese)
-    output_portuguese <- gsub("Actual response", "Resposta Real", output_portuguese)
-    output_portuguese <- gsub("Predicted response", "Resposta Projetada", output_portuguese)
-    output_portuguese <- gsub("Absolute effect", "Efeito Absoluto", output_portuguese)
-    output_portuguese <- gsub("Relative effect", "Efeito Relativo", output_portuguese)
-    output_portuguese <- gsub("Posterior tail-area probability p", "Probabilidade do efeito ser de origem aleatória", output_portuguese)
-    output_portuguese <- gsub("Posterior prob. of a causal effect", "Probabilidade do efeito ser causal", output_portuguese)
-    output_portuguese <- gsub("Prior standard deviation", "Desvio padrão prior", output_portuguese)
-    output_portuguese <- gsub("Posterior mean", "Média posterior", output_portuguese)
-    output_portuguese <- gsub("Posterior standard deviation", "Desvio padrão posterior", output_portuguese)
-    output_portuguese <- gsub("Posterior quantiles", "Quantis posteriores", output_portuguese)
-    output_portuguese <- gsub("MCMC iterations", "Iterações MCMC", output_portuguese)
-    output_portuguese <- gsub("Number of data points", "Número de pontos de dados", output_portuguese)
-    output_portuguese <- gsub("during the post-intervention period", "durante o período pós-intervenção", output_portuguese)
-    output_portuguese <- gsub("average", "média", output_portuguese)
-    output_portuguese <- gsub("cumulative", "acumulado", output_portuguese)
-    output_portuguese <- gsub("confidence interval", "intervalo de confiança", output_portuguese)
-    output_portuguese <- gsub("Average", "Média", output_portuguese)
-    output_portuguese <- gsub("Cumulative", "Acumulado", output_portuguese)
-    
-    formatted_report <- c(
-      "============================================================",
-      "               RELATÓRIO COMPLETO CAUSALIMPACT               ",
-      "============================================================",
-      "",
-      output_portuguese
-    )
-    paste(formatted_report, collapse = "\n")
-  }
-}
-
-#------------------------------------------------------------------------
-# Função auxiliar para formatar tabelas
-#------------------------------------------------------------------------
-
-format_table <- function(table_lines) {
-  if (length(table_lines) < 2) return(table_lines)
-  headers <- table_lines[!grepl("^-+", table_lines) & !grepl("^\\s*$", table_lines)]
-  formatted_lines <- c()
-  for (line in headers) {
-    cols <- unlist(strsplit(trimws(line), "\\s+"))
-    if (length(cols) <= 1) {
-      formatted_lines <- c(formatted_lines, line)
-      next
-    }
-    if (length(cols) >= 4) {
-      col1_width <- 20
-      col2_width <- 15
-      col3_width <- 15
-      if (length(formatted_lines) == 0) {
-        formatted_lines <- c(formatted_lines, paste(cols, collapse=" "))
-      } else {
-        if (length(cols) > 4) {
-          first_part <- sprintf("%-*s %-*s %-*s", 
-                                col1_width, substr(cols[1], 1, col1_width),
-                                col2_width, substr(cols[2], 1, col2_width),
-                                col3_width, substr(cols[3], 1, col3_width))
-          second_part <- paste(cols[4:length(cols)], collapse=" ")
-          formatted_lines <- c(formatted_lines, first_part)
-          formatted_lines <- c(formatted_lines, paste("  ", second_part))
-        } else {
-          formatted_line <- sprintf("%-*s %-*s %-*s %s", 
-                                    col1_width, substr(cols[1], 1, col1_width),
-                                    col2_width, substr(cols[2], 1, col2_width),
-                                    col3_width, substr(cols[3], 1, col3_width),
-                                    if(length(cols) > 3) cols[4] else "")
-          formatted_lines <- c(formatted_lines, formatted_line)
-        }
-      }
-    } else {
-      formatted_lines <- c(formatted_lines, line)
-    }
-  }
-  if (length(formatted_lines) > 1) {
-    separator <- paste(rep("-", 60), collapse="")
-    formatted_lines <- c(formatted_lines[1], separator, formatted_lines[2:length(formatted_lines)])
-  }
-  return(formatted_lines)
-}
-
 #-----------------------------------------------------------------
 #  Função para gerar tabela dos impactos agrupados por frequência
 #-----------------------------------------------------------------
@@ -418,24 +297,94 @@ ui <- fluidPage(
         margin-bottom: 10px;
         font-weight: bold;
       }
-      .developer-info {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #dee2e6;
-        font-size: 0.9em;
-        color: #6c757d;
+      /* Estilo customizado para botões */
+      .btn-custom-blue {
+        background-color: #2c3e50;
+        color: white;
+        border-color: #1a252f;
+      }
+      .btn-custom-blue:hover {
+        background-color: #1a252f;
+        color: white;
+      }
+      /* Estilo para selects - agora aplicado diretamente aos elementos selectInput via seletores CSS */
+      .selectize-control.single .selectize-input {
+        background-color: #2c3e50;
+        color: white !important;
+        border-color: #1a252f;
+      }
+      .selectize-dropdown {
+        background-color: white;
+        color: #333;
+      }
+      /* Estilo específico para pickerInput */
+      .bootstrap-select .dropdown-toggle {
+        background-color: #2c3e50;
+        color: white !important;
+        border-color: #1a252f;
+      }
+      .bootstrap-select .filter-option {
+        color: white !important;
+      }
+      .bootstrap-select .dropdown-toggle::after {
+        color: white;
+      }
+      /* Garante que o texto dentro do pickerInput seja branco */
+      .bootstrap-select .filter-option-inner-inner {
+        color: white !important;
+      }
+      /* Estilo para o jumbotron da tela inicial */
+      .jumbotron {
+        background-color: #ecf0f1;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .jumbotron h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+      }
+      .jumbotron h4 {
+        color: #2980b9;
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+      .jumbotron ul {
+        color: #34495e;
+        margin-bottom: 15px;
+      }
+      .jumbotron p {
+        color: #34495e;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .intro-action-btn {
+        margin-top: 20px;
       }
     "))
   ),
   navbarPage(
-    "Análise Causal com CausalImpact",
+    title = div(style = "cursor: pointer;", 
+                onclick = "$('.navbar-nav a:first').tab('show');", 
+                "Análise Causal com CausalImpact"),
     tabPanel("Análise Principal",
              sidebarLayout(
                sidebarPanel(
                  width = 3,
                  h4("Carregar Dados"),
-                 fileInput("datafile", "Carregar arquivo CSV ou XLSX", 
-                           accept = c(".csv", ".xlsx")),
+                 # Added example data button and download button
+                 div(style = "display: flex; flex-direction: column; margin-bottom: 15px;",
+                     fileInput("datafile", "Carregar arquivo CSV ou XLSX", 
+                               accept = c(".csv", ".xlsx")),
+                     div(style = "display: flex; margin-top: 10px;",
+                         actionButton("use_example", "Usar Exemplo", 
+                                      class = "btn-custom-blue"),
+                         downloadButton("download_example", "Baixar Exemplo", 
+                                        class = "btn-custom-blue",
+                                        style = "margin-left: 10px;")
+                     )
+                 ),
                  
                  conditionalPanel(
                    condition = "output.fileLoaded",
@@ -489,7 +438,7 @@ ui <- fluidPage(
                    condition = "!output.fileLoaded",
                    div(class = "info-box",
                        h4("Instruções:"),
-                       p("1. Faça o upload de um arquivo CSV ou XLSX contendo seus dados."),
+                       p("1. Faça o upload de um arquivo CSV ou XLSX contendo seus dados, ou clique em 'Usar Exemplo'."),
                        p("2. Selecione a coluna de data e as variáveis para análise."),
                        p("3. Defina o período de análise e a data do evento."),
                        p("4. Clique em 'Executar Análise' para gerar resultados.")
@@ -513,7 +462,7 @@ ui <- fluidPage(
                                        h4("Resumo da Análise"),
                                        verbatimTextOutput("impact_summary"),
                                        h4("Coeficientes do Modelo BSTS"),
-                                       uiOutput("modelo_info"),  # Adicionado aqui o aviso de modelo univariado
+                                       uiOutput("modelo_info"),
                                        plotOutput("coefficients_plot")
                                 )
                               ),
@@ -562,12 +511,42 @@ ui <- fluidPage(
                  ),
                  conditionalPanel(
                    condition = "!output.fileLoaded",
-                   div(class = "centered", 
-                       img(src = "https://www.r-project.org/logo/Rlogo.png", height = 100),
-                       h3("Bem-vindo à Análise Causal com CausalImpact"),
-                       p("Carregue um arquivo para começar sua análise."),
-                       # Adicionada a imagem do gato logo abaixo do texto de boas-vindas
-                       img(src = "https://i.etsystatic.com/37145909/r/il/a1da3a/4209674353/il_fullxfull.4209674353_87un.jpg", height = 500))
+                   # NOVO TEXTO INTRODUTÓRIO
+                   div(class = "jumbotron",
+                       div(style = "display: flex; align-items: flex-start;",
+                           div(style = "flex: 3;",
+                               h2("Bem-vindo à Análise Causal com CausalImpact"),
+                               p("Esta ferramenta permite avaliar o impacto de intervenções, campanhas ou eventos em suas séries temporais utilizando metodologia bayesiana desenvolvida pelo Google."),
+                               
+                               h4("O que você pode descobrir:"),
+                               tags$ul(
+                                 tags$li("Qual foi o impacto real de uma campanha de marketing nas suas vendas?"),
+                                 tags$li("Como uma mudança de política afetou indicadores importantes da sua organização?"),
+                                 tags$li("Quanto um evento externo (pandemia, crise econômica, etc.) influenciou seus resultados financeiros?"),
+                                 tags$li("Qual seria o cenário mais provável se a intervenção não tivesse ocorrido?")
+                               ),
+                               
+                               h4("Como funciona:"),
+                               p("A metodologia CausalImpact cria uma versão contrafactual dos seus dados - ou seja, uma previsão de como seria a realidade caso o evento analisado não tivesse ocorrido. A diferença entre os dados reais e este contrafactual é o impacto causal estimado."),
+                               
+                               p("A análise utiliza modelos de séries temporais bayesianas estruturais (BSTS) para gerar previsões robustas, considerando tendências e padrões históricos dos seus dados."),
+                               
+                               h4("Benefícios desta abordagem:"),
+                               tags$ul(
+                                 tags$li("Quantificação objetiva de impactos, eliminando o 'achismo'"),
+                                 tags$li("Visualizações claras que facilitam a comunicação de resultados"),
+                                 tags$li("Intervalos de confiança que indicam a incerteza nas estimativas"),
+                                 tags$li("Possibilidade de avaliar intervenções mesmo sem grupo de controle experimental")
+                               )
+                           ),
+                           div(style = "flex: 1; text-align: center; margin-left: 20px;",
+                               # Mantendo a imagem do gato
+                               img(src = "https://i.etsystatic.com/37145909/r/il/a1da3a/4209674353/il_fullxfull.4209674353_87un.jpg", 
+                                   height = 280,
+                                   style = "border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);")
+                           )
+                       )
+                   )
                  )
                )
              )
@@ -579,6 +558,15 @@ ui <- fluidPage(
                       h3("Sobre o CausalImpact"),
                       p("O CausalImpact é uma biblioteca desenvolvida pelo Google para análise de efeitos causais em séries temporais. 
                         Ela permite estimar o impacto de uma intervenção ou evento em uma variável ao longo do tempo."),
+                      
+                      h3("Dados de Exemplo"),
+                      p("Este aplicativo inclui um conjunto de dados de exemplo que você pode usar para testar a ferramenta:"),
+                      tags$ul(
+                        tags$li("Série temporal semanal com 52 observações"),
+                        tags$li("Variável resposta 'y' que sofre um impacto após a 40ª observação"),
+                        tags$li("Variável explicativa 'x1' que ajuda a prever 'y'"),
+                        tags$li("Data de intervenção sugerida: 2022-10-08 (40ª semana)")
+                      ),
                       
                       h3("Requisitos dos dados"),
                       tags$ul(
@@ -601,7 +589,7 @@ ui <- fluidPage(
                       p("A ferramenta oferece três métodos de transformação de séries temporais:"),
                       tags$ul(
                         tags$li(strong("Decomposição STL (Tendência + Resíduo):"), " Realiza a decomposição e remove a sazonalidade, mantendo a tendência e o resíduo"),
-                        tags$li(strong("Somente Tendência:"), " Mantém apenas o componente de tendência, removendo a sazonalidade e o ruído"),
+                        tags$li(strong("Somente Tendência:"), " Mantém apenas o componente de tendência, removando a sazonalidade e o ruído"),
                         tags$li(strong("Não:"), " Sem transformação")
                       ),
                       p("A frequência sazonal deve ser definida de acordo com a periodicidade dos dados:"),
@@ -622,36 +610,11 @@ ui <- fluidPage(
                       tags$ul(
                         tags$li(HTML('<a href="https://google.github.io/CausalImpact/CausalImpact.html" target="_blank">Documentação oficial do CausalImpact</a>')),
                         tags$li(HTML('<a href="https://doi.org/10.1214/14-AOAS788" target="_blank">Brodersen et al. (2015)</a>'))
-                      ),
-                      
-                      # Adicionando informações do desenvolvedor e licença
-                      h3("Desenvolvedor"),
-                      p("Desenvolvido por Silvio Paula"),
-                      p("Email: Silvio.economia@gmail.com"),
-                      
-                      h3("Licença"),
-                      tags$pre(style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap;",
-                               "MIT License
-Copyright (c) 2025 Silvio da Rosa Paula
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the \"Software\"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.")
+                      )
                )
              )
     )
-  )
+  ),
 )
 
 ########################################################################
@@ -663,7 +626,61 @@ server <- function(input, output, session) {
     data = NULL,
     analysis_result = NULL,
     analysis_complete = FALSE,
-    ci_metrics = NULL
+    ci_metrics = NULL,
+    using_example = FALSE
+  )
+  
+  # Load example data when button is clicked
+  observeEvent(input$use_example, {
+    rv$data <- generate_example_data()
+    rv$using_example <- TRUE
+    rv$analysis_complete <- FALSE
+    
+    # Pre-select appropriate values for the example data
+    updateDateRangeInput(session, "date_range", 
+                         start = min(rv$data$Data), 
+                         end = max(rv$data$Data))
+    
+    # Set intervention date to approximately where the effect was added (41st observation)
+    intervention_date <- rv$data$Data[41]
+    updateDateInput(session, "data_inicio_evento", value = intervention_date)
+    
+    showNotification("Dados de exemplo carregados com sucesso", type = "message")
+  })
+  
+  # Link the action buttons in the intro section to their functions
+  observeEvent(input$btn_exemplo, {
+    rv$data <- generate_example_data()
+    rv$using_example <- TRUE
+    rv$analysis_complete <- FALSE
+    
+    # Pre-select appropriate values for the example data
+    updateDateRangeInput(session, "date_range", 
+                         start = min(rv$data$Data), 
+                         end = max(rv$data$Data))
+    
+    # Set intervention date to approximately where the effect was added (41st observation)
+    intervention_date <- rv$data$Data[41]
+    updateDateInput(session, "data_inicio_evento", value = intervention_date)
+    
+    showNotification("Dados de exemplo carregados com sucesso", type = "message")
+  })
+  
+  # Download example data as XLSX
+  output$download_example <- downloadHandler(
+    filename = function() {
+      "dados_exemplo_causalimpact.xlsx"
+    },
+    content = function(file) {
+      # Generate example data
+      example_data <- generate_example_data()
+      
+      # Save as XLSX
+      wb <- createWorkbook()
+      addWorksheet(wb, "Dados")
+      writeData(wb, "Dados", example_data)
+      saveWorkbook(wb, file, overwrite = TRUE)
+    }
   )
   
   observeEvent(input$datafile, {
@@ -672,20 +689,64 @@ server <- function(input, output, session) {
         ext <- tools::file_ext(input$datafile$name)
         if(ext == "csv"){
           df <- fread(input$datafile$datapath, data.table = FALSE)
-          date_cols <- names(df)[sapply(df, function(x) any(grepl("^\\d{4}-\\d{2}-\\d{2}$", as.character(x))))]
+          # Tenta identificar a coluna de data
+          date_cols <- names(df)[sapply(df, function(x) {
+            x_char <- as.character(x)
+            return(any(grepl("^\\d{4}-\\d{2}-\\d{2}$", x_char)) || 
+                     any(grepl("^\\d{2}/\\d{2}/\\d{4}$", x_char)) ||
+                     any(grepl("^\\d{1,2}/\\d{1,2}/\\d{4}$", x_char)))
+          })]
           if(length(date_cols) > 0) {
-            df[[date_cols[1]]] <- as.Date(df[[date_cols[1]]])
+            # Tenta converter para data usando ymd
+            df[[date_cols[1]]] <- tryCatch({
+              lubridate::parse_date_time(df[[date_cols[1]]], orders = c("ymd", "dmy", "mdy"))
+            }, error = function(e) {
+              as.Date(df[[date_cols[1]]])
+            })
           }
         } else if(ext == "xlsx"){
           df <- read_excel(input$datafile$datapath)
-          date_cols <- names(df)[sapply(df, function(x) lubridate::is.Date(x) || any(grepl("^\\d{4}-\\d{2}-\\d{2}$", as.character(x))))]
+          # Tenta identificar a coluna de data
+          date_cols <- names(df)[sapply(df, function(x) {
+            if(lubridate::is.Date(x)) return(TRUE)
+            x_char <- as.character(x)
+            return(any(grepl("^\\d{4}-\\d{2}-\\d{2}$", x_char)) || 
+                     any(grepl("^\\d{2}/\\d{2}/\\d{4}$", x_char)) ||
+                     any(grepl("^\\d{1,2}/\\d{1,2}/\\d{4}$", x_char)))
+          })]
           if(length(date_cols) > 0) {
-            df[[date_cols[1]]] <- as.Date(df[[date_cols[1]]])
+            # Tenta converter para data usando ymd
+            df[[date_cols[1]]] <- tryCatch({
+              lubridate::parse_date_time(df[[date_cols[1]]], orders = c("ymd", "dmy", "mdy"))
+            }, error = function(e) {
+              as.Date(df[[date_cols[1]]])
+            })
           }
         } else {
           stop("Arquivo inválido. Carregue um CSV ou XLSX.")
         }
+        
+        # Verifica se há colunas numéricas que precisam ser convertidas
+        for(col in names(df)) {
+          if(!is.numeric(df[[col]]) && !is.Date(df[[col]])) {
+            # Tenta converter para numérico se possível
+            tryCatch({
+              # Substitui vírgulas por pontos para lidar com formato BR
+              values <- gsub(",", ".", as.character(df[[col]]))
+              # Remove caracteres não numéricos
+              numeric_values <- suppressWarnings(as.numeric(values))
+              # Se a maioria dos valores puder ser convertida, então procede
+              if(sum(!is.na(numeric_values)) > 0.5 * length(numeric_values)) {
+                df[[col]] <- numeric_values
+              }
+            }, error = function(e) {
+              # Se falhar, mantém como está
+            })
+          }
+        }
+        
         rv$data <- df
+        rv$using_example <- FALSE
         rv$analysis_complete <- FALSE
         showNotification("Dados carregados com sucesso", type = "message")
       }, error = function(e) {
@@ -700,27 +761,53 @@ server <- function(input, output, session) {
   output$analysisComplete <- reactive({ rv$analysis_complete })
   outputOptions(output, "analysisComplete", suspendWhenHidden = FALSE)
   
+  # CORREÇÃO: Remoção do argumento class nos selectInput
   output$dataColumnUI <- renderUI({
     req(rv$data)
     df <- rv$data
-    date_cols <- names(df)[sapply(df, function(x) lubridate::is.Date(x) || any(grepl("^\\d{4}-\\d{2}-\\d{2}$", as.character(x))))]
-    if(length(date_cols) == 0) { date_cols <- names(df) }
-    selectInput("data_column", "Coluna de Data", choices = names(df), 
-                selected = if(length(date_cols) > 0) date_cols[1] else names(df)[1])
+    
+    if(rv$using_example) {
+      # For example data, we know the date column
+      selectInput("data_column", "Coluna de Data", choices = names(df), selected = "Data", 
+                  width = "100%")
+    } else {
+      # For user data, try to find date columns
+      date_cols <- names(df)[sapply(df, function(x) lubridate::is.Date(x) || any(grepl("^\\d{4}-\\d{2}-\\d{2}$", as.character(x))))]
+      if(length(date_cols) == 0) { date_cols <- names(df) }
+      selectInput("data_column", "Coluna de Data", choices = names(df), 
+                  selected = if(length(date_cols) > 0) date_cols[1] else names(df)[1],
+                  width = "100%")
+    }
   })
   
+  # CORREÇÃO: Remoção do argumento class nos selectInput
   output$colunasUI <- renderUI({
     df <- rv$data
     req(df, input$data_column)
-    vars <- setdiff(names(df), input$data_column)
-    num_vars <- names(df)[sapply(df, is.numeric) & names(df) != input$data_column]
-    if(length(num_vars) == 0) { num_vars <- vars }
-    tagList(
-      selectInput("var_Y", "Variável Resposta (Y)", choices = vars, 
-                  selected = if(length(num_vars) > 0) num_vars[1] else vars[1]),
-      pickerInput("var_Xs", "Variáveis Explicativas (Xs)", choices = vars, 
-                  multiple = TRUE, options = list(`live-search` = TRUE))
-    )
+    
+    if(rv$using_example) {
+      # For example data, pre-select appropriate variables
+      tagList(
+        selectInput("var_Y", "Variável Resposta (Y)", choices = c("y", "x1"), selected = "y",
+                    width = "100%"),
+        pickerInput("var_Xs", "Variáveis Explicativas (Xs)", choices = c("x1"), 
+                    multiple = TRUE, selected = "x1", options = list(`live-search` = TRUE,
+                                                                     liveSearchStyle = "contains"))
+      )
+    } else {
+      # For user data, normal selection
+      vars <- setdiff(names(df), input$data_column)
+      num_vars <- names(df)[sapply(df, is.numeric) & names(df) != input$data_column]
+      if(length(num_vars) == 0) { num_vars <- vars }
+      tagList(
+        selectInput("var_Y", "Variável Resposta (Y)", choices = vars, 
+                    selected = if(length(num_vars) > 0) num_vars[1] else vars[1],
+                    width = "100%"),
+        pickerInput("var_Xs", "Variáveis Explicativas (Xs)", choices = vars, 
+                    multiple = TRUE, options = list(`live-search` = TRUE,
+                                                    liveSearchStyle = "contains"))
+      )
+    }
   })
   
   # Adicionado o renderUI para o aviso de modelo univariado
@@ -738,7 +825,8 @@ server <- function(input, output, session) {
     req(df, input$data_column)
     num_vars <- names(df)[sapply(df, is.numeric) & names(df) != "Data"]
     pickerInput("plot_cols", "Colunas para Análise", choices = num_vars, 
-                multiple = TRUE, options = list(`live-search` = TRUE))
+                multiple = TRUE, options = list(`live-search` = TRUE,
+                                                liveSearchStyle = "contains"))
   })
   
   output$tabela_carregada <- renderDT({
@@ -829,7 +917,7 @@ server <- function(input, output, session) {
           data_inicio_evento = input$data_inicio_evento
         )
         tryCatch({
-          ci_summary <- summary(ci_result)  # alpha removido, pois não é aceito
+          ci_summary <- summary(ci_result)
           avg_actual <- if(!is.null(ci_summary$average$actual)) ci_summary$average$actual else NA
           avg_pred <- if(!is.null(ci_summary$average$pred)) ci_summary$average$pred else NA
           avg_abs_effect <- if(!is.null(ci_summary$average$abs.effect)) ci_summary$average$abs.effect else NA
@@ -928,19 +1016,11 @@ server <- function(input, output, session) {
     }
   })
   
-  output$report_summary <- renderText({
-    req(rv$analysis_complete, rv$analysis_result)
-    summary_pt_br(rv$analysis_result$ci_result, type = "summary")
-  })
-  
-  output$report_summary_original <- renderText({
-    req(rv$analysis_complete, rv$analysis_result)
-    summary_pt_br(rv$analysis_result$ci_result, type = "summary")
-  })
-  
+  # Removed translation functions - now using original English output
   output$report_detailed <- renderText({
     req(rv$analysis_complete, rv$analysis_result)
-    summary_pt_br(rv$analysis_result$ci_result, type = "report")
+    # Show original English report
+    paste(capture.output(summary(rv$analysis_result$ci_result, "report")), collapse = "\n")
   })
   
   output$tabela_impacto <- renderDT({
@@ -1049,7 +1129,7 @@ server <- function(input, output, session) {
     )
   })
   
-  # Tabela de análise descritiva por período - VERSÃO SIMPLIFICADA
+  # Tabela de análise descritiva por período
   output$tabela_descritiva <- renderDT({
     # Obter os dados
     df <- dados_processados()
@@ -1164,8 +1244,9 @@ server <- function(input, output, session) {
       paste("relatorio_causal_impact_", format(Sys.time(), "%Y%m%d"), ".txt", sep = "")
     },
     content = function(file) {
-      resumo <- summary_pt_br(rv$analysis_result$ci_result, type = "summary")
-      detalhado <- summary_pt_br(rv$analysis_result$ci_result, type = "report")
+      # Using original English output
+      resumo <- paste(capture.output(summary(rv$analysis_result$ci_result)), collapse = "\n")
+      detalhado <- paste(capture.output(summary(rv$analysis_result$ci_result, "report")), collapse = "\n")
       conteudo <- paste0(
         "# RESUMO DA ANÁLISE\n",
         "====================\n\n",
@@ -1173,13 +1254,7 @@ server <- function(input, output, session) {
         "\n\n\n",
         "# RELATÓRIO DETALHADO\n",
         "=====================\n\n",
-        detalhado,
-        "\n\n\n",
-        "# INFORMAÇÕES ADICIONAIS\n",
-        "=====================\n\n",
-        "Desenvolvido por Silvio da Rosa Paula (Silvio.economia@gmail.com)\n",
-        "MIT License - Copyright (c) 2025 Silvio da Rosa Paula\n",
-        "Para detalhes completos da licença, consulte a aba Ajuda no aplicativo."
+        detalhado
       )
       cat(conteudo, file = file)
     }
@@ -1193,12 +1268,12 @@ server <- function(input, output, session) {
     content = function(file) {
       wb <- createWorkbook()
       # Aba Resumo
-      resumo <- summary_pt_br(rv$analysis_result$ci_result, type = "summary")
+      resumo <- paste(capture.output(summary(rv$analysis_result$ci_result)), collapse = "\n")
       addWorksheet(wb, "Resumo")
       writeData(wb, sheet = "Resumo", x = data.frame(Resumo = resumo))
       
       # Aba Relatório Detalhado
-      detalhado <- summary_pt_br(rv$analysis_result$ci_result, type = "report")
+      detalhado <- paste(capture.output(summary(rv$analysis_result$ci_result, "report")), collapse = "\n")
       addWorksheet(wb, "Relatorio Detalhado")
       writeData(wb, sheet = "Relatorio Detalhado", x = data.frame(Relatorio = detalhado))
       
@@ -1259,22 +1334,12 @@ server <- function(input, output, session) {
       addWorksheet(wb, "Metricas")
       writeData(wb, sheet = "Metricas", x = metrics_df)
       
-      # Adicionar informações de autoria
-      addWorksheet(wb, "Informações")
-      info_df <- data.frame(
-        Informação = c("Desenvolvido por", "Email", "Licença"),
-        Valor = c("Silvio da Rosa Paula", 
-                  "Silvio.economia@gmail.com", 
-                  "MIT License - Copyright (c) 2025 Silvio da Rosa Paula")
-      )
-      writeData(wb, sheet = "Informações", x = info_df)
-      
       saveWorkbook(wb, file, overwrite = TRUE)
     }
   )
 }
 
 ########################################################################
-#  Inicialização do App
+#                 Inicialização do App
 ########################################################################
 shinyApp(ui, server)
