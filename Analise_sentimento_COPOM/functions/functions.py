@@ -1676,7 +1676,7 @@ def correlacoes_df(results):
 
 def relatorio_correlacoes_lags(df_merged, max_lags=12):
     """Relatório focado em correlações e lags"""
-    
+
     # Gera o gráfico e resultados
     fig, results = plot_correlacoes_e_lags(df_merged, max_lags)
     
@@ -1774,7 +1774,6 @@ def relatorio_correlacoes_lags(df_merged, max_lags=12):
     print(f"   • Sugere que COPOM considera expectativas inflacionárias futuras")
     
     print("="*70)
-    
     
     return results
 
@@ -1903,8 +1902,8 @@ def plotar_sentimento_copom(sentimento, titulo="Evolução do Sentimento nas Ata
 
 def plotar_sentimento_copom_pres(sentimento, titulo="Evolução do Sentimento nas Atas do COPOM"):
     """
-    Plota a evolução temporal do sentimento nas atas do COPOM com áreas coloridas, pontos
-    e os períodos dos presidentes do Banco Central do Brasil de forma mais limpa.
+    Plota a evolução temporal do sentimento nas atas do COPOM com estilo aprimorado,
+    cores vibrantes, e marcações para as mudanças de presidentes do BCB.
     
     Args:
         sentimento: DataFrame com colunas 'DataReferencia' e 'sentimento'
@@ -1913,228 +1912,168 @@ def plotar_sentimento_copom_pres(sentimento, titulo="Evolução do Sentimento na
     Retorna:
         matplotlib.figure.Figure: objeto da figura (para salvar ou customizar)
     """
-    
-    # Verificações iniciais
+
     if sentimento is None or sentimento.empty:
         print("Erro: DataFrame de sentimento está vazio ou é None")
         return None
-    
+
     if 'DataReferencia' not in sentimento.columns or 'sentimento' not in sentimento.columns:
         print("Erro: Colunas 'DataReferencia' e/ou 'sentimento' não encontradas")
         print(f"Colunas disponíveis: {sentimento.columns.tolist()}")
         return None
-    
+
     try:
-        # Ordenar os dados por data
         sentimento = sentimento.sort_values("DataReferencia").copy()
-        
-        # Remover valores nulos
         sentimento = sentimento.dropna(subset=['DataReferencia', 'sentimento'])
-        
-        # Garantir que as datas sejam compatíveis para comparação
+
+        # Ajustar timezone e cortar dados
         if hasattr(sentimento['DataReferencia'].dtype, 'tz') and sentimento['DataReferencia'].dtype.tz is not None:
             timezone = sentimento['DataReferencia'].dtype.tz
             cutoff_date = pd.Timestamp('2012-01-01').tz_localize(timezone)
         else:
             cutoff_date = pd.Timestamp('2012-01-01')
-        
-        # Filtrar dados a partir de 2012
+
         sentimento = sentimento[sentimento['DataReferencia'] >= cutoff_date]
-        
         if sentimento.empty:
             print("Erro: Não há dados válidos após remoção de valores nulos e filtro para 2012+")
             return None
-        
-        # Definir períodos dos presidentes do BCB (apenas transições)
+
+        # Transições de presidentes
         if hasattr(sentimento['DataReferencia'].dtype, 'tz') and sentimento['DataReferencia'].dtype.tz is not None:
             timezone = sentimento['DataReferencia'].dtype.tz
             transicoes_presidentes = [
-                {
-                    'data': pd.Timestamp('2016-06-09').tz_localize(timezone),
-                    'saida': 'Alexandre Tombini',
-                    'entrada': 'Ilan Goldfajn'
-                },
-                {
-                    'data': pd.Timestamp('2019-02-28').tz_localize(timezone),
-                    'saida': 'Ilan Goldfajn',
-                    'entrada': 'Roberto Campos Neto'
-                },
-                {
-                    'data': pd.Timestamp('2025-01-01').tz_localize(timezone),
-                    'saida': 'Roberto Campos Neto',
-                    'entrada': 'Gabriel Galípolo'
-                }
+                {'data': pd.Timestamp('2016-06-09').tz_localize(timezone), 'saida': 'Alexandre Tombini', 'entrada': 'Ilan Goldfajn'},
+                {'data': pd.Timestamp('2019-02-28').tz_localize(timezone), 'saida': 'Ilan Goldfajn', 'entrada': 'Roberto Campos Neto'},
+                {'data': pd.Timestamp('2025-01-01').tz_localize(timezone), 'saida': 'Roberto Campos Neto', 'entrada': 'Gabriel Galípolo'}
             ]
         else:
             transicoes_presidentes = [
-                {
-                    'data': pd.Timestamp('2016-06-09'),
-                    'saida': 'Alexandre Tombini',
-                    'entrada': 'Ilan Goldfajn'
-                },
-                {
-                    'data': pd.Timestamp('2019-02-28'),
-                    'saida': 'Ilan Goldfajn',
-                    'entrada': 'Roberto Campos Neto'
-                },
-                {
-                    'data': pd.Timestamp('2025-01-01'),
-                    'saida': 'Roberto Campos Neto',
-                    'entrada': 'Gabriel Galípolo'
-                }
+                {'data': pd.Timestamp('2016-06-09'), 'saida': 'Alexandre Tombini', 'entrada': 'Ilan Goldfajn'},
+                {'data': pd.Timestamp('2019-02-28'), 'saida': 'Ilan Goldfajn', 'entrada': 'Roberto Campos Neto'},
+                {'data': pd.Timestamp('2025-01-01'), 'saida': 'Roberto Campos Neto', 'entrada': 'Gabriel Galípolo'}
             ]
-        
-        # Criar figura e eixo
+
+        # Paleta de cores vibrantes e com contraste
+        cor_pos = "#008000"       # azul forte
+        cor_neg = "#FF0000"       # vermelho forte
+        cor_linha = "#000000"     # preto
+        cor_pontos = "#010000"    # verde médio
+        cor_transicao = "#ff7f0e" # laranja
+        cor_fundo_anotacao = "#ffffff"  # branco puro
+
+        # Início do plot
         fig, ax = plt.subplots(figsize=(16, 8))
-        
-        # Área verde para sentimentos positivos
-        ax.fill_between(
-            sentimento["DataReferencia"],
-            0,
-            sentimento["sentimento"],
-            where=sentimento["sentimento"] > 0,
-            interpolate=True,
-            color="darkgreen",
-            alpha=0.3,
-            label="Sentimento Positivo"
-        )
-        
-        # Área vermelha para sentimentos negativos
-        ax.fill_between(
-            sentimento["DataReferencia"],
-            0,
-            sentimento["sentimento"],
-            where=sentimento["sentimento"] < 0,
-            interpolate=True,
-            color="darkred",
-            alpha=0.3,
-            label="Sentimento Negativo"
-        )
-        
-        # Linha de sentimento
-        ax.plot(
-            sentimento["DataReferencia"],
-            sentimento["sentimento"],
-            color="black",
-            linewidth=2.5,
-            label="Evolução do Sentimento",
-            zorder=10
-        )
-        
+        ax.set_facecolor("#f5f5f5")  # fundo levemente acinzentado
+
+        # Área positiva
+        ax.fill_between(sentimento["DataReferencia"], 0, sentimento["sentimento"],
+                        where=sentimento["sentimento"] > 0, interpolate=True,
+                        color=cor_pos, alpha=0.7)
+
+        # Área negativa
+        ax.fill_between(sentimento["DataReferencia"], 0, sentimento["sentimento"],
+                        where=sentimento["sentimento"] < 0, interpolate=True,
+                        color=cor_neg, alpha=0.7)
+
+        # Linha principal
+        ax.plot(sentimento["DataReferencia"], sentimento["sentimento"],
+                color=cor_linha, linewidth=2.5, zorder=10)
+
         # Pontos
-        ax.scatter(
-            sentimento["DataReferencia"],
-            sentimento["sentimento"],
-            color="navy",
-            s=40,
-            alpha=0.8,
-            zorder=15,
-            edgecolors='white',
-            linewidth=0.5
-        )
-        
-        # Linha horizontal no zero
+        ax.scatter(sentimento["DataReferencia"], sentimento["sentimento"],
+                   color=cor_pontos, s=45, alpha=1.0, zorder=15,
+                   edgecolors='black', linewidth=0.6)
+
+        # Linha horizontal zero
         ax.axhline(y=0, color='gray', linestyle='-', alpha=0.7, linewidth=1.5)
-        
-        # Adicionar linhas verticais e anotações para as transições
+
         data_min = sentimento["DataReferencia"].min()
         data_max = sentimento["DataReferencia"].max()
-        
-        # Determinar presidente atual no início do período
+
+        # Presidente inicial
         presidente_inicial = "Alexandre Tombini"
         for transicao in transicoes_presidentes:
             if transicao['data'] <= data_min:
                 presidente_inicial = transicao['entrada']
-        
-        # Adicionar anotação do presidente inicial na parte inferior
+
         y_max = sentimento['sentimento'].max()
         y_min = sentimento['sentimento'].min()
         range_y = y_max - y_min
-        
-        ax.text(data_min + pd.Timedelta(days=100), y_min - range_y * 0.1, 
-               f" {presidente_inicial}", 
-               fontsize=11, fontweight='bold',
-               bbox=dict(boxstyle="round,pad=0.4", facecolor='yellow', alpha=0.5),
-               ha='left', va='top')
-        
-        # Adicionar linhas verticais para transições dentro do período
+
+        ax.text(data_min + pd.Timedelta(days=100), y_min - range_y * 0.1,
+                f"{presidente_inicial}", fontsize=11, fontweight='bold',
+                bbox=dict(boxstyle="round,pad=0.4", facecolor=cor_fundo_anotacao,
+                          edgecolor="black", alpha=1.0),
+                ha='left', va='top')
+
         for i, transicao in enumerate(transicoes_presidentes):
             if data_min <= transicao['data'] <= data_max:
-                # Linha vertical
-                ax.axvline(x=transicao['data'], 
-                          color='red', 
-                          linestyle='--', 
-                          alpha=0.8, 
-                          linewidth=1,
-                          zorder=5)
-                
-                # Anotação da mudança - posicionada na parte inferior, colada ao eixo x
-                y_pos = y_min - range_y * (0.15 + i * 0.12)  # Posição abaixo do gráfico
+                ax.axvline(x=transicao['data'], color=cor_transicao,
+                           linestyle='--', alpha=1.0, linewidth=2.5, zorder=5)
+                y_pos = y_min - range_y * (0.15 + i * 0.12)
                 ax.text(transicao['data'], y_pos,
-                       f"{transicao['entrada']}\n{transicao['data'].strftime('%m/%Y')}",
-                       fontsize=10, fontweight='bold',
-                       bbox=dict(boxstyle="round,pad=0.3", facecolor='yellow', alpha=0.8),
-                       ha='left', va='top')
-        
-        # Ajustar limites do eixo Y para acomodar as anotações na parte inferior
-        num_transicoes_no_periodo = len([t for t in transicoes_presidentes if data_min <= t['data'] <= data_max])
-        if num_transicoes_no_periodo > 0:
-            ax.set_ylim(y_min - range_y * (0.3 + num_transicoes_no_periodo * 0.12), y_max + range_y * 0.05)
-        
-        # Títulos e formatação
+                        f"{transicao['entrada']}\n{transicao['data'].strftime('%m/%Y')}",
+                        fontsize=10, fontweight='bold',
+                        bbox=dict(boxstyle="round,pad=0.3", facecolor=cor_fundo_anotacao,
+                                  edgecolor='black', alpha=1.0),
+                        ha='left', va='top')
+
+        num_transicoes = len([t for t in transicoes_presidentes if data_min <= t['data'] <= data_max])
+        if num_transicoes > 0:
+            ax.set_ylim(y_min - range_y * (0.3 + num_transicoes * 0.12), y_max + range_y * 0.05)
+
+        # Títulos
         ax.set_title(titulo, fontsize=18, weight="bold", loc="center", pad=25)
-        fig.suptitle("Análise Temporal (2012+) | Mudanças de Presidência do BCB", 
-                    fontsize=13, y=0.96, style='italic')
+        fig.suptitle("Análise Temporal (2012+) | Mudanças de Presidência do BCB",
+                     fontsize=13, y=0.96, style='italic')
         ax.set_xlabel("Data da Reunião", fontsize=13, weight='bold')
         ax.set_ylabel("Índice de Sentimento", fontsize=13, weight='bold')
-        
-        # Formatação do eixo x
+
+        # Eixo x
         ax.xaxis.set_major_locator(mdates.YearLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
         ax.xaxis.set_minor_locator(mdates.MonthLocator((1, 7)))
-        
-        # Rotação dos labels do eixo x
         plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
-        
-        # Grid melhorado
+
+        # Grid
         ax.grid(axis='y', linestyle='--', alpha=0.6, linewidth=0.8)
         ax.grid(axis='x', linestyle=':', alpha=0.4, linewidth=0.6)
-        
-        # Legenda única e limpa
+
+        # Legenda estilizada
         legend_elements = [
-            plt.Line2D([0], [0], color='darkgreen', alpha=0.3, linewidth=10, label='Sentimento Positivo'),
-            plt.Line2D([0], [0], color='darkred', alpha=0.3, linewidth=10, label='Sentimento Negativo'),
-            plt.Line2D([0], [0], color='black', linewidth=2.5, label='Evolução do Sentimento'),
-            plt.Line2D([0], [0], color='red', linestyle='--', linewidth=2.5, label='Mudança de Presidente BCB')
+            plt.Line2D([0], [0], color=cor_pos, alpha=1.0, linewidth=10, label='Sentimento Positivo'),
+            plt.Line2D([0], [0], color=cor_neg, alpha=1.0, linewidth=10, label='Sentimento Negativo'),
+            plt.Line2D([0], [0], color=cor_linha, linewidth=2.5, label='Evolução do Sentimento'),
+            plt.Line2D([0], [0], color=cor_transicao, linestyle='--', linewidth=2.5, label='Mudança de Presidente BCB')
         ]
-        
-        ax.legend(handles=legend_elements, loc='upper right', fontsize=11, 
-                 title="Legenda", title_fontsize=12, framealpha=0.9)
-        
-        # Melhorar layout das bordas
+
+        ax.legend(handles=legend_elements, loc='upper right', fontsize=11,
+                  title="Legenda", title_fontsize=12, frameon=True,
+                  fancybox=True, framealpha=0.9)
+
+        # Estilo dos eixos
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['left'].set_color('gray')
         ax.spines['bottom'].set_color('gray')
-        
-        # Créditos
-        fig.text(0.99, 0.01, "Dados: BCB | Transições de Presidência BCB destacadas", 
-                ha='right', fontsize=10, style='italic')
-        
-        # Layout ajustado - mais espaço na parte inferior para as anotações
+
+        fig.text(0.99, 0.01, "Dados: BCB | Transições de Presidência BCB destacadas",
+                 ha='right', fontsize=10, style='italic')
+
         plt.tight_layout(rect=[0, 0.05, 1, 0.98])
-        
+
         print(f"Gráfico criado com sucesso! Período: {sentimento['DataReferencia'].min()} a {sentimento['DataReferencia'].max()}")
         print(f"Número de observações: {len(sentimento)}")
-        print(f"Transições de presidência no período: {len([t for t in transicoes_presidentes if data_min <= t['data'] <= data_max])}")
-        
+        print(f"Transições de presidência no período: {num_transicoes}")
+
         return fig
-        
+
     except Exception as e:
         print(f"Erro ao criar o gráfico: {str(e)}")
         import traceback
         traceback.print_exc()
         return None
+
 
 #################################################################################################
 # Função auxiliar para obter apenas os valores dos sentimentos em um df
