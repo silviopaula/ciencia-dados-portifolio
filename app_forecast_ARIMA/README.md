@@ -10,75 +10,21 @@ Um aplicativo web interativo desenvolvido em R Shiny para análise avançada de 
 ## 🚀 Características Principais
 
 ### ✨ Funcionalidades Principais
-- **🤖 Análise Automática**: Detecção automática dos melhores parâmetros ARIMA
-- **⚙️ Configuração Manual**: Controle total sobre parâmetros p, d, q, P, D, Q
-- **📈 Modelos Multivariados**: Suporte a variáveis explicativas (exógenas)
-- **🎯 Comparação de Modelos**: Avaliação automática com múltiplas métricas
-- **📊 Visualizações Interativas**: Gráficos dinâmicos com Plotly
-- **📋 Análise de Coeficientes**: Detalhamento completo dos parâmetros estimados
-- **📈 Análise de Crescimento**: Visualização de taxas em diferentes períodos
-- **📤 Exportação Excel**: Relatórios completos em formato XLSX
+- **Análise Automática**: Detecção automática dos melhores parâmetros ARIMA
+- **Configuração Manual**: Controle total sobre parâmetros p, d, q, P, D, Q
+- **Modelos Multivariados**: Suporte a variáveis explicativas (exógenas)
+- **Comparação de Modelos**: Avaliação automática com múltiplas métricas
+- **Visualizações Interativas**: Gráficos dinâmicos com Plotly
+- **Análise de Coeficientes**: Detalhamento completo dos parâmetros estimados
+- **Análise de Crescimento**: Visualização de taxas em diferentes períodos
+- **Exportação Excel**: Relatórios completos em formato XLSX
 
 ### 🎨 Interface Moderna
-- Design responsivo e profissional
+- Design responsivo
 - Navegação intuitiva por abas
 - Feedback visual em tempo real
 - Tabelas interativas com busca e filtros
 - Gráficos interativos com zoom e pan
-
-## 📷 Screenshots
-
-![Dashboard Principal](screenshots/dashboard.png)
-*Dashboard principal com visualização de previsões*
-
-![Análise de Coeficientes](screenshots/coefficients.png)
-*Análise detalhada dos coeficientes estimados*
-
-![Configuração de Modelos](screenshots/configuration.png)
-*Interface de configuração dos modelos ARIMA*
-
-## 🛠️ Instalação
-
-### Pré-requisitos
-- R (versão 4.0 ou superior)
-- RStudio (recomendado)
-
-### Instalação das Dependências
-
-```r
-# Instalar pacman se não estiver instalado
-if (!require(pacman)) install.packages("pacman")
-
-# Instalar todas as dependências necessárias
-pacman::p_load(
-  shiny,           # Framework web
-  shinydashboard,  # Layout dashboard
-  tidyverse,       # Manipulação de dados
-  lubridate,       # Processamento de datas
-  plotly,          # Gráficos interativos
-  readxl,          # Leitura de arquivos Excel
-  DT,              # Tabelas interativas
-  forecast,        # Modelos ARIMA
-  writexl,         # Escrita em Excel
-  shinyWidgets,    # Widgets adicionais
-  shinythemes,     # Temas visuais
-  RColorBrewer,    # Paletas de cores
-  zoo,             # Séries temporais
-  stringr,         # Manipulação de strings
-  shinyjs          # JavaScript interativo
-)
-```
-
-### Executando o Aplicativo
-
-```r
-# Clonar o repositório
-git clone https://github.com/seu-usuario/arima-shiny-app.git
-cd arima-shiny-app
-
-# Executar no R/RStudio
-source("app.R")
-```
 
 ## 📋 Como Usar
 
@@ -151,24 +97,6 @@ Seus dados devem ter a seguinte estrutura:
 - Testes de significância (t-test)
 - Intervalos de confiança
 - Diagnósticos de modelo
-
-## 🏗️ Arquitetura
-
-```
-📦 arima-shiny-app/
-├── 📄 app.R                    # Aplicação principal
-├── 📄 README.md               # Este arquivo
-├── 📄 LICENSE                 # Licença MIT
-├── 📁 www/                    # Recursos web
-│   ├── 📊 dados.xlsx          # Dados de exemplo
-│   └── 🎨 custom.css          # Estilos personalizados
-├── 📁 screenshots/            # Capturas de tela
-├── 📁 functions/              # Funções auxiliares
-│   ├── 📄 arima_functions.R   # Funções ARIMA
-│   ├── 📄 data_processing.R   # Processamento de dados
-│   └── 📄 visualization.R     # Visualizações
-└── 📁 tests/                  # Testes unitários
-    └── 📄 test_functions.R    # Testes das funções
 ```
 
 ## 🛠️ Tecnologias Utilizadas
@@ -190,141 +118,7 @@ Seus dados devem ter a seguinte estrutura:
 - **Box-Jenkins**: Metodologia clássica ARIMA
 - **Hyndman-Khandakar**: Algoritmo de busca eficiente
 - **Maximum Likelihood**: Estimação de parâmetros
-
-## 📈 Exemplos de Uso
-
-### Caso de Uso 1: Previsão de Vendas
-```r
-# Dados mensais de vendas de 2020-2023
-# Objetivo: Prever vendas para os próximos 24 meses
-# Configuração: ARIMA automático com sazonalidade
 ```
-
-### Caso de Uso 2: Análise de Demanda
-```r
-# Dados diários de demanda por produto
-# Variáveis exógenas: preço, promoções, temperatura
-# Configuração: ARIMA multivariado manual
-```
-
-### Caso de Uso 3: Indicadores Econômicos
-```r
-# Dados trimestrais de PIB
-# Objetivo: Análise de crescimento e projeções
-# Configuração: Múltiplos modelos para comparação
-```
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Por favor, siga estes passos:
-
-1. **Fork** o repositório
-2. **Crie** uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. **Abra** um Pull Request
-
-### Diretrizes para Contribuição
-- Mantenha o código bem documentado
-- Adicione testes para novas funcionalidades
-- Siga as convenções de estilo do R
-- Atualize a documentação quando necessário
-
-## 🐛 Reportando Bugs
-
-Encontrou um bug? Por favor, abra uma [issue](https://github.com/seu-usuario/arima-shiny-app/issues) com:
-
-- Descrição detalhada do problema
-- Passos para reproduzir
-- Comportamento esperado vs. atual
-- Screenshots (se aplicável)
-- Informações do sistema (R version, OS, etc.)
-
-## 📝 Changelog
-
-### v1.0.0 (2024-01-XX)
-- 🎉 Lançamento inicial
-- ✨ Análise automática ARIMA
-- 📊 Interface interativa completa
-- 📤 Exportação em Excel
-- 🔍 Análise de coeficientes
-- 📈 Visualizações dinâmicas
-
-### Próximas Versões
-- [ ] Suporte a modelos SARIMA avançados
-- [ ] Integração com APIs de dados
-- [ ] Análise de múltiplas séries (VAR)
-- [ ] Dashboard executivo
-- [ ] Relatórios automatizados em PDF
-
-## 📊 Performance
-
-### Testado com:
-- ✅ Datasets de até 10.000 observações
-- ✅ Até 10 variáveis exógenas simultâneas
-- ✅ Modelos com até 20 configurações paralelas
-- ✅ Navegadores: Chrome, Firefox, Safari, Edge
-
-### Tempos de Processamento:
-- **Pequenos datasets** (< 500 obs): < 10 segundos
-- **Médios datasets** (500-2000 obs): 10-30 segundos
-- **Grandes datasets** (2000+ obs): 30-120 segundos
-
-## 🔒 Segurança
-
-- Processamento local dos dados (sem upload para servidores)
-- Validação de entrada robusta
-- Limite de tamanho de arquivo (100MB)
-- Sanitização de inputs do usuário
-
-## 📄 Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
-```
-MIT License
-
-Copyright (c) 2024 Seu Nome
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
-## 👤 Autor
-
-**Seu Nome**
-- 🐱 GitHub: [@seu-usuario](https://github.com/seu-usuario)
-- 📧 Email: seu.email@exemplo.com
-- 💼 LinkedIn: [Seu Perfil](https://linkedin.com/in/seu-perfil)
-
-## 🙏 Agradecimentos
-
-- [R Core Team](https://www.r-project.org/) pelo R
-- [RStudio Team](https://rstudio.com/) pelo Shiny
-- [Rob Hyndman](https://robjhyndman.com/) pelo pacote forecast
-- [Hadley Wickham](http://hadley.nz/) pelo tidyverse
-- Comunidade R pelo suporte e feedback
-
-## 📚 Referências Acadêmicas
-
-- Box, G. E. P., & Jenkins, G. M. (1976). Time Series Analysis: Forecasting and Control.
-- Hyndman, R. J., & Khandakar, Y. (2008). Automatic time series forecasting: the forecast package for R.
-- Brockwell, P. J., & Davis, R. A. (2016). Introduction to Time Series and Forecasting.
 
 ---
 
