@@ -1,58 +1,65 @@
-# Curso de MLFlow
+# Exemplo de Aplicação do MLflow – Previsão de Churn
 
-Curso destinado a explicar o funcionamento e principais conceitos do MLFlow para desenvolvimento de modelos de Machine Learning e Inteligência Artificial.
+Este repositório foi criado com o objetivo de demonstrar, como integrar uma aplicação simples de Machine Learning ao MLflow.  
+A ideia central não é a complexidade dos modelos em si, mas sim mostrar o fluxo completo de rastreamento, registro e versionamento de experimentos de ML.
 
-O uso dessa ferramenta viabilisará a produção e gestão de diferentes modelos treinados. Bem como auxiliará na maneira como os modelos são selecionados para produção.
+---
 
-Todo material está no YouTube: [clique aqui](https://youtube.com/playlist?list=PLvlkVRRKOYFQeQEA5Lc0US9i-EK8eGgrs&si=_xiG7YzwzeVVra9t).
+##  Objetivo do exercício
 
-## Estrutura do projeto
+- **Construir um caso didático** de Machine Learning para previsão de **churn (rotatividade de clientes)**.  
+- **Treinar modelos básicos** (Decision Tree, Random Forest e Ensemble) em uma base de clientes fictícia.  
+- **Avaliar métricas de desempenho** como acurácia e F1-score.  
+- **Integrar o processo ao MLflow**, utilizando recursos de:
+  - Rastreamento de parâmetros, métricas e artefatos;
+  - Criação e gerenciamento de experimentos;
+  - Registro de modelos no **Model Registry**;
+  - Uso de **aliases** para controlar a versão em produção.
 
-```bash
-.
-├── mlflow-server
-│   ├── mlartifacts
-│   ├── mlruns
-│   └── requirements.txt
-├── model_churn
-│   ├── data
-│   ├── requirements.txt
-│   └── train.py
-└── README.md
-```
+---
 
-### mlflow-server
+## O que foi feito
 
-É aqui que os artefatos serão gerados a partir do MLFlow. É o lugar onde você deve executar os comandos:
+1. **Configuração do MLflow local**  
+   - Execução da interface UI na porta local (`localhost:5000`).  
+   - Organização de um diretório dedicado para armazenar runs e artefatos.  
 
-```bash
-cd mlflow-server
-conda create --name mlflow-server python=3.12
-conda activate mlflow-server
-pip install -r requirements.txt
-mlflow server
-```
+2. **Aplicação de Machine Learning**  
+   - Carregamento da base `abt.csv`.  
+   - Definição de variáveis explicativas e da variável alvo (`flag_churn`).  
+   - Treinamento de modelos supervisionados clássicos.  
+   - Cálculo e comparação das métricas.
 
-Sempre que precisar subir o servidor do MLFlow, pode executar:
-ml-churn
-```bash
-cd mlflow-server
-conda activate mlflow-server
-mlflow server
-```
+3. **Integração ao MLflow**  
+   - Registro automático de parâmetros, métricas e artefatos com `autolog`.  
+   - Registro manual de métricas adicionais (acurácia treino/teste).  
+   - Criação de experimentos nomeados para organização.  
+   - Comparação estruturada de diferentes execuções (runs).
 
-Assim que você criar os primeiros modelos e exeprimentos, as demais pastas serão criadas.
+4. **Versionamento e Governança de Modelos**  
+   - Registro de modelos no **Model Registry**.  
+   - Consulta a diferentes versões registradas.  
+   - Utilização de **aliases** (ex.: `@production`) para definir qual modelo deve ser consumido em produção sem alterar o código.
 
-### model_churn
+---
 
-É o diretório do nosso projeto de Machine Learning. É onde contruímos o nosso modelo, armazenamos os dados, e todo código necessário para o modelo ser treinado e executado.
+## Aprendizados principais
 
-Para construir o ambiente necessário, execute os comandos:
+- O MLflow não é apenas uma ferramenta de visualização: ele fornece **estrutura e governança** para todo o ciclo de vida de modelos de ML.  
+- Cada execução gera um **run** rastreável, permitindo **comparar hiperparâmetros, métricas e resultados**.  
+- O **Model Registry** possibilita gerenciar versões de modelos de forma profissional, incluindo estágios (Staging, Production) e aliases.  
+- Mesmo em um **exemplo simples de churn**, é possível aplicar práticas utilizadas em ambientes corporativos de ML.
 
+---
 
-```bash
-cd model_churn
-conda create --name ml-churn python=3.12
-conda activate ml-churn
-pip install -r requirements.txt
-```
+## Conclusão
+
+Este exercício serviu para **explorar, em pequena escala, o ciclo completo de um projeto de Machine Learning com MLflow**:
+
+- Da preparação dos dados ao treino de modelos;  
+- Do rastreamento de execuções ao registro de modelos;  
+- Da avaliação de métricas à gestão de versões em produção.  
+
+Ou seja, um **mini-pipeline de MLOps** aplicado a um caso prático e acessível, que pode ser expandido para projetos reais de maior porte.
+
+---
