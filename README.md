@@ -1,6 +1,6 @@
-# 📂 Portfólio de Projetos — Silvio da Rosa Paula
+# Portfólio de Projetos — Silvio da Rosa Paula
 
-## 👨‍💼 Sobre Mim
+## Sobre Mim
 
 Sou **Silvio da Rosa Paula**, **Doutor em Economia Aplicada** pela Universidade Federal de Pelotas (UFPel), com sólida atuação entre **ciência de dados, econometria, inferência causal**. Ao longo da minha carreira, tenho aplicado métodos quantitativos avançados para resolver desafios reais, especialmente no **setor elétrico**, em **políticas públicas** e na **pesquisa aplicada**.
 
@@ -8,7 +8,7 @@ Minhas competências unem o rigor técnico à capacidade de transformar dados co
 
 ---
 
-## ⚙️ Habilidades Técnicas
+##  Habilidades Técnicas
 
 **Linguagens e Ferramentas:**  
 - R (principal), Python, SQL, Stata  
@@ -24,7 +24,7 @@ Minhas competências unem o rigor técnico à capacidade de transformar dados co
 
 ---
 
-## ⚡ Sobre este Portfólio
+## Sobre este Portfólio
 
 Este repositório reúne projetos desenvolvidos em contextos **corporativos e de pesquisa aplicada**, com foco em demonstrar minha capacidade de:
 
@@ -35,16 +35,16 @@ Este repositório reúne projetos desenvolvidos em contextos **corporativos e de
 
 ---
 
-## 🚀 Objetivos com este Repositório
+## Objetivos com este Repositório
 
-- 📚 Compartilhar boas práticas em ciência de dados aplicada  
-- 🤝 Colaborar com profissionais e pesquisadores da área  
-- 🔄 Manter um acervo vivo de aprendizado contínuo  
-- ⚡ Promover o uso de dados para gerar impacto em setores críticos como energia, políticas públicas e desenvolvimento econômico  
+-  Compartilhar boas práticas em ciência de dados aplicada  
+-  Colaborar com profissionais e pesquisadores da área  
+-  Manter um acervo vivo de aprendizado contínuo  
+-  Promover o uso de dados para gerar impacto em setores críticos como energia, políticas públicas e desenvolvimento econômico  
 
 ---
 
-## 📬 Contato
+##  Contato
 
 - 🔗 [LinkedIn](https://www.linkedin.com/in/silvio-paula)  
 - 🌐 [Website pessoal](https://silviopaula.github.io/)  
