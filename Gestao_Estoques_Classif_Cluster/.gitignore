@@ -1,0 +1,51 @@
+# === Python básicos ===
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambientes virtuais
+.env
+.venv
+env/
+venv/
+ENV/
+.ipynb_checkpoints/
+
+# Configs locais
+*.DS_Store
+*.vscode/
+*.idea/
+
+# Logs e temporários
+*.log
+*.tmp
+*.out
+
+# === Modelos treinados ===
+*.pkl
+*.joblib
+*.sav
+*.h5
+*.hdf5
+*.keras
+
+# Dados exportados / intermediários
+*.tsv
+*.parquet
+*.feather
+*.xlsx
+*.xls
+*.db
+*.sqlite
+
+# Notebooks convertidos
+*.nbconvert.ipynb
+*.html
+*.pdf
+
+# Diretórios comuns de dados/modelos
+data/
+datasets/
+models/
+outputs/
+results/
