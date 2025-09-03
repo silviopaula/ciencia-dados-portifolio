@@ -33,8 +33,6 @@ ENV/
 *.tsv
 *.parquet
 *.feather
-*.xlsx
-*.xls
 *.db
 *.sqlite
 
