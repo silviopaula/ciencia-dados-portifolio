@@ -1,0 +1,9 @@
+# modelos locais e caches
+Models_cronos_amazon/
+__pycache__/
+*.pyc
+*.ipynb_checkpoints/
+*.html
+
+# dados grandes locais (se usar link remoto, ignore a pasta)
+dados/
