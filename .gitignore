@@ -161,3 +161,10 @@ cython_debug/
 
 .zip
 .rar
+
+# projetos em andamento
+/Guia_Painel_Dinamico_System_GMM
+/LSTM_forecast_keras_tf
+/Seguimentacao_desemprego_PNADc
+/API_python
+/Comercio_exterior_spark
