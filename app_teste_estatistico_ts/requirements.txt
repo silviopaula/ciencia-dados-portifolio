@@ -1,0 +1,74 @@
+R version 4.5.0 (2025-04-11 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 26100)
+
+Matrix products: default
+  LAPACK version 3.12.1
+
+locale:
+[1] LC_COLLATE=Portuguese_Brazil.utf8 
+[2] LC_CTYPE=Portuguese_Brazil.utf8   
+[3] LC_MONETARY=Portuguese_Brazil.utf8
+[4] LC_NUMERIC=C                      
+[5] LC_TIME=Portuguese_Brazil.utf8    
+
+time zone: America/Sao_Paulo
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils    
+[5] datasets  methods   base     
+
+other attached packages:
+ [1] shinycssloaders_1.1.0
+ [2] writexl_1.5.4        
+ [3] DT_0.33              
+ [4] nortest_1.0-4        
+ [5] lmtest_0.9-40        
+ [6] zoo_1.8-14           
+ [7] tseries_0.10-58      
+ [8] forecast_8.24.0      
+ [9] plotly_4.10.4        
+[10] lubridate_1.9.4      
+[11] forcats_1.0.0        
+[12] stringr_1.5.1        
+[13] dplyr_1.1.4          
+[14] purrr_1.0.4          
+[15] tidyr_1.3.1          
+[16] tibble_3.2.1         
+[17] ggplot2_3.5.2        
+[18] tidyverse_2.0.0      
+[19] readr_2.1.5          
+[20] readxl_1.4.5         
+[21] shinydashboard_0.7.3 
+[22] shiny_1.10.0         
+[23] pacman_0.5.1         
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6       htmlwidgets_1.6.4 
+ [3] lattice_0.22-6     tzdb_0.5.0        
+ [5] quadprog_1.5-8     vctrs_0.6.5       
+ [7] tools_4.5.0        generics_0.1.3    
+ [9] curl_7.0.0         parallel_4.5.0    
+[11] xts_0.14.1         pkgconfig_2.0.3   
+[13] data.table_1.17.0  RColorBrewer_1.1-3
+[15] lifecycle_1.0.4    compiler_4.5.0    
+[17] farver_2.1.2       httpuv_1.6.16     
+[19] htmltools_0.5.8.1  lazyeval_0.2.2    
+[21] later_1.4.2        pillar_1.10.2     
+[23] rsconnect_1.4.0    nlme_3.1-168      
+[25] mime_0.13          fracdiff_1.5-3    
+[27] tidyselect_1.2.1   digest_0.6.37     
+[29] stringi_1.8.7      fastmap_1.2.0     
+[31] grid_4.5.0         colorspace_2.1-1  
+[33] cli_3.6.5          magrittr_2.0.3    
+[35] withr_3.0.2        scales_1.4.0      
+[37] promises_1.3.2     timechange_0.3.0  
+[39] TTR_0.24.4         httr_1.4.7        
+[41] quantmod_0.4.27    nnet_7.3-20       
+[43] timeDate_4041.110  cellranger_1.1.0  
+[45] hms_1.1.3          urca_1.3-4        
+[47] viridisLite_0.4.2  rlang_1.1.6       
+[49] Rcpp_1.0.14        xtable_1.8-4      
+[51] glue_1.8.0         rstudioapi_0.17.1 
+[53] jsonlite_2.0.0     R6_2.6.1          

@@ -11,6 +11,9 @@ if(!require(pacman)){install.packages("pacman")}
 pacman::p_load(tidyverse, lubridate, plotly, zoo, CausalImpact, ggplot2, data.table, shiny, zoo, DT,
                htmltools, readxl, shinythemes, shinyjs, shinydashboard, shinyWidgets, data.table, openxlsx)
 
+# Salvar em arquivo TXT
+writeLines(capture.output(sessionInfo()), "requirements.txt")
+
 #--------------------------------------------------
 ## Funçao para gerar dados de exemplo (o mesmo exemplo do package )
 #--------------------------------------------------

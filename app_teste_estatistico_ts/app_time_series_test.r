@@ -43,6 +43,10 @@ pacman::p_load(
   shinycssloaders # Loading spinners
 )
 
+
+# Salvar em arquivo TXT
+#writeLines(capture.output(sessionInfo()), "requirements.txt")
+
 # ====================================================================
 # 2. FUNÇÃO PARA GERAR DADOS SIMULADOS
 # ====================================================================
