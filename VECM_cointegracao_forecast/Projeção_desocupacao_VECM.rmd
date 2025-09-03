@@ -53,6 +53,8 @@ pacman::p_load(
 
 )
 
+# Salvar em arquivo TXT
+#writeLines(capture.output(sessionInfo()), "requirements.txt")
 ```
 
 ## Conceitos Fundamentais
