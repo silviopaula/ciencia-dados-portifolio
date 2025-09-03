@@ -25,6 +25,8 @@ if (!require("pacman")) install.packages("pacman")
 pacman::p_load(DT, lavaan, tidyverse, readxl, plotly, lubridate, tidyr, glmnet, 
                htmltools, gridExtra, htmlwidgets, visNetwork, tibble, funModeling
 )
+# Salvar em arquivo TXT
+#writeLines(capture.output(sessionInfo()), "requirements.txt")
 
 ```
 
