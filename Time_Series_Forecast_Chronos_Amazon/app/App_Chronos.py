@@ -30,7 +30,7 @@ from sklearn.metrics import (
 )
 
 warnings.filterwarnings("ignore")
-
+!pip freeze > requirements.txt
 
 # =========================================
 # AJUDA / AUTORIA (fora do painel de inputs)
