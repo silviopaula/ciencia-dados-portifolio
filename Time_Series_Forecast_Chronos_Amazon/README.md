@@ -1,23 +1,25 @@
 # Time Series Chronos Forecast
 
-## 📄 Descrição
+## Descrição
 
-Este README descreve o relatório `Time_Series_Chronos_Forecast.html` (exportado de um notebook Jupyter) e como reproduzi-lo/atualizá-lo.
+Este README documenta o projeto Time_Series_Chronos_Forecast.ipynb, uma implementação completa e prática para previsão de séries temporais utilizando os modelos de última geração Amazon Chronos (famílias T5 e BOLT).
 
-Um relatório HTML estático com os resultados de previsão de séries temporais usando os modelos Amazon Chronos (linhas T5 e BOLT). 
+O projeto apresenta uma demonstração hands-on do package chronos-forecasting, explorando suas capacidades para forecasting univariado através de diferentes variantes de modelos pré-treinados.
+
+Desenvolvo uma função robusta e reutilizável que simplifica significativamente a implementação dos modelos Chronos, automatizando todo o pipeline desde o carregamento dos dados até a geração de previsões com intervalos de confiança e métricas de avaliação detalhadas.
+
+A solução inclui visualizações avançadas de performance com gráficos interativos que facilitam a interpretação dos resultados e comparação entre diferentes modelos. Para tornar a ferramenta acessível a usuários não-técnicos, também desenvolvo uma aplicação web em Streamlit que permite upload de dados, configuração de parâmetros via interface gráfica e execução de forecasts univariados de forma intuitiva e eficiente.
 
 ### Características principais:
-- ✅ Preparação dos dados
-- ✅ Definição da função de previsão multimarcas (vários modelos de uma vez)
-- ✅ Separação treino/teste
-- ✅ Métricas (MAE, RMSE, MAPE, MedAE, R²)
-- ✅ Intervalos preditivos (quantis como P10/P50/P90)
-- ✅ Gráficos interativos (Plotly)
-- ✅ Tabelas consolidadas com as previsões por modelo e ensemble
+- Preparação dos dados.
+- Definição da função de previsão multimarcas (vários modelos de uma vez)
+- Separação treino/teste
+- Métricas (MAE, RMSE, MAPE, MedAE, R²)
+- Intervalos preditivos (quantis como P10/P50/P90)
+- Gráficos interativos (Plotly)
+- Tabelas consolidadas com as previsões por modelo e ensemble
 
-> **Nota:** Você não precisa de Python para visualizar: basta abrir no navegador.
-
-## 🗂️ Estrutura do Conteúdo
+## Estrutura do Conteúdo
 
 1. **Setup** — pacotes, seeds e utilitários
 2. **Dados** — série alvo (ex.: consumo de energia) e período
@@ -31,49 +33,9 @@ Um relatório HTML estático com os resultados de previsão de séries temporais
 5. **Resultados** — gráficos, métricas e (opcional) ensemble
 6. **Exportação** — salvamento dos artefatos (tabelas/figuras)
 
-## ▶️ Como Visualizar
+### Resultado
 
-### Método 1: Duplo clique
-Clique duas vezes no arquivo `Time_Series_Chronos_Forecast.html`
-
-### Método 2: Navegador
-Abra diretamente pelo navegador (Chrome/Edge/Firefox)
-
-> Por ser estático, os gráficos interativos já funcionam no browser.
-
-## 🔁 Como Reproduzir/Atualizar
-
-### 1. Abrir o notebook
-```bash
-jupyter notebook Time_Series_Chronos_Forecast.ipynb
-```
-
-### 2. Configurar ambiente
-Instale as dependências necessárias:
-
-```bash
-pip install pandas numpy scikit-learn plotly torch transformers accelerate sentencepiece safetensors huggingface_hub chronos-forecasting
-```
-
-### 3. Executar células
-Execute todas as células (ajuste modelos/dados se necessário)
-
-### 4. Exportar para HTML
-
-**Via Jupyter:**
-```
-File → Save and Export As → HTML
-```
-
-**Via terminal:**
-```bash
-jupyter nbconvert --to html Time_Series_Chronos_Forecast.ipynb
-```
-
-### 5. Resultado
-O novo `Time_Series_Chronos_Forecast.html` refletirá os resultados atualizados.
-
-## 🧪 Saídas da Função de Forecast
+## Saídas da Função de Forecast
 
 ### `metrics_df`
 Uma linha por modelo com:
@@ -88,16 +50,14 @@ Dicionário `{label → DataFrame}` com colunas:
 
 ### `df_forecast`
 DataFrame unificado = dados originais + colunas de previsão no padrão:
-```
-{target}__{label}__pL | {target}__{label}__p50 | {target}__{label}__pU
-```
+
 
 ### Gráfico Plotly
 - Série real (treino/teste)
 - P50 de cada modelo
 - Faixas dos intervalos na mesma cor do modelo (mais clara)
 
-## 📊 Interpretação das Métricas
+## Interpretação das Métricas
 
 | Métrica | Descrição | Interpretação |
 |---------|-----------|---------------|
@@ -109,7 +69,7 @@ DataFrame unificado = dados originais + colunas de previsão no padrão:
 | **P50** | Mediana | Previsão "central" |
 | **P10/P90** | Limites do intervalo | Incerteza da previsão |
 
-## 📁 Dados e Modelos
+## Dados e Modelos
 
 ### Dados
 - **Formato:** Série alvo em frequência mensal (ex.: consumo de energia)
@@ -117,41 +77,13 @@ DataFrame unificado = dados originais + colunas de previsão no padrão:
 
 ### Modelos Chronos
 
-#### Online (Hugging Face)
-```python
-amazon/chronos-t5-*
-amazon/chronos-bolt-*
-```
-
 #### Offline
 Pastas com `config.json` e pesos; passe o diretório-base na função.
 
-> **⚠️ Observação:** Modelos BOLT aceitam quantis no intervalo [0.1, 0.9]; a função ajusta automaticamente se necessário.
+> **Observação:** Modelos BOLT aceitam quantis no intervalo [0.1, 0.9]; a função ajusta automaticamente se necessário.
 
-## 🧑‍💻 Dicas de Uso
-
-- 📏 Para horizontes > 64 pontos, a função faz previsão em blocos (auto-concatenação)
-- 🔄 Você pode ativar ensemble (mean, median ou weighted) para combinar modelos
-- 🎨 A paleta de cores é consistente entre P50 e o intervalo, facilitando leitura
-- ☁️ Em ambientes na nuvem sem disco persistente, prefira modelos online
-
-## 👨‍💻 Autor
+## Autor
 
 **Dr. Silvio da Rosa Paula**
 - GitHub: [https://github.com/silviopaula](https://github.com/silviopaula)
-
-## 📜 Como Citar
-
-```bibtex
-Paula, S. R. (2025). Time Series Forecast with Amazon Chronos — Relatório HTML (Time_Series_Chronos_Forecast.html). Disponível no repositório do autor.
-```
-
-## 📝 Notas Adicionais
-
-- Possível gerar README em inglês
-- Possível versão para integração ao app Streamlit (menu "Sobre/Help")
-
----
-
-**Versão:** 1.0  
-**Última atualização:** 2025
+--
