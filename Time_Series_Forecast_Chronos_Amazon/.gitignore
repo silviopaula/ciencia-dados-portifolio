@@ -36,10 +36,5 @@ ENV/
 *.db
 *.sqlite
 
-# Notebooks convertidos
-*.nbconvert.ipynb
-*.html
-*.pdf
-
 # Diretórios comuns de dados/modelos
 /Models_cronos_amazon
