@@ -50,9 +50,7 @@ Dicionário `{label → DataFrame}` com colunas:
 
 ### `df_forecast`
 DataFrame unificado = dados originais + colunas de previsão no padrão:
-```
-{target}__{label}__pL | {target}__{label}__p50 | {target}__{label}__pU
-```
+
 
 ### Gráfico Plotly
 - Série real (treino/teste)
