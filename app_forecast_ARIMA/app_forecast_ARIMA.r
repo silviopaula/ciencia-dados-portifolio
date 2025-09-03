@@ -7,6 +7,10 @@ if (!require(pacman)) install.packages("pacman")
 p_load(shiny, shinydashboard, tidyverse, lubridate, plotly, readxl, DT, 
        forecast, writexl, shinyWidgets, shinythemes, RColorBrewer, zoo, stringr, shinyjs)
 
+# Salvar em arquivo TXT
+# writeLines(capture.output(sessionInfo()), "requirements.txt")
+
+
 # Aumentar limite máximo de upload de arquivos para 100 MB
 options(shiny.maxRequestSize = 100 * 1024^5)
 
