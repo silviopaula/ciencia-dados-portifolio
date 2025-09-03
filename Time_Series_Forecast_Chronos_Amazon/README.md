@@ -10,6 +10,80 @@ Desenvolvo uma função robusta e reutilizável que simplifica significativament
 
 A solução inclui visualizações avançadas de performance com gráficos interativos que facilitam a interpretação dos resultados e comparação entre diferentes modelos. Para tornar a ferramenta acessível a usuários não-técnicos, também desenvolvo uma aplicação web em Streamlit que permite upload de dados, configuração de parâmetros via interface gráfica e execução de forecasts univariados de forma intuitiva e eficiente.
 
+## o que é o Chronos?
+
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/amazon-science/chronos-forecasting/main/figures/chronos-logo.png" width="30%">
+</div>
+
+<div align="center">
+
+</div>
+
+Chronos é uma família de **modelos pré-treinados de previsão de séries temporais** baseados em arquiteturas de modelos de linguagem.  
+Uma série temporal é transformada em uma sequência de tokens por meio de escalonamento e quantização. O modelo de linguagem é treinado nesses tokens usando perda de entropia cruzada.  
+
+Após o treinamento, previsões probabilísticas são obtidas amostrando múltiplas trajetórias futuras dadas as observações históricas.  
+Os modelos Chronos foram treinados em um grande corpus de séries temporais públicas, além de dados sintéticos gerados via processos Gaussianos.
+
+Leia o artigo para mais detalhes: [Chronos: Learning the Language of Time Series](https://arxiv.org/abs/2403.07815).
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/amazon-science/chronos-forecasting/main/figures/main-figure.png" width="30%">
+  <br />
+  <span>
+    Fig. 1: Visão geral do Chronos. (<b>Esquerda</b>) A série temporal é escalada e quantizada em tokens.  
+    (<b>Centro</b>) Os tokens são processados por um modelo de linguagem (encoder-decoder ou apenas decoder), treinado com perda de entropia cruzada.  
+    (<b>Direita</b>) Na inferência, amostramos tokens de forma autoregressiva e mapeamos de volta para valores numéricos.  
+    Várias trajetórias são geradas para formar uma distribuição preditiva.
+  </span>
+</p>
+
+-------------
+**Veja como utilizar o Chronos** 
+
+https://github.com/amazon-science/chronos-forecasting
+
+https://auto.gluon.ai/stable/install.html
+
+-------------
+## **Chronos (T5/Bolt) — visão intuitiva**
+
+#### Ideia central
+- É um “autocomplete de números”: lê o histórico da série e completa o futuro passo a passo.
+- Pré-treinado em milhões de séries → já “sabe” padrões gerais (tendências, sazonalidades, picos/vales).
+
+#### Como o modelo enxerga a série
+- Converte valores para uma representação estável (normalização interna).
+- Trata a sequência como texto: usa uma janela recente (contexto) e aprende a continuar a série.
+
+#### Como prevê (quantis)
+- Produz **distribuições** futuras, das quais extraímos **quantis**:
+  - **P50**: mediana (melhor chute).
+  - **P10 / P90**: limites inferior/superior → **intervalo de projeção** (incerteza).
+- Para horizontes longos, prevê em **blocos**, encadeando os resultados.
+
+#### T5 vs. Bolt (em termos práticos)
+- **T5**: mais pesado/tradicional na família Transformer.
+- **Bolt**: **muito mais rápido** (funciona bem em CPU) com qualidade similar.
+- Na prática, **Bolt** costuma ser o ponto de partida para velocidade + qualidade.
+
+#### Pontos fortes
+- Não exige estacionar série (dispensa diferenciação manual).
+- Lida com faltas razoavelmente bem.
+- Entrega **incerteza** via intervalos (P10–P90 etc.).
+- Funciona em **zero-shot** (teste rápido com dados históricos).
+
+#### Limites
+- **Mudanças de regime** recentes e exógenas (sem “pistas” na própria série).
+- **Histórico curto** → maior incerteza.
+- **Muito longo prazo** → erro acumulado e intervalos mais largos.
+
+-----------------
+
+## Exercício aplicando o Chronos
+
 ### Características principais:
 - Preparação dos dados.
 - Definição da função de previsão multimarcas (vários modelos de uma vez)
@@ -50,7 +124,9 @@ Dicionário `{label → DataFrame}` com colunas:
 
 ### `df_forecast`
 DataFrame unificado = dados originais + colunas de previsão no padrão:
-
+```
+{target}__{label}__pL | {target}__{label}__p50 | {target}__{label}__pU
+```
 
 ### Gráfico Plotly
 - Série real (treino/teste)
