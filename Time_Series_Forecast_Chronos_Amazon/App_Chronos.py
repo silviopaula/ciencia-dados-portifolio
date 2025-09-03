@@ -1,65 +1,110 @@
-# app.py
-import io
+# App_Chronos.py
+# --------------------------------------------------------------------------------------
+# Autor: Dr. Silvio da Rosa Paula
+# Requisitos:
+#   pip install streamlit chronos-forecasting plotly scikit-learn pandas numpy torch openpyxl
+# Execução:
+#   streamlit run App_Chronos.py
+# --------------------------------------------------------------------------------------
+
 import os
-import json
+import io
 import random
-from typing import List, Dict, Optional
+import warnings
+from pathlib import Path
+from typing import Optional
 
 import numpy as np
 import pandas as pd
+import torch
 import streamlit as st
 import plotly.graph_objects as go
 
-import torch
 from chronos import BaseChronosPipeline
 from sklearn.metrics import (
-    mean_absolute_error, mean_squared_error, mean_absolute_percentage_error,
-    median_absolute_error, r2_score
+    mean_absolute_error,
+    mean_squared_error,
+    mean_absolute_percentage_error,
+    median_absolute_error,
+    r2_score,
 )
 
-st.set_page_config(page_title="Forecast com Amazon Chronos", layout="wide")
-st.title("⚡ Forecast com Amazon Chronos (Chronos/Bolt)")
+warnings.filterwarnings("ignore")
 
-# =========================
-# Pequenos utilitários
-# =========================
-def parse_json_or_none(s: str):
-    if not s or str(s).strip() == "":
-        return None
-    try:
-        return json.loads(s)
-    except Exception:
-        return None
 
-def ensure_datetime(series: pd.Series):
-    if np.issubdtype(series.dtype, np.datetime64):
-        return series
-    try:
-        return pd.to_datetime(series.astype(str), format="%Y%m%d", errors="coerce")
-    except Exception:
-        return pd.to_datetime(series, errors="coerce")
+# =========================================
+# AJUDA / AUTORIA (fora do painel de inputs)
+# =========================================
+HELP_MD = r"""
+### Objetivo
+Função univariada com **Amazon Chronos (T5/Bolt)** para prever `n_periods` meses, gerar **quantis** (pL/p50/pU), calcular **métricas** no período de teste e montar um **DataFrame consolidado** (dados originais + projeções de vários modelos e **ensemble** opcional).
 
-# =========================
-# Função principal (com melhorias)
-# =========================
-def chronos_forecast_multi_models_single_df(
+### Como usar (inputs essenciais)
+- **Dados (`df`)**: selecione a **coluna de data** e a **coluna alvo** no app (qualquer nome é aceito). Recomenda-se frequência **mensal (MS)** e datas em ordem crescente.
+- **Modelos (`models`)**:
+  - **Online (Hugging Face)**: nomes **com “/”** (ex.: `amazon/chronos-bolt-small`).
+  - **Offline (local)**: nomes **sem “/”** (ex.: `amazon_chronos-bolt-small`) + `local_base_dir`.
+- **Horizonte**: `n_periods` (meses). Se >64, a função usa **blocos**.
+- **Quantis**: informe `quantile_levels` (ex.: `[0.1,0.5,0.9]`) ou `interval_alpha` (ex.: `0.95`).
+  - **Bolt** aceita quantis apenas em **[0.1, 0.9]** (ajuste automático).
+
+### Saídas
+- **Gráfico (Plotly)**: histórico (treino/teste), **P50** por modelo e **intervalos** translúcidos.
+- **Métricas**: MAE, RMSE, MAPE, MedAE, R² (no período de teste).
+- **`df_forecast`**: df original + linhas futuras + colunas `__pL/__p50/__pU` por modelo (e `__ensemble__*` se usado).
+
+### Dicas
+- **Bolt-small** costuma ter o melhor custo-benefício.
+- **Ensemble** (média/mediana/ponderado) pode estabilizar e melhorar a acurácia.
+- **Offline** evita downloads repetidos e acelera lotes de modelos.
+
+---
+
+**Dados demo (pré-carregados)**  
+Usamos **Consumo de energia (Brasil)** já preparado (mensal, com totais e quebras regionais/classes).  
+Arquivo Excel: **`consumo_energia_pronto.xlsx`** (coluna `Data` + colunas `ec_*`/`nc_*`, ex.: `ec_total_BR`).  
+Fonte: https://github.com/silviopaula/ciencia-dados-portifolio/raw/refs/heads/main/Time_Series_Forecast_Chronos_Amazon/dados/consumo_energia_pronto.xlsx
+
+---
+
+**Autoria**  
+**Dr. Silvio da Rosa Paula**  
+GitHub: https://silviopaula.github.io/
+"""
+
+
+# =========================================
+# FUNÇÃO PRINCIPAL DE FORECAST (univariada)
+# =========================================
+def function_chronos_forecast(
     df: pd.DataFrame,
-    models: List[str],
-    target_col: str,
+    models: list[str],
+    target_col: str = "ec_total_BR",
     test_periods: int = 12,
     n_periods: Optional[int] = None,      # horizonte desejado
     device: str = "cpu",
     force_offline: bool = False,
     date_col: str = "Data",
     interval_alpha: float = 0.95,         # usado se quantile_levels=None
-    quantile_levels: Optional[List[float]] = None,  # ex.: [0.1, 0.5, 0.9]
+    quantile_levels: Optional[list[float]] = None,  # ex.: [0.1, 0.5, 0.9]
     local_base_dir: Optional[str] = None,
-    color_map: Optional[Dict[str, str]] = None,
+    color_map: Optional[dict] = None,
     random_seed: Optional[int] = 123,
     allow_long_horizon: bool = True,      # se >64, faz blocos e concatena
-    ensemble: Optional[dict] = None,      # {"method":"mean"|"median"|"weighted","weights":{...},"models":[...]}
+    ensemble: Optional[dict] = None,      # {"method": "mean"|"median"|"weighted", "weights": {"label": w, ...}, "models": ["label", ...]}
 ):
-    # ---- Seeds ----
+    """
+    Retorna:
+      fig (Plotly), metrics_df, forecasts (dict[label] -> DF com Data+pL/p50/pU),
+      df_treino, df_teste, df_forecast (df original + colunas de projeção por modelo e, se definido, ensemble_*).
+
+    Observações:
+    - Modelos com "/" são online (Hugging Face); sem "/" => pasta local em local_base_dir.
+    - BOLT aceita quantis em [0.1, 0.9]; ajustamos automaticamente se precisar.
+    - Intervalos usam a MESMA cor do modelo com transparência. A legenda do intervalo NÃO mostra valores dos quantis.
+    """
+
+    # Seeds (determinismo prático)
     if random_seed is not None:
         np.random.seed(random_seed)
         random.seed(random_seed)
@@ -69,7 +114,7 @@ def chronos_forecast_multi_models_single_df(
         except Exception:
             pass
 
-    # ---- Paleta ----
+    # Paleta e utilitários
     default_palette = [
         "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
         "#9467bd", "#8c564b", "#e377c2", "#7f7f7f",
@@ -88,6 +133,7 @@ def chronos_forecast_multi_models_single_df(
             "amazon_chronos-bolt-base":  "#e377c2",
         }
     used_colors = {}
+
     def get_color_for_label(label: str) -> str:
         if label in color_map:
             return color_map[label]
@@ -96,44 +142,50 @@ def chronos_forecast_multi_models_single_df(
                 return c
         return "#7f7f7f"
 
-    # ---- Preparação do DF ----
+    # Preparação do DF
+    df = df.copy()
     if date_col not in df.columns:
         raise ValueError(f"Coluna de data '{date_col}' não encontrada.")
     if target_col not in df.columns:
         raise ValueError(f"Coluna alvo '{target_col}' não encontrada.")
 
-    df = df.copy()
-    df[date_col] = ensure_datetime(df[date_col])
+    if not np.issubdtype(df[date_col].dtype, np.datetime64):
+        try:
+            df[date_col] = pd.to_datetime(df[date_col].astype(str), format="%Y%m%d", errors="coerce")
+        except Exception:
+            df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
     df = df.sort_values(date_col).reset_index(drop=True)
 
-    # split
     non_missing_idx = df[df[target_col].notna()].index
     if len(non_missing_idx) < max(1, test_periods):
         raise ValueError(f"Não há {test_periods} pontos não-nulos em '{target_col}' para formar o teste.")
+
     test_idx = non_missing_idx[-test_periods:]
     train_idx = non_missing_idx[:-test_periods]
     df_treino = df.loc[train_idx, [date_col, target_col]].reset_index(drop=True)
-    df_teste  = df.loc[test_idx,  [date_col, target_col]].reset_index(drop=True)
+    df_teste = df.loc[test_idx, [date_col, target_col]].reset_index(drop=True)
 
-    # horizonte
+    # Horizonte desejado
     if n_periods is None:
         n_periods = test_periods
     n_periods = int(n_periods)
 
-    # índices de previsão
+    # Índices temporais de previsão
     start_date = df_teste[date_col].iloc[0] if len(df_teste) > 0 else (df_treino[date_col].max() + pd.offsets.MonthBegin(1))
     future_index_full = pd.date_range(start=start_date, periods=n_periods, freq="MS")
 
-    # interseção p/ métricas
+    # Interseção p/ métricas
     overlap_len = min(n_periods, len(df_teste))
     df_teste_used = df_teste.iloc[:overlap_len].copy()
     shade_start = df_teste_used[date_col].iloc[0] if overlap_len > 0 else None
-    shade_end   = df_teste_used[date_col].iloc[-1] if overlap_len > 0 else None
+    shade_end = df_teste_used[date_col].iloc[-1] if overlap_len > 0 else None
 
-    # device
+    # Device
     use_device = "cuda" if (device.lower() == "cuda" and torch.cuda.is_available()) else "cpu"
+    if device.lower() == "cuda" and not torch.cuda.is_available():
+        print("[AVISO] CUDA não disponível. Usando CPU.")
 
-    # gráfico base
+    # Gráfico base
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         x=df_treino[date_col], y=df_treino[target_col],
@@ -152,19 +204,19 @@ def chronos_forecast_multi_models_single_df(
             fillcolor="rgba(0,0,0,0.07)", line=dict(width=0), layer="below"
         )
 
-    # métricas enxutas
+    # Métricas
     metrics_cols = [
-        "Label","Fonte","Variável","Previsto","Avaliado_sobre",
-        "MAE","RMSE","MAPE (%)","MedAE","R2","Lower_q","Upper_q"
+        "Label", "Fonte", "Variável", "Previsto", "Avaliado_sobre",
+        "MAE", "RMSE", "MAPE (%)", "MedAE", "R2", "Lower_q", "Upper_q"
     ]
     metrics_rows = []
     forecasts = {}
 
-    # contexto
+    # Contexto treino
     y_hist = df_treino[target_col].dropna().values.astype("float32")
-    context_base = torch.from_numpy(y_hist).unsqueeze(0)
+    context_base = torch.from_numpy(y_hist).unsqueeze(0)  # [1, T]
 
-    # quantis
+    # Quantis
     def build_quantiles_for_model(model_id: str):
         if quantile_levels:
             q_sorted = sorted(quantile_levels)
@@ -176,8 +228,10 @@ def chronos_forecast_multi_models_single_df(
         if "bolt" in model_id.lower():
             lo = max(0.1, min(0.9, lo))
             hi = max(0.1, min(0.9, hi))
-            if lo >= mid: lo = 0.1
-            if hi <= mid: hi = 0.9
+            if lo >= mid:
+                lo = 0.1
+            if hi <= mid:
+                hi = 0.9
             q_sorted = [lo, mid, hi]
         return q_sorted, q_sorted[0], q_sorted[-1]
 
@@ -194,7 +248,7 @@ def chronos_forecast_multi_models_single_df(
     if f"{target_col}_real" not in df_forecast.columns:
         df_forecast[f"{target_col}_real"] = df_forecast[target_col]
 
-    # previsão em blocos
+    # Previsão em blocos (>64)
     def predict_in_blocks(pipe, ctx_tensor, pred_len, q_levels):
         max_block = 64
         remaining = pred_len
@@ -205,26 +259,24 @@ def chronos_forecast_multi_models_single_df(
             qs, _ = pipe.predict_quantiles(
                 context=y_ctx, prediction_length=step, quantile_levels=q_levels
             )
-            np_block = qs[0].detach().cpu().numpy()
+            np_block = qs[0].detach().cpu().numpy()  # [step, len(q_levels)]
             out_list.append(np_block)
-            # atualiza contexto com p50
+            # atualiza contexto com mediana (p50) para seguir
             p50_idx = q_levels.index(0.5)
             p50_vals = qs[0, :, p50_idx].detach().cpu()
             y_ctx = torch.cat([y_ctx, p50_vals.unsqueeze(0)], dim=1)
             remaining -= step
         return np.concatenate(out_list, axis=0)
 
-    # loop de modelos
+    # Loop de modelos
     for model_str in models:
         is_online = ("/" in model_str)
         label = model_str.split("/")[-1] if is_online else model_str
 
-        # carregar
+        # Carregar
         try:
             if is_online:
-                # garantir modo online
-                if "TRANSFORMERS_OFFLINE" in os.environ:
-                    os.environ.pop("TRANSFORMERS_OFFLINE")
+                os.environ.pop("TRANSFORMERS_OFFLINE", None)
                 pipe = BaseChronosPipeline.from_pretrained(
                     model_str, device_map=None, dtype=torch.float32, local_files_only=False
                 )
@@ -243,21 +295,22 @@ def chronos_forecast_multi_models_single_df(
                 )
                 fonte = "local"
                 ident_for_quant = model_dir
-
             try:
                 pipe.model.to(use_device)
             except Exception:
                 pipe.model.to("cpu")
         except Exception as e:
-            st.warning(f"Falha ao carregar modelo '{model_str}': {e}")
+            print(f"[ERRO] Falha ao carregar modelo '{model_str}': {e}")
             metrics_rows.append([
                 label, ("huggingface" if is_online else "local"), target_col,
                 n_periods, overlap_len, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan
             ])
             continue
 
+        # Quantis do modelo
         q_levels, lower_q, upper_q = build_quantiles_for_model(ident_for_quant)
 
+        # Prever
         try:
             if allow_long_horizon and n_periods > 64:
                 pvals = predict_in_blocks(pipe, context_base, n_periods, q_levels)
@@ -267,14 +320,15 @@ def chronos_forecast_multi_models_single_df(
                 )
                 pvals = qs[0].detach().cpu().numpy()
         except Exception as e:
-            st.warning(f"Falha ao prever com '{label}': {e}")
+            print(f"[ERRO] Falha ao prever com '{label}': {e}")
             metrics_rows.append([
                 label, fonte, target_col, n_periods, overlap_len,
                 np.nan, np.nan, np.nan, np.nan, np.nan, lower_q, upper_q
             ])
             continue
 
-        q_lo_idx, q_md_idx, q_hi_idx = 0, q_levels.index(0.5), len(q_levels)-1
+        # Monta DF do modelo
+        q_lo_idx, q_md_idx, q_hi_idx = 0, q_levels.index(0.5), len(q_levels) - 1
         df_fc_model = pd.DataFrame({
             date_col: future_index_full,
             f"{target_col}__{label}__pL": pvals[:, q_lo_idx],
@@ -283,26 +337,27 @@ def chronos_forecast_multi_models_single_df(
         })
         forecasts[label] = df_fc_model
 
-        # métricas
+        # Métricas na interseção com teste (usando p50)
         if overlap_len > 0 and df_teste_used[target_col].notna().any():
             y_true = df_teste_used[target_col].astype("float64").values
-            y_p50  = df_fc_model[f"{target_col}__{label}__p50"].iloc[:overlap_len].astype("float64").values
-            mae   = mean_absolute_error(y_true, y_p50)
-            rmse  = np.sqrt(mean_squared_error(y_true, y_p50))
-            mape  = mean_absolute_percentage_error(y_true, y_p50) * 100.0
+            y_p50 = df_fc_model[f"{target_col}__{label}__p50"].iloc[:overlap_len].astype("float64").values
+            mae = mean_absolute_error(y_true, y_p50)
+            rmse = np.sqrt(mean_squared_error(y_true, y_p50))
+            mape = mean_absolute_percentage_error(y_true, y_p50) * 100.0
             medae = median_absolute_error(y_true, y_p50)
-            r2    = r2_score(y_true, y_p50)
+            r2 = r2_score(y_true, y_p50)
         else:
-            mae=rmse=mape=medae=r2=np.nan
+            mae = rmse = mape = medae = r2 = np.nan
 
         metrics_rows.append([
             label, fonte, target_col, n_periods, overlap_len,
             mae, rmse, mape, medae, r2, lower_q, upper_q
         ])
 
-        # plot
+        # Plot linhas/intervalos
         base_color = get_color_for_label(label)
         used_colors[label] = base_color
+
         fig.add_trace(go.Scatter(
             x=df_fc_model[date_col],
             y=df_fc_model[f"{target_col}__{label}__p50"],
@@ -316,26 +371,28 @@ def chronos_forecast_multi_models_single_df(
                 df_fc_model[f"{target_col}__{label}__pU"],
                 df_fc_model[f"{target_col}__{label}__pL"][::-1]
             ]),
-            fill='toself',
+            fill="toself",
             name=f"Intervalo — {label}",
             line=dict(width=0),
             fillcolor=base_color,
             opacity=0.20
         ))
 
-        # merge no consolidado
+        # Mescla no consolidado
         df_forecast = df_forecast.merge(df_fc_model, on=date_col, how="left")
 
+    # Metrics DF
     metrics_df = pd.DataFrame(metrics_rows, columns=metrics_cols)
 
-    # ensemble
-    if ensemble is not None and len(forecasts) > 0:
+    # Ensemble (opcional)
+    if ensemble is not None:
         method = ensemble.get("method", "mean")
         weights = ensemble.get("weights", {})
         models_for_ens = ensemble.get("models", list(forecasts.keys()))
-        cols_pL  = [f"{target_col}__{m}__pL"  for m in models_for_ens if f"{target_col}__{m}__pL"  in df_forecast.columns]
+
+        cols_pL = [f"{target_col}__{m}__pL" for m in models_for_ens if f"{target_col}__{m}__pL" in df_forecast.columns]
         cols_p50 = [f"{target_col}__{m}__p50" for m in models_for_ens if f"{target_col}__{m}__p50" in df_forecast.columns]
-        cols_pU  = [f"{target_col}__{m}__pU"  for m in models_for_ens if f"{target_col}__{m}__pU"  in df_forecast.columns]
+        cols_pU = [f"{target_col}__{m}__pU" for m in models_for_ens if f"{target_col}__{m}__pU" in df_forecast.columns]
 
         def combine(cols, qname):
             if not cols:
@@ -354,9 +411,11 @@ def chronos_forecast_multi_models_single_df(
             else:
                 df_forecast[f"{target_col}__ensemble__{qname}"] = df_forecast[cols].mean(axis=1)
 
-        combine(cols_pL, "pL"); combine(cols_p50, "p50"); combine(cols_pU, "pU")
+        combine(cols_pL, "pL")
+        combine(cols_p50, "p50")
+        combine(cols_pU, "pU")
 
-        # plot ensemble
+        # Plot ensemble (p50)
         ens_col = f"{target_col}__ensemble__p50"
         if ens_col in df_forecast.columns:
             ens_color = "#000000"
@@ -374,14 +433,15 @@ def chronos_forecast_multi_models_single_df(
                         df_forecast[f"{target_col}__ensemble__pU"],
                         df_forecast[f"{target_col}__ensemble__pL"][::-1]
                     ]),
-                    fill='toself',
+                    fill="toself",
                     name="Intervalo — ensemble",
                     line=dict(width=0),
                     fillcolor=ens_color,
                     opacity=0.12
                 ))
 
-    title_extra = (f" | Avaliado (sombreado): {shade_start.date()} → {shade_end.date()}" if overlap_len > 0 else "")
+    # Layout final
+    title_extra = f" | Avaliado (sombreado): {shade_start.date()} → {shade_end.date()}" if overlap_len > 0 else ""
     fig.update_layout(
         title=f"Forecast {target_col} — {len(models)} modelos | Previsto: {n_periods} meses{title_extra}",
         template="plotly_white",
@@ -395,158 +455,246 @@ def chronos_forecast_multi_models_single_df(
     return fig, metrics_df, forecasts, df_treino, df_teste, df_forecast
 
 
-# =========================
-# Sidebar — Carregamento e parâmetros
-# =========================
-with st.sidebar:
-    st.header("1) Carregar dados")
-    up = st.file_uploader("CSV ou Excel", type=["csv", "xlsx", "xls"])
-    read_kwargs = {}
-    if up is not None and up.name.lower().endswith(".csv"):
-        read_kwargs["sep"] = st.text_input("Delimitador (CSV)", value=",")
-    enc = st.text_input("Encoding (opcional)", value="")
-    if enc.strip():
-        read_kwargs["encoding"] = enc.strip()
+# =========================================
+# STREAMLIT APP
+# =========================================
+st.set_page_config(page_title="Chronos Forecast (Univariado)", layout="wide")
 
-    st.header("2) Seleção de colunas")
-    date_col = st.text_input("Nome da coluna de data", value="Data")
-    target_col = st.text_input("Nome da coluna alvo", value="ec_total_BR")
+# Logo no título
+st.markdown(
+    """
+<div align="center">
+  <img src="https://raw.githubusercontent.com/amazon-science/chronos-forecasting/main/figures/chronos-logo.png" width="30%">
+</div>
+""",
+    unsafe_allow_html=True,
+)
+st.title("Chronos Forecast — Univariado (T5/Bolt)")
 
-    st.header("3) Modelos (Amazon Chronos)")
-    mode = st.radio("Origem dos modelos", ["Online (Hugging Face)", "Offline (pastas locais)"])
+# Tabs: App e Ajuda (help fora do painel de inputs)
+tab_app, tab_help = st.tabs(["App", "❓ Ajuda"])
+with tab_help:
+    st.markdown(HELP_MD, unsafe_allow_html=True)
 
-    # Lista de opções (usaremos só o SUFIXO na UI)
-    amazon_online_options = [
-        "amazon/chronos-t5-tiny", "amazon/chronos-t5-mini", "amazon/chronos-t5-small",
-        "amazon/chronos-t5-base", "amazon/chronos-t5-large",
-        "amazon/chronos-bolt-tiny", "amazon/chronos-bolt-mini",
-        "amazon/chronos-bolt-small", "amazon/chronos-bolt-base",
-    ]
-    amazon_offline_options = [
-        "amazon_chronos-t5-tiny", "amazon_chronos-t5-mini", "amazon_chronos-t5-small",
-        "amazon_chronos-t5-base", "amazon_chronos-t5-large",
-        "amazon_chronos-bolt-tiny", "amazon_chronos-bolt-mini",
-        "amazon_chronos-bolt-small", "amazon_chronos-bolt-base",
-    ]
+with tab_app:
+    # ----------------------------
+    # Sidebar — Configuração (apenas inputs)
+    # ----------------------------
+    with st.sidebar:
+        # Autor + Git acima dos inputs (sem LinkedIn)
+        st.markdown("**Autor:** Dr. Silvio da Rosa Paula  \n**GitHub:** https://silviopaula.github.io/")
+        st.markdown("---")
 
-    selected_models = []
-    if mode == "Online (Hugging Face)":
-        st.caption("Marque os modelos (só o final do nome é exibido).")
-        cols = st.columns(3)
-        for i, full in enumerate(amazon_online_options):
-            short = full.split("/")[-1]
-            if cols[i % 3].checkbox(short, value=False, key=f"online_{short}"):
-                selected_models.append(full)
+        st.header("Configuração")
+
+        # Dataset: upload ou demo
+        st.subheader("Dados")
+        up = st.file_uploader("Envie um CSV/Excel (opcional) — se vazio, usamos o dataset demo",
+                              type=["csv", "xlsx", "xls"])
+
+        # Demo: Consumo de energia (Brasil)
+        demo_url = "https://github.com/silviopaula/ciencia-dados-portifolio/raw/refs/heads/main/Time_Series_Forecast_Chronos_Amazon/dados/consumo_energia_pronto.xlsx"
+
+        # Split e horizonte
+        test_periods = st.number_input("Período de teste (meses)", min_value=1, max_value=48, value=12, step=1)
+        n_periods = st.number_input("Horizonte de previsão (meses)", min_value=1, max_value=240, value=60, step=1)
+
+        # Dispositivo
+        dev_choice = st.selectbox("Dispositivo", options=["auto", "cpu", "cuda"], index=0)
+        device = "cuda" if (dev_choice == "auto" and torch.cuda.is_available()) else (dev_choice if dev_choice != "auto" else "cpu")
+        st.caption(f"GPU disponível: **{torch.cuda.is_available()}** · Usando: **{device}**")
+
+        # Modo offline/online
+        force_offline = st.checkbox("Rodar OFFLINE (pastas locais)", value=False)
         local_base_dir = None
-        force_offline = False
+        if force_offline:
+            # Usuário informa se desejar (sem caminho pré-carregado)
+            local_base_dir = st.text_input("Diretório raiz dos modelos (offline)", value="", placeholder="Ex.: D:/Models/chronos (opcional)")
+
+        # Modelos
+        st.subheader("Modelos")
+        online_models = [
+            "amazon/chronos-bolt-tiny",
+            "amazon/chronos-bolt-mini",
+            "amazon/chronos-bolt-small",
+            "amazon/chronos-bolt-base",
+            "amazon/chronos-t5-tiny",
+            "amazon/chronos-t5-mini",
+            "amazon/chronos-t5-small",
+            "amazon/chronos-t5-base",
+            "amazon/chronos-t5-large",
+        ]
+        offline_models = [m.replace("amazon/", "amazon_").replace("/", "-") for m in online_models]
+
+        if force_offline:
+            model_choices = offline_models
+            default_sel = ["amazon_chronos-bolt-small"]
+        else:
+            model_choices = online_models
+            default_sel = ["amazon/chronos-bolt-small"]
+
+        selected_models = st.multiselect("Selecione os modelos", options=model_choices, default=default_sel)
+
+        # Quantis
+        st.subheader("Quantis / Intervalo")
+        q_mode = st.radio("Escolha", options=["Usar interval_alpha", "Listar quantile_levels"], index=0)
+        quantile_levels = None
+        interval_alpha = 0.95
+        if q_mode == "Usar interval_alpha":
+            interval_alpha = st.slider("interval_alpha (nível do intervalo)", min_value=0.50, max_value=0.99, value=0.95, step=0.01)
+        else:
+            q_text = st.text_input("quantile_levels (ex.: 0.1,0.5,0.9)", value="0.1,0.5,0.9")
+            try:
+                quantile_levels = [float(x.strip()) for x in q_text.split(",") if x.strip()]
+                quantile_levels = sorted(set(quantile_levels))
+                if 0.5 not in quantile_levels:
+                    quantile_levels.append(0.5)
+                    quantile_levels = sorted(quantile_levels)
+            except Exception:
+                st.warning("Não consegui interpretar os quantis. Voltando para interval_alpha=0.95.")
+                quantile_levels = None
+                interval_alpha = 0.95
+
+        # Outras configs
+        random_seed = st.number_input("Random seed", min_value=0, max_value=999999, value=123, step=1)
+        allow_long_horizon = st.checkbox("Permitir horizonte longo (>64) com blocos", value=True)
+
+        # Ensemble
+        st.subheader("Ensemble (opcional)")
+        use_ens = st.checkbox("Ativar ensemble", value=False)
+        ensemble_dict = None
+        if use_ens:
+            method = st.selectbox("Método", options=["mean", "median", "weighted"], index=2)
+            ens_models = st.multiselect("Modelos usados no ensemble", options=selected_models, default=selected_models)
+            weights_map = {}
+            if method == "weighted":
+                st.caption("Defina pesos (só para os modelos escolhidos). Eles serão normalizados.")
+                for m in ens_models:
+                    w = st.number_input(f"Peso — {m}", min_value=0.0, max_value=9999.0, value=1.0, step=0.1, key=f"w_{m}")
+                    weights_map[m.split("/")[-1] if "/" in m else m] = float(w)
+            ensemble_dict = {"method": method}
+            if method == "weighted":
+                ensemble_dict["weights"] = {k.split("/")[-1] if "/" in k else k: v for k, v in weights_map.items()}
+            ensemble_dict["models"] = [m.split("/")[-1] if "/" in m else m for m in ens_models]
+
+    # ----------------------------
+    # Carregamento de dados (demo se vazio)
+    # ----------------------------
+    df = None
+    if up is None:
+        st.info("Nenhum arquivo enviado — carregando **dataset demo: Consumo de energia (Brasil)**.")
+        try:
+            # Excel remoto com colunas "Data" e várias "ec_*" / "nc_*"
+            df = pd.read_excel(demo_url)  # requer openpyxl
+            st.success(f"Dataset demo carregado — {df.shape[0]} linhas × {df.shape[1]} colunas")
+        except Exception as e:
+            st.error(f"Falha ao carregar dataset demo: {e}")
+            st.stop()
     else:
-        local_base_dir = st.text_input("Pasta base dos modelos locais", value="")  # sem pré-carregar
-        st.caption("Marque as pastas de modelos (mostrando apenas o final do nome).")
-        cols = st.columns(3)
-        for i, full in enumerate(amazon_offline_options):
-            short = full.split("_")[-1] if "_" in full else full
-            if cols[i % 3].checkbox(short, value=False, key=f"offline_{full}"):
-                selected_models.append(full)
-        force_offline = st.checkbox("Forçar OFFLINE (sem internet)", value=True)
+        try:
+            if up.name.lower().endswith(".csv"):
+                df = pd.read_csv(up)
+            else:
+                df = pd.read_excel(up)
+            st.success(f"Arquivo carregado: {up.name} | {df.shape[0]} linhas × {df.shape[1]} colunas")
+        except Exception as e:
+            st.error(f"Erro ao ler arquivo: {e}")
+            st.stop()
 
-    st.header("4) Parâmetros")
-    test_periods = st.number_input("Períodos de teste (últimos N)", min_value=1, max_value=120, value=6, step=1)
-    n_periods = st.number_input("Horizonte de previsão (meses)", min_value=1, max_value=240, value=60, step=1)
-    device = st.selectbox("Device", options=["cpu", "cuda"], index=1 if torch.cuda.is_available() else 0)
-    interval_alpha = st.slider("Intervalo alvo (alpha)", 0.50, 0.99, 0.95, 0.01)
-    quantiles_str = st.text_input("Quantis (JSON, opcional) ex.: [0.1,0.5,0.9]", value="")
-    quantile_levels = parse_json_or_none(quantiles_str)
-    random_seed = st.number_input("Random seed", value=123, step=1)
-    allow_long_horizon = st.checkbox("Permitir horizonte longo (>64) via blocos", value=True)
+    # Prévia
+    with st.expander("Prévia dos dados", expanded=False):
+        st.dataframe(df.head(20), use_container_width=True)
 
-    st.header("5) Ensemble (opcional)")
-    use_ens = st.checkbox("Ativar ensemble", value=False)
-    ensemble_dict = None
-    if use_ens:
-        method = st.selectbox("Método", ["mean", "median", "weighted"], index=0)
-        # Para escolher os modelos do ensemble, use os marcados
-        models_for_ens = selected_models.copy()
-        weights_str = st.text_input("Pesos (JSON, só se weighted) ex.: {'chronos-t5-mini':0.4,'chronos-bolt-small':0.6}", value="")
-        ens = {"method": method, "models": [m.split("/")[-1] if "/" in m else m for m in models_for_ens]}
-        wjs = parse_json_or_none(weights_str)
-        if method == "weighted" and wjs:
-            ens["weights"] = wjs
-        ensemble_dict = ens
+    # ----------------------------
+    # Seleção de colunas (o usuário escolhe)
+    # ----------------------------
+    st.subheader("Seleção de colunas")
+    all_cols = list(df.columns)
 
-    st.header("6) Exportação")
-    out_filename = st.text_input("Nome do arquivo .xlsx", value="forecast_resultados.xlsx")
+    default_date = "Data" if "Data" in all_cols else next((c for c in all_cols if c.lower() in ["data", "date", "timestamp", "time"]), all_cols[0])
+    default_target = "ec_total_BR" if "ec_total_BR" in all_cols else next((c for c in all_cols if c.lower() in ["target", "valor", "y", "consumo"]), all_cols[-1])
 
-# =========================
-# Área principal
-# =========================
-if up is None:
-    st.info("👈 Carregue um arquivo para começar.")
-    st.stop()
+    date_col = st.selectbox("Nome da coluna de data (date_col)", options=all_cols, index=all_cols.index(default_date))
+    target_col = st.selectbox("Nome da coluna alvo (target_col)", options=all_cols, index=all_cols.index(default_target))
 
-# Ler arquivo
-try:
-    if up.name.lower().endswith(".csv"):
-        df = pd.read_csv(up, **read_kwargs)
-    else:
-        df = pd.read_excel(up)
-except Exception as e:
-    st.error(f"Erro ao ler arquivo: {e}")
-    st.stop()
+    # ----------------------------
+    # Botão de execução
+    # ----------------------------
+    run = st.button("▶️ Rodar previsão", use_container_width=True)
 
-st.success(f"Arquivo carregado: {up.name} | {df.shape[0]} linhas × {df.shape[1]} colunas")
-with st.expander("Prévia dos dados", expanded=False):
-    st.dataframe(df.head(20), use_container_width=True)
+    # ----------------------------
+    # Execução
+    # ----------------------------
+    if run:
+        if len(selected_models) == 0:
+            st.warning("Selecione pelo menos um modelo.")
+            st.stop()
 
-# Botão de execução
-run = st.button("🚀 Rodar previsão agora")
+        if date_col not in df.columns or target_col not in df.columns:
+            st.error(f"O DataFrame precisa ter as colunas selecionadas '{date_col}' (data) e '{target_col}' (alvo).")
+            st.stop()
 
-if run:
-    if len(selected_models) == 0:
-        st.warning("Selecione pelo menos um modelo nas caixinhas antes de rodar.")
-        st.stop()
+        try:
+            fig, met_df, fc_dict, df_treino, df_teste, df_forecast = function_chronos_forecast(
+                df=df,
+                models=selected_models,
+                target_col=target_col,
+                test_periods=int(test_periods),
+                n_periods=int(n_periods),
+                device=device,
+                force_offline=force_offline,
+                date_col=date_col,
+                interval_alpha=float(interval_alpha),
+                quantile_levels=quantile_levels,
+                local_base_dir=local_base_dir if (force_offline and local_base_dir and local_base_dir.strip()) else None,
+                color_map=None,
+                random_seed=int(random_seed) if random_seed is not None else None,
+                allow_long_horizon=allow_long_horizon,
+                ensemble=ensemble_dict
+            )
 
-    try:
-        fig, met_df, fc_dict, df_treino, df_teste, df_forecast = chronos_forecast_multi_models_single_df(
-            df=df,
-            models=selected_models,
-            target_col=target_col,
-            test_periods=test_periods,
-            n_periods=n_periods,
-            device=device,
-            force_offline=force_offline,
-            date_col=date_col,
-            interval_alpha=interval_alpha,
-            quantile_levels=quantile_levels,
-            local_base_dir=local_base_dir if local_base_dir else None,
-            color_map=None,
-            random_seed=int(random_seed) if random_seed is not None else None,
-            allow_long_horizon=allow_long_horizon,
-            ensemble=ensemble_dict
-        )
+            # Gráfico
+            st.subheader("Gráfico")
+            st.plotly_chart(fig, use_container_width=True, theme="streamlit")
 
-        st.subheader("📈 Gráfico")
-        st.plotly_chart(fig, use_container_width=True)
+            # Métricas
+            st.subheader("Métricas (período de teste)")
+            fmt_cols = ["MAE", "RMSE", "MAPE (%)", "MedAE", "R2"]
+            met_show = met_df.copy()
+            for c in fmt_cols:
+                if c in met_show.columns:
+                    met_show[c] = pd.to_numeric(met_show[c], errors="coerce")
+            st.dataframe(met_show, use_container_width=True)
 
-        st.subheader("📋 Métricas")
-        st.dataframe(met_df, use_container_width=True)
+            # Forecast consolidado (preview)
+            st.subheader("Forecast consolidado (preview)")
+            st.dataframe(df_forecast.tail(24), use_container_width=True)
 
-        st.subheader("🧮 df_forecast (consolidado)")
-        st.dataframe(df_forecast.tail(30), use_container_width=True)
+            # Download Excel (robusto sem xlsxwriter)
+            st.subheader("Baixar resultados")
+            buffer = io.BytesIO()
+            try:
+                # tenta xlsxwriter (se instalado)
+                with pd.ExcelWriter(buffer, engine="xlsxwriter") as xw:
+                    df_treino.to_excel(xw, "treino", index=False)
+                    df_teste.to_excel(xw, "teste", index=False)
+                    met_df.to_excel(xw, "metricas", index=False)
+                    df_forecast.to_excel(xw, "forecast", index=False)
+            except ModuleNotFoundError:
+                # fallback para openpyxl (já no requirements)
+                with pd.ExcelWriter(buffer, engine="openpyxl") as xw:
+                    df_treino.to_excel(xw, "treino", index=False)
+                    df_teste.to_excel(xw, "teste", index=False)
+                    met_df.to_excel(xw, "metricas", index=False)
+                    df_forecast.to_excel(xw, "forecast", index=False)
 
-        # Exportar para XLSX (buffer)
-        buffer = io.BytesIO()
-        with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
-            met_df.to_excel(writer, index=False, sheet_name="metrics")
-            df_treino.to_excel(writer, index=False, sheet_name="treino")
-            df_teste.to_excel(writer, index=False, sheet_name="teste")
-            df_forecast.to_excel(writer, index=False, sheet_name="forecast")
+            st.download_button(
+                label="📥 Baixar Excel (treino/teste/métricas/forecast)",
+                data=buffer.getvalue(),
+                file_name="chronos_forecast_results.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True
+            )
 
-        st.download_button(
-            label="💾 Baixar resultados (.xlsx)",
-            data=buffer.getvalue(),
-            file_name=out_filename,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-    except Exception as e:
-        st.exception(e)
+        except Exception as e:
+            st.exception(e)
