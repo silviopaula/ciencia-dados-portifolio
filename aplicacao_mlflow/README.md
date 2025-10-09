@@ -1,5 +1,9 @@
 # Exemplo de Aplicação do MLflow – Previsão de Churn
 
+[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
+[![MLflow](https://img.shields.io/badge/MLflow-2.x-orange.svg)](https://mlflow.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 Este repositório foi criado com o objetivo de demonstrar, como integrar uma aplicação simples de Machine Learning ao MLflow.  
 A ideia central não é a complexidade dos modelos em si, mas sim mostrar o fluxo completo de rastreamento, registro e versionamento de experimentos de ML.
 
@@ -7,14 +11,13 @@ A ideia central não é a complexidade dos modelos em si, mas sim mostrar o flux
 
 ##  Objetivo do exercício
 
-- **Construir um caso didático** de Machine Learning para previsão de **churn (rotatividade de clientes)**.  
-- **Treinar modelos básicos** (Decision Tree, Random Forest e Ensemble) em uma base de clientes fictícia.  
-- **Avaliar métricas de desempenho** como acurácia e F1-score.  
-- **Integrar o processo ao MLflow**, utilizando recursos de:
-  - Rastreamento de parâmetros, métricas e artefatos;
-  - Criação e gerenciamento de experimentos;
-  - Registro de modelos no **Model Registry**;
-  - Uso de **aliases** para controlar a versão em produção.
+- **Construir um caso didático** de Machine Learning para previsão de **churn (rotatividade de clientes)**
+- **Treinar modelos básicos** (Decision Tree, Random Forest e Ensemble) em uma base de clientes fictícia
+- **Avaliar métricas de desempenho** como acurácia e F1-score
+- **Integrar o processo ao MLflow**, utilizando:
+  - Rastreamento de parâmetros, métricas e artefatos
+  - Criação e gerenciamento de experimentos
+  - Registro de modelos no **Model Registry**
 
 ---
 
@@ -63,3 +66,7 @@ Este exercício serviu para **explorar, em pequena escala, o ciclo completo de u
 Ou seja, um **mini-pipeline de MLOps** aplicado a um caso prático e acessível, que pode ser expandido para projetos reais de maior porte.
 
 ---
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
