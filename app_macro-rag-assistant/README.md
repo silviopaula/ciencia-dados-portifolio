@@ -1,179 +1,126 @@
 # RAG para Livros de Macroeconomia
 
-Aplicação de Retrieval-Augmented Generation (RAG) para consultar livros e notas, com um exemplo para livros de macroeconomia em PDF usando IA generativa.
+Aplicação de **Retrieval-Augmented Generation (RAG)** para consultar livros e notas em PDF, com um exemplo voltado para **livros de macroeconomia** usando IA generativa.
+
+---
+
+## Interface
+
+![Interface da Aplicação](https://github.com/silviopaula/ciencia-dados-portifolio/blob/main/app_macro-rag-assistant/img/img.png)
+
+---
 
 ## Descrição
 
-Sistema que permite fazer upload de PDFs, processar o conteúdo, indexar em um banco vetorial e realizar perguntas contextualizadas usando o modelo Gemini do Google. As respostas são geradas com base no conteúdo dos documentos carregados, com citação das fontes.
+Sistema que permite fazer **upload de PDFs**, processar o conteúdo, indexar em um **banco vetorial** e realizar **perguntas contextualizadas** usando o modelo **Gemini** do Google.  
+As respostas são geradas com base no conteúdo dos documentos carregados, com **citação das fontes**.
+
+---
 
 ## Tecnologias
 
 ### Framework e Interface
-- **Streamlit**: Interface web interativa e responsiva
-- **Python 3.10+**: Linguagem base
+- **Streamlit**: Interface web interativa e responsiva  
+- **Python 3.10+**: Linguagem base  
 
 ### Processamento de Documentos
-- **LangChain**: Framework para aplicações com LLMs
-- **PyPDFLoader**: Extração de texto de PDFs mantendo metadados (página, fonte)
-- **RecursiveCharacterTextSplitter**: Divisão inteligente de texto em chunks
+- **LangChain**: Framework para aplicações com LLMs  
+- **PyPDFLoader**: Extração de texto de PDFs com metadados  
+- **RecursiveCharacterTextSplitter**: Divisão em *chunks* de texto  
 
 ### Embeddings e Armazenamento Vetorial
-- **HuggingFace Embeddings**: Modelo `sentence-transformers/all-MiniLM-L6-v2`
-- **Chroma**: Banco de dados vetorial para busca semântica
+- **HuggingFace Embeddings**: Modelo `all-MiniLM-L6-v2` (384 dimensões)  
+- **ChromaDB**: Banco vetorial local e leve  
 
 ### LLM
-- **Google Gemini**: Modelo `gemini-2.5-flash` para geração de respostas
+- **Google Gemini (`gemini-2.5-flash`)**: geração de respostas rápidas e custo-efetivas  
 
-## Como Foi Construído
+---
 
-### Arquitetura do Sistema
-```
-┌─────────────┐
-│   PDF Upload │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────────┐
-│  PyPDFLoader    │  Lê PDFs e extrai texto + metadados
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│  Text Splitter  │  Divide em chunks de 500 caracteres (overlap 50)
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│  HF Embeddings  │  Converte chunks em vetores (384 dimensões)
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│     Chroma      │  Armazena vetores + texto original
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│  Pergunta User  │
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│   Retriever     │  Busca k=4 chunks mais similares
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│  Gemini LLM     │  Gera resposta baseada nos chunks recuperados
-└──────┬──────────┘
-       │
-       ▼
-┌─────────────────┐
-│  Resposta +     │
-│  Fontes         │
-└─────────────────┘
-```
+## Arquitetura do Sistema
 
-### Fluxo de Dados
+PDF Upload → PyPDFLoader → Text Splitter → HF Embeddings → Chroma                               
+↓                          
+Gemini LLM (consulta)                         
+↓                         
+Resposta + Fontes Citadas                         
 
-1. **Ingestão**
-   - Usuário faz upload de 1 ou mais PDFs
-   - PyPDFLoader processa cada página e mantém metadados
-   - Texto é dividido em chunks de 500 caracteres com overlap de 50
 
-2. **Indexação**
-   - Cada chunk é convertido em embedding (vetor de 384 dimensões)
-   - Vetores são armazenados no Chroma com o texto original
-   - Index fica em memória durante a sessão
+---
 
-3. **Consulta**
-   - Usuário faz uma pergunta em linguagem natural
-   - Pergunta é convertida em embedding
-   - Sistema busca os 4 chunks mais similares (busca por similaridade de cosseno)
-   - Chunks recuperados são enviados como contexto para o Gemini
-   - LLM gera resposta fundamentada no contexto
-   - Sistema exibe resposta e as fontes (arquivo + página)
+## Fluxo de Dados
 
-### Decisões Técnicas
+1. **Ingestão:** upload e extração de texto via PyPDFLoader  
+2. **Indexação:** conversão em embeddings e armazenamento no Chroma  
+3. **Consulta:** busca semântica e resposta gerada pelo Gemini  
 
-- **Chunk size 500**: Balanceio entre contexto e precisão
-- **Overlap 50**: Evita perda de informação nas bordas
-- **k=4 docs**: Suficiente para contexto sem sobrecarregar o prompt
-- **all-MiniLM-L6-v2**: Rápido e eficiente para português/inglês
-- **gemini-2.5-flash**: Custo-benefício e latência baixa
-- **Temperature 0.2**: Respostas mais determinísticas e factuais
+---
 
-## Instalação
+## Decisões Técnicas
 
-### Pré-requisitos
-- Python 3.10 ou superior
-- Chave de API do Google Gemini
+| Parâmetro | Valor | Justificativa |
+|------------|--------|----------------|
+| `chunk_size` | 500 | Equilíbrio entre contexto e precisão |
+| `chunk_overlap` | 50 | Evita perda de informação |
+| `k` | 4 | Retorna os 4 trechos mais relevantes |
+| Embedding | `all-MiniLM-L6-v2` | Rápido e eficiente |
+| Modelo LLM | `gemini-2.5-flash` | Baixa latência |
+| Temperature | 0.2 | Respostas mais factuais |
 
-## Como Usar
+---
 
-### 1. Iniciar a aplicação
-```powershell
-# Ative o ambiente virtual
-.venv\Scripts\activate
+## Privacidade e Segurança
 
-# Execute o Streamlit
-streamlit run app.py
-```
+Durante a consulta:
+- Apenas **trechos relevantes (chunks)** são enviados ao LLM  
+- **Documentos completos e embeddings** permanecem locais  
 
-### 2. Configurar
+| Item | Vai para o LLM externo? |
+|------|--------------------------|
+| Documentos inteiros | ❌ Não |
+| Trechos recuperados (chunks) | ✅ Sim |
+| Embeddings vetoriais | ❌ Não |
+| Logs temporários | ⚠️ Possível (depende do provedor) |
 
-Na sidebar:
-- Ajuste chunk_size e chunk_overlap se necessário
-- Defina k (número de documentos recuperados)
-- Cole sua GOOGLE_API_KEY
+### Boas Práticas
+- Usar **LLM local (Ollama, LM Studio, Llama.cpp, Gemma)** para dados sensíveis  
+- **RAG híbrido:** busca local + API externa apenas para perguntas genéricas  
+- **Filtrar contexto** para evitar envio de informações confidenciais  
+- **On-premise:** hospedar modelo e banco vetorial internamente  
 
-### 3. Processar PDFs
+---
 
-- Faça upload dos PDFs
-- Clique em "Processar PDFs"
-- Aguarde a indexação
+## Desempenho e Custos
+- **Indexação:** 2–5 s por PDF de 100 páginas  
+- **Busca:** 100–200 ms  
+- **Geração:** 2–5 s  
+- **Custo:** embeddings e Chroma gratuitos; API do Gemini com camada gratuita  
 
-### 4. Fazer Perguntas
-
-- Digite sua pergunta na caixa de texto
-- Clique em "Perguntar"
-- Veja a resposta e as fontes citadas
-
-## Exemplos de Perguntas
-
-- "Explique o modelo IS-LM"
-- "Qual a diferença entre inflação de demanda e inflação de custos?"
-- "Como funciona a política monetária expansionista?"
-- "Diferencie as versões da Curva de Phillips"
-
-## Configurações Avançadas
-
-### Personalizar Embeddings
-
-Troque o modelo na função `build_vectordb`:
-```python
-embeddings = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-)
-```
-
-### Persistência do Banco
-
-Para manter o índice entre sessões, use um diretório fixo:
-```python
-persist_dir = "./chroma_db"
-```
+---
 
 ## Limitações
+- Banco vetorial temporário (volátil)  
+- Não processa imagens nem tabelas complexas  
+- Limitado à janela de contexto do LLM (~32 k tokens)  
+- Qualidade depende do texto dos PDFs  
 
-- Banco vetorial em diretório temporário (perde ao reiniciar)
-- Não suporta imagens ou tabelas complexas dos PDFs
-- Limitado pela janela de contexto do LLM
+---
 
 ## Melhorias Futuras
+- Persistência permanente do banco vetorial  
+- Cache de embeddings  
+- Suporte a DOCX e TXT  
+- Interface para gerenciar PDFs indexados  
+- Histórico de conversas  
 
-- Persistência permanente do banco vetorial
-- Cache de embeddings para reprocessamento rápido
-- Suporte a outros formatos (DOCX, TXT)
-- Interface para gerenciar documentos indexados
-- Histórico de conversas
+---
+
+## Exemplos de Perguntas
+- “Explique o modelo IS-LM”  
+- “Qual a diferença entre inflação de demanda e de custos?”  
+- “Como funciona a política monetária expansionista?”  
+- “Diferencie as versões da Curva de Phillips”
+
+---
+
+**Benefício:** ler centenas de páginas em segundos, com respostas baseadas nas fontes reais.
