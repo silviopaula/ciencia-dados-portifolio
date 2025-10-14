@@ -1,0 +1,63 @@
+# Ambiente Virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Chroma e Bancos Vetoriais
+chroma_*/
+*.chroma
+vectordb/
+
+# API Keys e Configuração
+.env
+.env.local
+*.key
+secrets.toml
+.streamlit/secrets.toml
+
+# Cache de Modelos HuggingFace
+.cache/
+models/
+sentence_transformers/
+
+# Arquivos Temporários
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Logs
+*.log
+logs/
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/

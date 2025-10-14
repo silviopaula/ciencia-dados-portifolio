@@ -1,0 +1,16 @@
+# --- Core ---
+streamlit
+langchain
+langchain-community
+langchain-openai
+tiktoken
+langchain-google-genai
+
+# --- PDF e texto ---
+pypdf
+chromadb
+sentence-transformers
+
+# --- Utilidades ---
+numpy
+pandas
