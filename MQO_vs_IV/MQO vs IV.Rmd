@@ -1,0 +1,411 @@
+---
+title: "Endogeneidade e Suas Consequências: Estimativas Enviesadas de Elasticidade-Preço"
+author: "Silvio da Rosa Paula"
+output:
+  html_document:
+    df_print: paged
+---
+
+----------------------
+
+### O Problema
+
+Este exercício demonstra os efeitos nocivos da **endogeneidade** na estimação de elasticidades preço-demanda. Quando preço e quantidade são determinados simultaneamente no mercado, a correlação entre o preço e o termo de erro viola o pressuposto fundamental de MQO, gerando **estimativas enviesadas**.
+
+----------------------
+
+### Simulação dos Dados
+
+Criamos dados sintéticos onde:
+
+- **Variável dependente**: log(vendas)
+- **Variável endógena**: log(preço) 
+- **Variáveis exógenas**: log(renda), sazonalidade
+- **Instrumento**: tempo (tendência temporal)
+
+----------------------
+
+### A Fonte da Endogeneidade
+
+O **choque de demanda** afeta simultaneamente:
+1. As vendas (aumenta demanda)
+2. O preço (empresas ajustam preços conforme demanda)
+
+Esta simultaneidade cria correlação entre preço e erro, violando E[ε|X] = 0.
+
+----------------------
+
+### Elasticidade Verdadeira vs Estimada
+
+- **Coeficiente Verdadeiro**: -1.8 (definida na simulação)
+
+----------------------
+
+### Por Que o modelo de regressão linear (Mínimos Quadrados Ordinários - MQO) Falha?
+
+O MQO captura tanto:
+- O efeito causal do preço nas vendas (que queremos)
+- A resposta endógena do preço à demanda (confundidor)
+
+Resultado: subestima drasticamente a elasticidade em magnitude.
+
+----------------------
+
+### A Solução: Variáveis Instrumentais
+
+Usamos **tempo** como instrumento porque:
+- É relevante: correlacionado com preço (tendência)
+- É exógeno: não correlacionado com choques de demanda
+- Satisfaz restrição de exclusão: afeta vendas apenas via preço
+
+O método IV/2SLS isola a variação exógena no preço, recuperando o efeito causal.
+
+----------------------
+
+### Teste de Hausman
+
+Confirma presença de endogeneidade comparando estimadores OLS e IV. P-valor baixo rejeita H₀ de exogeneidade.
+
+----------------------
+
+### Implicações Práticas
+
+Ignorar endogeneidade leva a:
+- Elasticidades subestimadas
+- Previsões erradas
+- Decisões de precificação equivocadas
+- Perda de receita potencial
+ 
+----------------------
+ 
+### Importar bibliotecas 
+```{r}
+# Instalar e carregar packages
+if (!require(pacman)) install.packages("pacman")
+p_load(tidyverse, AER, plotly, lubridate, stargazer, Metrics)
+
+```
+
+-------------------
+
+### Simulação dos dados
+
+Criamos dados sintéticos onde:
+
+- **Variável dependente**: log(vendas)
+- **Variável endógena**: log(preço) 
+- **Variáveis exógenas**: log(renda), sazonalidade
+- **Instrumento**: tempo (tendência temporal)
+
+```{r}
+# Define semente para reprodutibilidade
+set.seed(456)
+
+# Número de observações (dias)
+n <- 500
+
+# Criação da base de dados simulada
+dados <- tibble(
+  # Sequência de datas diárias a partir de 2020-01-01
+  data = seq.Date(as.Date("2020-01-01"), by = "day", length.out = n),
+  
+  # Índice de tempo (1 a 500)
+  tempo = 1:n,
+  
+  # Renda média simulada (distribuição normal com média 50 e desvio 10)
+  renda = rnorm(n, 50, 10),
+  
+  # Sazonalidade anual simulada com função seno
+  sazonalidade = sin(2 * pi * tempo / 365),
+  
+  # Choques aleatórios de demanda
+  choque_demanda = rnorm(n, 0, 0.5)
+) %>%
+  mutate(
+    # Preço determinado por tempo, sazonalidade e choques
+    preco = exp(4.5 + 0.8 * choque_demanda + 0.001 * tempo + 0.1 * sazonalidade + rnorm(n, 0, 0.08)),
+    
+    # Vendas dependem negativamente do preço e positivamente da renda e sazonalidade
+    vendas = exp(6 - 1.8 * log(preco) + 0.5 * log(renda) + 0.2 * sazonalidade + choque_demanda + rnorm(n, 0, 0.1))
+  ) %>%
+  mutate(
+    # Versões log das variáveis principais para modelos log-lineares
+    log_vendas = log(vendas),
+    log_preco = log(preco),
+    log_renda = log(renda)
+  )
+
+# Visualiza a base de dados resultante
+dados
+
+```
+
+-----------------
+
+### Estatísticas descritivas
+```{r}
+# Calcula média, desvio padrão, mínimo e máximo das variáveis numéricas
+dados %>%
+  select(renda, preco, vendas, log_vendas, log_preco, log_renda, sazonalidade, choque_demanda) %>%
+  summary()
+```
+
+-------------
+
+### Matriz de correlação
+```{r}
+# Calcula correlação entre variáveis numéricas selecionadas
+dados %>%
+  select(log_vendas, log_preco, log_renda, sazonalidade, choque_demanda) %>%
+  cor() %>%
+  round(3)
+```
+A matriz de correlação revela relações econômicas coerentes: as vendas caem quando o preço aumenta (forte correlação negativa), aumentam com a renda (correlação positiva moderada) e são pouco afetadas pela sazonalidade. Choques de demanda elevam os preços e reduzem as vendas, mostrando seu efeito direto sobre o mercado. No geral, os resultados refletem um comportamento típico de oferta e demanda, com renda exógena e sazonalidade pouco relevante.
+
+---------------
+
+### Estimação dos modelos 
+
+**Mínimos Quadrados Ordinários (MQO)**
+* Modelo linear simples onde log_vendas é explicado por log_preco, log_renda e sazonalidade
+* Assume que todas as variáveis explicativas são exógenas (não correlacionadas com o erro)
+
+```{r, warning=FALSE}
+# Mínimos Quadrados Ordinários (MQO)
+mqo <- lm(log_vendas ~ log_preco + log_renda + sazonalidade, data = dados)
+
+# summary
+stargazer(mqo, type = "text")
+
+```
+* O modelo estimado por Mínimos Quadrados Ordinários (MQO) mostra resultados consistentes com o comportamento teórico da demanda.
+
+* O coeficiente de log_preco (-0.726) é negativo e estatisticamente significativo (p < 0.01), indicando que um aumento de 1% no preço reduz as vendas em aproximadamente 0,73%, em média. Essa é a elasticidade-preço da demanda, confirmando a relação inversa entre preço e quantidade demandada.
+
+* O coeficiente de log_renda (0.440) é positivo e também altamente significativo, sugerindo que um aumento de 1% na renda aumenta as vendas em cerca de 0,44% — sinal esperado para bens normais, cujo consumo cresce com o poder de compra.
+
+* A variável sazonalidade (0.089) tem um coeficiente positivo e significativo, indicando que, em períodos sazonais favoráveis (picos do ciclo senoidal), as vendas crescem ligeiramente.
+
+* O R² = 0.704 indica que o modelo explica cerca de 70% da variação nas vendas.
+
+---------------
+
+**Modelo de Variáveis Instrumentais (IV)**
+* Usa o método de Mínimos Quadrados em Dois Estágios (2SLS) via função ivreg()
+* log_preco é potencialmente endógeno (correlacionado com o erro)
+* tempo é usado como instrumento — ele afeta o preço, mas não afeta diretamente as vendas além do efeito via preço
+* log_renda e sazonalidade permanecem como variáveis exógenas
+
+```{r, warning=FALSE}
+# Modelo de Variáveis Instrumentais (IV)
+iv <- ivreg(log_vendas ~ log_preco + log_renda + sazonalidade |
+             tempo + log_renda + sazonalidade,
+             data = dados)
+
+# summary
+summary(iv, diagnostics = TRUE)
+
+```
+### Interpretação do Modelo de Variáveis Instrumentais (IV)
+
+O modelo de **Variáveis Instrumentais (IV)** foi estimado por meio do método de **Mínimos Quadrados em Dois Estágios (2SLS)**, usando `tempo` como instrumento para `log_preco`.
+
+###  Estrutura do Modelo
+A equação estimada é:
+
+\[
+\text{log_vendas} = \beta_0 + \beta_1 \text{log_preco} + \beta_2 \text{log_renda} + \beta_3 \text{sazonalidade} + \varepsilon
+\]
+
+O instrumento `tempo` é utilizado para corrigir a **endogeneidade** do preço, assumindo que `tempo` afeta o preço, mas não afeta as vendas diretamente (exceto via preço).
+
+---
+
+### Principais Resultados
+
+| Variável       | Coeficiente | Interpretação |
+|----------------|--------------|----------------|
+| **Intercepto (6.02)** | Valor médio de log_vendas quando as variáveis explicativas são zero (sem interpretação direta). |
+| **log_preco (-1.69)** | Elasticidade-preço estimada. Um aumento de 1% no preço reduz as vendas em **1,69%**, indicando **demanda elástica**. |
+| **log_renda (0.36)** | Elasticidade-renda positiva. Um aumento de 1% na renda eleva as vendas em **0,36%**, coerente com bens normais. |
+| **sazonalidade (0.19)** | Efeito positivo e significativo. Períodos sazonais favoráveis aumentam as vendas em torno de 0,19%. |
+
+Comparado ao MQO (elasticidade-preço ≈ -0.73), o IV mostra um efeito de preço mais forte, sugerindo que o MQO estava **enviesado para cima** por endogeneidade (preços correlacionados com choques de demanda).
+
+---
+
+###  Diagnósticos do Modelo
+
+| Teste | Interpretação |
+|--------|----------------|
+| **Weak instruments (F = 73.45, p < 0.001)** | O instrumento `tempo` é **forte**, explicando bem a variação em `log_preco` (F > 10). |
+| **Wu–Hausman (p < 0.001)** | Rejeita a hipótese de exogeneidade do preço. O uso de IV é **necessário**. |
+| **Sargan (NA)** | Não aplicável, pois há apenas um instrumento para uma variável endógena (modelo exatamente identificado). |
+
+---
+
+###  Ajuste do Modelo
+
+- **Erro padrão residual:** 0.463 — maior que no MQO (0.212), refletindo a maior incerteza ao corrigir endogeneidade.  
+- **R² negativo:** comum em modelos IV; não é interpretado da mesma forma que no MQO.  
+- **Wald test:** significativo (p < 0.001), indicando que o conjunto das variáveis explicativas é relevante.
+
+---
+
+###  Conclusão
+
+O modelo IV revela que:
+- **O preço é endógeno**, e o MQO subestimava sua elasticidade.  
+- Após a correção, a **elasticidade-preço** é **–1,69**, mostrando que a demanda é **altamente sensível ao preço**.  
+- **Renda (0,36)** e **sazonalidade (0,19)** mantêm efeitos positivos e significativos.  
+- O instrumento `tempo` é estatisticamente forte e adequado, tornando o modelo IV confiável para estimar o verdadeiro impacto do preço sobre as vendas.
+
+
+--------------------
+
+### Visualizar elasticidades 
+```{r}
+# Mínimos Quadrados Ordinários (MQO)
+elasticidade_mqo <- coef(mqo)["log_preco"]
+
+# Modelo de Variáveis Instrumentais (IV)
+elasticidade_iv <- coef(iv)["log_preco"]
+
+# print
+cat("\n\n=== ELASTICIDADES-PREÇO DA DEMANDA ===\n")
+cat(sprintf("Coeficiente Verdadeiro:      -1.8000\n"))
+cat(sprintf("OLS (Enviesado): %.4f\n", elasticidade_mqo))
+cat(sprintf("IV (Corrigido):  %.4f\n", elasticidade_iv))
+cat(sprintf("\nViés MQO: %.4f (%.1f%%)\n", 
+            elasticidade_mqo - (-1.8),
+            100 * abs(elasticidade_mqo - (-1.8)) / 1.8))
+```
+
+
+### Análise
+
+O modelo MQO apresenta um **viés de +1,07 pontos (59,7%)**, indicando que ele **subestima fortemente o efeito do preço** sobre as vendas.  
+Em outras palavras, o MQO sugere que o consumidor reage pouco a variações de preço, quando na realidade a demanda é **altamente elástica**.
+
+### Implicações para Negócios
+
+Usar um **coeficiente enviesado** pode gerar **decisões equivocadas e prejuízos econômicos**:
+
+- Uma empresa pode **aumentar preços acreditando que as vendas cairão pouco**, quando na verdade a redução no volume será muito maior — **diminuindo a receita e o lucro**.  
+- Estratégias baseadas nesse coeficiente incorreto (como precificação, previsão de demanda e gestão de estoques) se tornam **inconsistentes e arriscadas**.  
+- Em políticas públicas, um viés semelhante pode levar a **erros de previsão de arrecadação e distorções de mercado**.
+
+### Conclusão
+
+A correção via **modelo IV** é essencial para revelar o verdadeiro comportamento da demanda.  
+Neste caso, a elasticidade corrigida (–1.69) mostra que o mercado é **muito sensível a variações de preço**.  
+Ignorar a endogeneidade e usar o valor enviesado do MQO poderia levar a **decisões estratégicas incorretas e perdas financeiras significativas**.
+
+
+----------
+
+### Impacto da Endogeneidade nas Previsões: OLS vs IV, qual modelo se sai melhor e porquê?
+
+```{r}
+# realizar as previsões
+dados$pred_log_ols <- predict(mqo, dados)
+dados$pred_log_iv <- predict(iv, dados)
+dados$pred_ols <- exp(dados$pred_log_ols)
+dados$pred_iv <- exp(dados$pred_log_iv)
+
+# Métricas na escala original (vendas)
+metricas_nivel <- tibble(
+  modelo = c("OLS", "IV"),
+  RMSE = c(
+    rmse(dados$vendas, dados$pred_ols),
+    rmse(dados$vendas, dados$pred_iv)
+  ),
+  MAE = c(
+    mae(dados$vendas, dados$pred_ols),
+    mae(dados$vendas, dados$pred_iv)
+  ),
+  MAPE = c(
+    mape(dados$vendas, dados$pred_ols),
+    mape(dados$vendas, dados$pred_iv)
+  ),
+  R2 = c(
+    cor(dados$vendas, dados$pred_ols)^2,
+    cor(dados$vendas, dados$pred_iv)^2
+  )
+)
+
+# Exibir resultados
+metricas_nivel
+
+# plotar
+plot_ly(dados) %>%
+  add_trace(x = ~data, y = ~vendas, type = "scatter", mode = "lines",
+            name = "Vendas Reais", line = list(width = 1.5, color = "black")) %>%
+  add_trace(x = ~data, y = ~pred_ols, type = "scatter", mode = "lines",
+            name = "OLS (Enviesado)", line = list(width = 1.5, color = "red")) %>%
+  add_trace(x = ~data, y = ~pred_iv, type = "scatter", mode = "lines",
+            name = "IV (Corrigido)", line = list(width = 1.5, color = "green")) %>%
+  layout(title = "Vendas: Real vs Projeções",
+         xaxis = list(title = "Data"),
+         yaxis = list(title = "Vendas"),
+         hovermode = "x unified")
+
+```
+
+
+### Os resultados mostram as métricas de desempenho preditivo para os dois modelos:
+
+* O MQO apresenta melhores métricas de ajuste preditivo — menor erro (RMSE, MAE, MAPE) e maior R², porquê? 
+
+---
+
+### Por Que Isso Acontece?
+
+1. **OLS "aprende" a endogeneidade**: Captura a correlação espúria entre preço e erro, melhorando o ajuste mas distorcendo a interpretação causal
+
+2. **IV "ignora" parte dos dados**: Usa apenas a variação exógena do preço (via instrumento), descartando informação correlacionada com o erro
+
+3. **Trade-off viés-variância**: 
+   - OLS: baixa variância, alto viés (quando há endogeneidade)
+   - IV: alta variância, baixo viés (assintoticamente)
+
+### Referências na Literatura
+
+- **Angrist & Pischke (2009, 2015)**: "Mostly Harmless Econometrics" - discutem extensivamente esse trade-off
+- **Wooldridge (2010)**: Cap. 5 "Instrumental Variables" - formalmente demonstra
+- **Stock & Watson (2015)**: "Introduction to Econometrics" - exemplos aplicados
+
+### Quando Usar Cada Um?
+
+**Use OLS se**:
+- Objetivo é predição pura (forecasting)
+- Não há necessidade de interpretação dos coeficientes
+- Exogeneidade é plausível
+
+**Use IV se**:
+- Objetivo é inferência causal (efeito de X em Y)
+- Há endogeneidade conhecida/suspeita
+- Decisões dependem de entender relações causais (ex: elasticidades para pricing)
+
+### Métricas de Ajuste em IV São Enganosas
+
+R² e RMSE **não são apropriados** para avaliar IV porque:
+- IV não minimiza soma dos quadrados
+- R² pode ser negativo (fitted values não são projeção ortogonal)
+- Melhor ajuste ≠ melhor estimador causal
+
+---------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
