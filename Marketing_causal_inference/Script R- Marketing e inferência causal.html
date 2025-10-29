@@ -1496,8 +1496,8 @@ Viés DiD + Cov + Pesos:     -123.59  ( -2.1 %)</code></pre>
 <h2 class="anchored" data-anchor-id="section-3">————————————————————</h2>
 <hr>
 </section>
-<section id="differença-em-diferenças-com-efeitos-fixos-bidirecionais-twfe" class="level2">
-<h2 class="anchored" data-anchor-id="differença-em-diferenças-com-efeitos-fixos-bidirecionais-twfe">Differença-em-Diferenças com Efeitos Fixos Bidirecionais (TWFE)</h2>
+<section id="diferença-em-diferenças-com-efeitos-fixos-bidirecionais-twfe" class="level2">
+<h2 class="anchored" data-anchor-id="diferença-em-diferenças-com-efeitos-fixos-bidirecionais-twfe">Diferença-em-Diferenças com Efeitos Fixos Bidirecionais (TWFE)</h2>
 <p><img src="img/did_TWFE.png" class="img-fluid" width="900"></p>
 <p>………………………………………………………………………………………………………………………………………………………</p>
 <section id="o-que-é-did-twfe" class="level3">
@@ -3443,77 +3443,80 @@ Viés vs real:     R$ 1108.14  ( 18.4 %)
 </div>
 </div>
 </div>
-<div id="cell-67" class="cell" data-execution_count="47">
+<div id="cell-67" class="cell" data-execution_count="84">
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================</span></span>
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ABORDAGEM 3: MULTIVARIADO (TODAS COVARIÁVEIS)</span></span>
 <span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================</span></span>
 <span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== ABORDAGEM 3: CAUSALIMPACT MULTIVARIADO ===</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
 <span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Modelo: Série das tratadas + múltiplas covariáveis</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Covariáveis: Vendas controle + renda + internet + concorrentes</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Covariáveis:  renda + internet + concorrentes</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
 <span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Todas as variáveis disponíveis</span></span>
 <span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>ts_multivariado <span class="ot">&lt;-</span> <span class="fu">zoo</span>(</span>
 <span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>  dados_ci_base <span class="sc">%&gt;%</span> <span class="fu">select</span>(</span>
 <span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>    vendas_tratadas,      <span class="co"># Resposta</span></span>
-<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>    vendas_controle,      <span class="co"># Covariável 1</span></span>
-<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">order.by =</span> dados_ci_base<span class="sc">$</span>periodo</span>
-<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Rodar modelo</span></span>
-<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>impacto_multi <span class="ot">&lt;-</span> <span class="fu">CausalImpact</span>(ts_multivariado, pre_period, post_period)</span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>    vendas_controle,      <span class="co"># Covariável principal</span></span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>    renda_controle,       <span class="co"># Covariável 2</span></span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>    internet_controle,    <span class="co"># Covariável 3</span></span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>    concorrentes_controle <span class="co"># Covariável 4</span></span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">order.by =</span> dados_ci_base<span class="sc">$</span>periodo</span>
+<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Resultados</span></span>
-<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(impacto_multi))</span>
-<span id="cb73-23"><a href="#cb73-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(impacto_multi)</span>
-<span id="cb73-24"><a href="#cb73-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-25"><a href="#cb73-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Extrair métricas</span></span>
-<span id="cb73-26"><a href="#cb73-26" aria-hidden="true" tabindex="-1"></a>efeito_multi <span class="ot">&lt;-</span> impacto_multi<span class="sc">$</span>summary<span class="sc">$</span>AbsEffect[<span class="dv">1</span>]</span>
-<span id="cb73-27"><a href="#cb73-27" aria-hidden="true" tabindex="-1"></a>efeito_multi_lower <span class="ot">&lt;-</span> impacto_multi<span class="sc">$</span>summary<span class="sc">$</span>AbsEffect.lower[<span class="dv">1</span>]</span>
-<span id="cb73-28"><a href="#cb73-28" aria-hidden="true" tabindex="-1"></a>efeito_multi_upper <span class="ot">&lt;-</span> impacto_multi<span class="sc">$</span>summary<span class="sc">$</span>AbsEffect.upper[<span class="dv">1</span>]</span>
-<span id="cb73-29"><a href="#cb73-29" aria-hidden="true" tabindex="-1"></a>prob_multi <span class="ot">&lt;-</span> impacto_multi<span class="sc">$</span>summary<span class="sc">$</span>p[<span class="dv">1</span>]</span>
-<span id="cb73-30"><a href="#cb73-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb73-31"><a href="#cb73-31" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- RESUMO MULTIVARIADO ---</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb73-32"><a href="#cb73-32" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Efeito médio:     R$"</span>, <span class="fu">round</span>(efeito_multi, <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb73-33"><a href="#cb73-33" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"IC 95%:           ["</span>, <span class="fu">round</span>(efeito_multi_lower, <span class="dv">2</span>), <span class="st">","</span>, </span>
-<span id="cb73-34"><a href="#cb73-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(efeito_multi_upper, <span class="dv">2</span>), <span class="st">"]</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb73-35"><a href="#cb73-35" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Probabilidade:    "</span>, <span class="fu">round</span>(prob_multi <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>), <span class="st">"%</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb73-36"><a href="#cb73-36" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Viés vs real:     R$"</span>, <span class="fu">round</span>(efeito_multi <span class="sc">-</span> efeito_verdadeiro, <span class="dv">2</span>), </span>
-<span id="cb73-37"><a href="#cb73-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">" ("</span>, <span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>(efeito_multi <span class="sc">-</span> efeito_verdadeiro)<span class="sc">/</span>efeito_verdadeiro, <span class="dv">1</span>), <span class="st">"%)</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
-<span id="cb73-38"><a href="#cb73-38" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Rodar modelo</span></span>
+<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a>impacto_multi <span class="ot">&lt;-</span> <span class="fu">CausalImpact</span>(ts_multivariado, pre_period, post_period)</span>
+<span id="cb73-23"><a href="#cb73-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-24"><a href="#cb73-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Resultados</span></span>
+<span id="cb73-25"><a href="#cb73-25" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(impacto_multi))</span>
+<span id="cb73-26"><a href="#cb73-26" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(impacto_multi)</span>
+<span id="cb73-27"><a href="#cb73-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-28"><a href="#cb73-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Extrair métricas</span></span>
+<span id="cb73-29"><a href="#cb73-29" aria-hidden="true" tabindex="-1"></a>efeito_multi <span class="ot">&lt;-</span> impacto_multi<span class="sc">$</span>summary<span class="sc">$</span>AbsEffect[<span class="dv">1</span>]</span>
+<span id="cb73-30"><a href="#cb73-30" aria-hidden="true" tabindex="-1"></a>efeito_multi_lower <span class="ot">&lt;-</span> impacto_multi<span class="sc">$</span>summary<span class="sc">$</span>AbsEffect.lower[<span class="dv">1</span>]</span>
+<span id="cb73-31"><a href="#cb73-31" aria-hidden="true" tabindex="-1"></a>efeito_multi_upper <span class="ot">&lt;-</span> impacto_multi<span class="sc">$</span>summary<span class="sc">$</span>AbsEffect.upper[<span class="dv">1</span>]</span>
+<span id="cb73-32"><a href="#cb73-32" aria-hidden="true" tabindex="-1"></a>prob_multi <span class="ot">&lt;-</span> impacto_multi<span class="sc">$</span>summary<span class="sc">$</span>p[<span class="dv">1</span>]</span>
+<span id="cb73-33"><a href="#cb73-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-34"><a href="#cb73-34" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">--- RESUMO MULTIVARIADO ---</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb73-35"><a href="#cb73-35" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Efeito médio:     R$"</span>, <span class="fu">round</span>(efeito_multi, <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb73-36"><a href="#cb73-36" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"IC 95%:           ["</span>, <span class="fu">round</span>(efeito_multi_lower, <span class="dv">2</span>), <span class="st">","</span>, </span>
+<span id="cb73-37"><a href="#cb73-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(efeito_multi_upper, <span class="dv">2</span>), <span class="st">"]</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb73-38"><a href="#cb73-38" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Probabilidade:    "</span>, <span class="fu">round</span>(prob_multi <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>), <span class="st">"%</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb73-39"><a href="#cb73-39" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Viés vs real:     R$"</span>, <span class="fu">round</span>(efeito_multi <span class="sc">-</span> efeito_verdadeiro, <span class="dv">2</span>), </span>
+<span id="cb73-40"><a href="#cb73-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">" ("</span>, <span class="fu">round</span>(<span class="dv">100</span><span class="sc">*</span>(efeito_multi <span class="sc">-</span> efeito_verdadeiro)<span class="sc">/</span>efeito_verdadeiro, <span class="dv">1</span>), <span class="st">"%)</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb73-41"><a href="#cb73-41" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 === ABORDAGEM 3: CAUSALIMPACT MULTIVARIADO ===
 
 Modelo: Série das tratadas + múltiplas covariáveis
-Covariáveis: Vendas controle + renda + internet + concorrentes
+Covariáveis:  renda + internet + concorrentes
 
 Posterior inference {CausalImpact}
 
                          Average          Cumulative        
 Actual                   101115           1213376           
-Prediction (s.d.)        93994 (806)      1127931 (9672)    
-95% CI                   [92422, 95620]   [1109065, 1147443]
+Prediction (s.d.)        93982 (741)      1127786 (8897)    
+95% CI                   [92516, 95360]   [1110195, 1144317]
                                                             
-Absolute effect (s.d.)   7120 (806)       85445 (9672)      
-95% CI                   [5494, 8693]     [65932, 104310]   
+Absolute effect (s.d.)   7132 (741)       85590 (8897)      
+95% CI                   [5755, 8598]     [69058, 103181]   
                                                             
-Relative effect (s.d.)   7.6% (0.92%)     7.6% (0.92%)      
-95% CI                   [5.7%, 9.4%]     [5.7%, 9.4%]      
+Relative effect (s.d.)   7.6% (0.85%)     7.6% (0.85%)      
+95% CI                   [6%, 9.3%]       [6%, 9.3%]        
 
-Posterior tail-area probability p:   0.00101
-Posterior prob. of a causal effect:  99.8993%
+Posterior tail-area probability p:   0.00109
+Posterior prob. of a causal effect:  99.8913%
 
 For more details, type: summary(impact, "report")
 
 NULL
 
 --- RESUMO MULTIVARIADO ---
-Efeito médio:     R$ 7120.42 
-IC 95%:           [ 5494.37 , 8692.52 ]
-Probabilidade:     0.1 %
-Viés vs real:     R$ 1108.14  ( 18.4 %)
+Efeito médio:     R$ 7132.49 
+IC 95%:           [ 5754.87 , 8598.41 ]
+Probabilidade:     0.11 %
+Viés vs real:     R$ 1120.21  ( 18.6 %)
 </code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -3524,7 +3527,7 @@ Viés vs real:     R$ 1108.14  ( 18.4 %)
 </div>
 </div>
 </div>
-<div id="cell-68" class="cell" data-execution_count="48">
+<div id="cell-68" class="cell" data-execution_count="85">
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================</span></span>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="co"># COMPARAÇÃO DAS 3 ABORDAGENS</span></span>
 <span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================</span></span>
@@ -3558,16 +3561,16 @@ Viés vs real:     R$ 1108.14  ( 18.4 %)
                          Abordagem    Efeito  IC_Lower  IC_Upper Probabilidade     Vies Erro_Pct
 1     Univariado (sem covariáveis) 12270.785 10172.065 14259.562   0.001014199 6258.503    104.1
 2      Bivariado (vendas controle)  7120.424  5643.856  8614.390   0.001007049 1108.143     18.4
-3 Multivariado (todas covariáveis)  7120.424  5494.373  8692.517   0.001007049 1108.143     18.4
+3 Multivariado (todas covariáveis)  7132.490  5754.873  8598.412   0.001086957 1120.209     18.6
 4                Efeito Verdadeiro  6012.281        NA        NA            NA    0.000      0.0
   Amplitude_IC
 1     4087.498
 2     2970.534
-3     3198.144
+3     2843.539
 4           NA</code></pre>
 </div>
 </div>
-<div id="cell-69" class="cell" data-execution_count="52">
+<div id="cell-69" class="cell" data-execution_count="86">
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================</span></span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="co"># INTERPRETAÇÃO BAYESIANA</span></span>
 <span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================</span></span>
@@ -3589,7 +3592,7 @@ Viés vs real:     R$ 1108.14  ( 18.4 %)
 Probabilidade de efeito positivo:
   Univariado:    99.9 %
   Bivariado:     99.9 %
-  Multivariado:  99.9 %
+  Multivariado:  99.89 %
 
 Interpretação:
 'Há X% de probabilidade posterior de que o efeito seja positivo,
@@ -5314,6 +5317,12 @@ Por outro lado, técnicas modernas de reponderação e controle sintético (Entr
 <td>6.280</td>
 <td>+4.4%</td>
 <td>SC + DiD</td>
+</tr>
+<tr class="odd">
+<td>Média dos modelos</td>
+<td>6.024</td>
+<td>+0.001%</td>
+<td>⭐⭐⭐⭐⭐⭐</td>
 </tr>
 </tbody>
 </table>
