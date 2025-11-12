@@ -90,8 +90,3 @@ A combinacao dos dois frameworks se aproxima dos ganhos reportados pela DoorDash
 - Paper oficial: veja `paper.pdf` (direto da selecao KDD 2025).
 - Notebook em HTML: `Jupyter py - reproduzir experimento do paper.html` (visualizacao rapida).
 
-## Proximos passos sugeridos
-- Publicar um `requirements.txt` ou arquivo Poetry para fixar versoes e facilitar reproducao.
-- Extrair as funcoes de geracao de dados e dos meta-learners para modulos reutilizaveis ou pacotes.
-- Experimentar meta-learners adicionais (X-Learner, R-Learner, Causal Forest) ou bibliotecas como `econml`/`causalml`.
-- Substituir os dados sinteticos por logs reais e conectar o fluxo a testes A/B e monitoramento de producao.
