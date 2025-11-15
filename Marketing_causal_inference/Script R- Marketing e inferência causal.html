@@ -7789,12 +7789,12 @@ naturalmente</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># ============================================</span>
@@ -7830,6 +7830,7 @@ naturalmente</li>
 <span class="w">  </span><span class="n">WeightIt</span><span class="p">,</span><span class="w">  </span><span class="c1"># Ponderação (IPW, Entropy Balancing, etc.)</span>
 <span class="w">  </span><span class="n">cobalt</span><span class="p">,</span><span class="w">    </span><span class="c1"># Diagnóstico de balanceamento</span>
 <span class="w">  </span><span class="n">grf</span><span class="p">,</span><span class="w">       </span><span class="c1"># Generalized Random Forest (Causal Forest)</span>
+<span class="w">  </span><span class="n">xgboost</span><span class="p">,</span><span class="w">   </span><span class="c1"># modelo xgboost</span>
 
 <span class="w">  </span><span class="c1"># --- Séries Temporais Causais ---</span>
 <span class="w">  </span><span class="n">CausalImpact</span><span class="p">,</span><span class="w"> </span><span class="c1"># Análise de impacto causal em séries temporais (Google)</span>
@@ -7847,20 +7848,6 @@ naturalmente</li>
 <span class="w">  </span><span class="n">gridExtra</span><span class="w">     </span><span class="c1"># Plote</span>
 <span class="p">)</span>
 </pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>Warning message:
-package ‘pacman’ was built under R version 4.5.1 
-</pre>
 </div>
 </div>
 </div>
@@ -7886,7 +7873,7 @@ Simulação de dados
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># ============================================</span>
@@ -8020,7 +8007,7 @@ Simulação de dados
 </div>
 </div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
-<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[2]:</div>
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[3]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
 <pre>  loja_id periodo   vendas tratamento pos renda_per_capita penetracao_internet n_concorrentes potencial_crescimento efeito_verdadeiro
 1       1       1 84092.27          0   0         2963.987           0.6674432              3            -0.4182928                 0
@@ -8068,7 +8055,7 @@ Simulação de dados
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="n">dados</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span>
@@ -8458,7 +8445,7 @@ momentos superiores) das covariáveis fiquem idênticas às do grupo tratado. Ga
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1">#----------------------------------------------------</span>
@@ -8692,7 +8679,7 @@ características pré-existentes</strong></li>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># ============================================</span>
@@ -8830,7 +8817,7 @@ pré-existentes</li>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># ============================================</span>
@@ -9074,7 +9061,7 @@ Matematicamente, isso equivale a ajustar o pós-período levando em conta a vari
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># preprar dataframe</span>
@@ -9139,7 +9126,7 @@ Resumo por condição:
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># ============================================================</span>
@@ -9496,7 +9483,7 @@ agrega a análise em: (Média do período pré-tratamento - Média do período p
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># ============================================================</span>
@@ -9677,7 +9664,7 @@ Viés DiD + Cov + Pesos:     -123.59  ( -2.1 %)
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># Testes de diagnóstico</span>
@@ -9905,7 +9892,7 @@ Se houver heterogeneidade de efeito, o estimador pode ser severamente enviesado 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [23]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># ============================================</span>
@@ -13750,6 +13737,62 @@ dados os dados observados e o modelo especificado'
 <li><strong>Pontos fortes:</strong> contrafactual bem definido, inferência bayesiana clara, IC consistente</li>
 <li><strong>Limitação:</strong> ainda apresenta superestimação moderada, tratável com métodos de balanceamento explícito</li>
 </ul>
+<h4 id="Tabela:-Ranking-Modelos-Causal-Impact"><strong><code>Tabela: Ranking Modelos Causal Impact</code></strong><a class="anchor-link" href="#Tabela:-Ranking-Modelos-Causal-Impact">¶</a></h4><table>
+<thead>
+<tr>
+<th>Ranking</th>
+<th>Método</th>
+<th>Efeito (R$)</th>
+<th>Viés (R$)</th>
+<th>Erro %</th>
+<th>Amplitude IC</th>
+<th>Probabilidade</th>
+<th>Abordagem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1º</td>
+<td>Bivariado (vendas controle)</td>
+<td>7.120,42</td>
+<td>+1.108,14</td>
+<td>+18,4%</td>
+<td>3.031,53</td>
+<td>0,001007</td>
+<td>Bivariado</td>
+</tr>
+<tr>
+<td>2º</td>
+<td>Multivariado (grupo tratado e controle)</td>
+<td>12.247,64</td>
+<td>+6.235,36</td>
+<td>+103,7%</td>
+<td>2.435,16</td>
+<td>0,001004</td>
+<td>Multivariado</td>
+</tr>
+<tr>
+<td>3º</td>
+<td>Multivariado (somente grupo tratado)</td>
+<td>12.243,80</td>
+<td>+6.231,51</td>
+<td>+103,6%</td>
+<td>2.347,84</td>
+<td>0,001005</td>
+<td>Multivariado</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Efeito Verdadeiro (Referência)</td>
+<td>6.012,28</td>
+<td>0,00</td>
+<td>0,0%</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -14432,6 +14475,52 @@ Soma dos pesos: 1
 <li><strong>Synthetic DiD:</strong> Ligeiramente superior, mas dentro de margem aceitável</li>
 </ul>
 <p><strong>Conclusão:</strong> Métodos diferentes com suposições distintas convergem para resultados similares, reforçando confiança nas estimativas.</p>
+<h4 id="Tabela:-Ranking-Modelos-Controle-Sint%C3%A9tico"><strong><code>Tabela: Ranking Modelos Controle Sintético</code></strong><a class="anchor-link" href="#Tabela:-Ranking-Modelos-Controle-Sint%C3%A9tico">¶</a></h4><table>
+<thead>
+<tr>
+<th>Ranking</th>
+<th>Método</th>
+<th>Efeito (R$)</th>
+<th>Viés (R$)</th>
+<th>Erro %</th>
+<th>Abordagem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1º</td>
+<td>Augmented SC (Ridge)</td>
+<td>5.954,88</td>
+<td>-57,40</td>
+<td>-0,95%</td>
+<td>Augmented SC</td>
+</tr>
+<tr>
+<td>2º</td>
+<td>SC Tradicional (Abadie)</td>
+<td>5.953,40</td>
+<td>-58,88</td>
+<td>-0,98%</td>
+<td>SC Clássico</td>
+</tr>
+<tr>
+<td>3º</td>
+<td>Synthetic DiD</td>
+<td>6.279,79</td>
+<td>+267,51</td>
+<td>+4,45%</td>
+<td>Synthetic DiD</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Efeito Verdadeiro (Referência)</td>
+<td>6.012,28</td>
+<td>0,00</td>
+<td>0,0%</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -14798,16 +14887,12 @@ Número de variáveis: 4
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [139]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-r"><pre><span></span><span class="c1"># ============================================</span>
 <span class="c1"># VISUALIZAÇÕES</span>
 <span class="c1"># ============================================</span>
-
-<span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
-<span class="nf">library</span><span class="p">(</span><span class="n">gridExtra</span><span class="p">)</span>
-
 <span class="c1"># --- Plot 1: Distribuição dos ITEs ---</span>
 <span class="n">p1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">ggplot</span><span class="p">(</span><span class="n">dados_pos</span><span class="p">,</span><span class="w"> </span><span class="nf">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ite</span><span class="p">))</span><span class="w"> </span><span class="o">+</span>
 <span class="w">  </span><span class="nf">geom_histogram</span><span class="p">(</span><span class="n">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"steelblue"</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
@@ -15535,15 +15620,15 @@ Wald test for time dummies: chisq(22) = 5380.018 (p-value = &lt; 2.22e-16)</pre>
 </thead>
 <tbody>
 <tr>
-<td><strong>lag(vendas, 1)</strong></td>
+<td>lag1(vendas)</td>
 <td>-0,003</td>
 <td>0,026</td>
 <td>-0,12</td>
 <td>0,908</td>
-<td></td>
+<td>.</td>
 </tr>
 <tr>
-<td><strong>treated</strong></td>
+<td>treated</td>
 <td>6.378,91</td>
 <td>473,61</td>
 <td>13,47</td>
@@ -15551,7 +15636,7 @@ Wald test for time dummies: chisq(22) = 5380.018 (p-value = &lt; 2.22e-16)</pre>
 <td>***</td>
 </tr>
 <tr>
-<td><strong>renda_per_capita</strong></td>
+<td>renda_per_capita</td>
 <td>11,55</td>
 <td>0,37</td>
 <td>31,55</td>
@@ -15559,7 +15644,7 @@ Wald test for time dummies: chisq(22) = 5380.018 (p-value = &lt; 2.22e-16)</pre>
 <td>***</td>
 </tr>
 <tr>
-<td><strong>penetracao_internet</strong></td>
+<td>penetracao_internet</td>
 <td>28.008</td>
 <td>3.264</td>
 <td>8,58</td>
@@ -15567,7 +15652,7 @@ Wald test for time dummies: chisq(22) = 5380.018 (p-value = &lt; 2.22e-16)</pre>
 <td>***</td>
 </tr>
 <tr>
-<td><strong>n_concorrentes</strong></td>
+<td>n_concorrentes</td>
 <td>-1.976,9</td>
 <td>247,3</td>
 <td>-8,00</td>
@@ -15664,8 +15749,309 @@ Wald test for time dummies: chisq(22) = 5380.018 (p-value = &lt; 2.22e-16)</pre>
 <ul>
 <li>Passa no teste de autocorrelação AR(2)</li>
 <li>Instrumentos válidos (mas possivelmente fracos)</li>
-<li>Avisos sobre matriz singular sugerem ajuste da especificação</li>
+<li>Avisos sobre matriz singular sugerem ajuste da especificação.</li>
 </ul>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<hr/>
+<div style="border-left: 5px solid #2e00d4ff; background-color: #f8f8f8ff; padding: 15px;">
+<h2 style="color: #2e00d4ff; margin: 0;">
+<strong>Meta-Learners</strong>
+</h2>
+<br/>
+<br/>
+<h5 style="color: #000000; margin: 0; font-weight: bold;">
+</h5>
+</div>
+<h3 id="O-Que-S%C3%A3o-Meta-Learners?"><strong><code>O Que São Meta-Learners?</code></strong><a class="anchor-link" href="#O-Que-S%C3%A3o-Meta-Learners?">¶</a></h3><p>Meta-Learners são estratégias para usar algoritmos de machine learning (como XGBoost, Random Forest, Neural Networks) para estimar <strong>efeitos causais heterogêneos</strong>.</p>
+<p>A palavra "meta" vem do fato de que <strong>não são algoritmos em si</strong>, mas sim <strong>frameworks</strong> que dizem <strong>como</strong> usar algoritmos de ML para responder perguntas causais.</p>
+<p>Cada Meta-Learner tem uma <strong>filosofia diferente</strong> sobre como abordar o problema, resultando em estimativas potencialmente diferentes.</p>
+<hr/>
+<h3 id="S-Learner"><strong><code>S-Learner</code></strong><a class="anchor-link" href="#S-Learner">¶</a></h3><h4 id="Como-Funciona:"><strong>Como Funciona:</strong><a class="anchor-link" href="#Como-Funciona:">¶</a></h4><ul>
+<li><p>1º Treina <strong>um único modelo</strong> que aprende a prever as vendas usando todas as variáveis, incluindo se a loja recebeu tratamento ou não.</p>
+</li>
+<li><p>2º Com o Modelo treinado podemos prever os valores das vendas para todas as lojas (quando a dummy de tratamento é 1 para todas as lojas e 0 para todas as lojas)</p>
+</li>
+<li><p>3º Calculamos a diferença das vendas previstas pelo modelo quanto todos são tratados e quando todos são controles, a diferença é o efeito causal</p>
+</li>
+<li><p>O modelo aprende padrões como: <em>"Lojas com alta renda vendem mais"</em> e <em>"Lojas que receberam campanha vendem X a mais"</em>.</p>
+</li>
+</ul>
+<h4 id="Vantagens:"><strong>Vantagens:</strong><a class="anchor-link" href="#Vantagens:">¶</a></h4><ul>
+<li><strong>Simples:</strong> Um modelo apenas</li>
+<li><strong>Eficiente:</strong> Usa todos os dados juntos</li>
+<li><strong>Rápido:</strong> Treina mais rápido que outros métodos</li>
+</ul>
+<h4 id="Desvantagens:"><strong>Desvantagens:</strong><a class="anchor-link" href="#Desvantagens:">¶</a></h4><ul>
+<li><strong>Regularization bias:</strong> Se o algoritmo de ML "regulariza" muito (penaliza complexidade), pode subestimar o efeito do tratamento</li>
+<li><strong>Tratamento como feature comum:</strong> O modelo pode não dar atenção suficiente à variável de tratamento</li>
+</ul>
+<h4 id="Quando-Usar:"><strong>Quando Usar:</strong><a class="anchor-link" href="#Quando-Usar:">¶</a></h4><ul>
+<li>Prototipagem rápida</li>
+<li>Quando o efeito é relativamente uniforme</li>
+<li>Como baseline para comparação</li>
+</ul>
+<hr/>
+<h3 id="T-Learner"><strong><code>T-Learner</code></strong><a class="anchor-link" href="#T-Learner">¶</a></h3><h4 id="Como-Funciona:"><strong>Como Funciona:</strong><a class="anchor-link" href="#Como-Funciona:">¶</a></h4><ul>
+<li>1º sepamos os dados somente os tratados e somente os controles</li>
+<li>2º treina <strong>dois modelos separados</strong>, um para lojas tratadas e outro para lojas controle. Cada grupo aprende seus próprios padrões."</li>
+<li>3º Utilizamos o modelo treinado somente nos tratados para prever as vendas do grupo de controle, e o modelo treinado com dados de controle para prever as vendas do grupo tratado</li>
+<li>4º Calculamos a diferença das vendas previstas pelo modelo e obtemos o efeito causal</li>
+</ul>
+<h4 id="Vantagens:"><strong>Vantagens:</strong><a class="anchor-link" href="#Vantagens:">¶</a></h4><ul>
+<li><strong>Sem regularization bias:</strong> Cada modelo é livre para aprender sem penalizar o tratamento</li>
+<li><strong>Flexível:</strong> Permite padrões completamente diferentes entre grupos</li>
+<li><strong>Interpretável:</strong> Fácil entender o que cada modelo faz</li>
+</ul>
+<h4 id="Desvantagens:"><strong>Desvantagens:</strong><a class="anchor-link" href="#Desvantagens:">¶</a></h4><ul>
+<li><strong>Desbalanceamento:</strong> Se há muito mais controles que tratados (ou vice-versa), um modelo aprende com poucos dados</li>
+<li><strong>Dois modelos:</strong> Mais complexo que S-Learner</li>
+<li><strong>Extrapolação:</strong> Cada modelo precisa fazer previsões para lojas "do outro grupo"</li>
+</ul>
+<h4 id="Quando-Usar:"><strong>Quando Usar:</strong><a class="anchor-link" href="#Quando-Usar:">¶</a></h4><ul>
+<li>Quando tratados e controles parecem muito diferentes</li>
+<li>Dados balanceados (número similar de tratados e controles)</li>
+<li>Quando quer entender padrões específicos de cada grupo</li>
+</ul>
+<hr/>
+<h3 id="X-Learner"><strong><code>X-Learner</code></strong><a class="anchor-link" href="#X-Learner">¶</a></h3><h4 id="Como-Funciona:"><strong>Como Funciona:</strong><a class="anchor-link" href="#Como-Funciona:">¶</a></h4><p><strong>Etapa 1 - Modelos Base:</strong> <em>(Igual ao T-learn)</em></p>
+<ul>
+<li>1º sepamos os dados somente os tratados e somente os controles</li>
+<li>2º Treinamos <strong>dois modelos separados</strong> (μ₀ para controles e μ₁ para tratados)</li>
+</ul>
+<p><strong>Etapa 2 - Imputação de Contrafactuais:</strong></p>
+<ul>
+<li><p>3º Usamos μ₀ para prever vendas dos <strong>tratados</strong> se fossem controles <strong>(Igual ao T-learn)</strong></p>
+</li>
+<li><p>4º Usamos μ₁ para prever vendas dos <strong>controles</strong> se fossem tratados <strong>(Igual ao T-learn)</strong></p>
+</li>
+<li><p>5º Calculamos <strong>pseudo-efeitos individuais</strong>: <em>(extrai somente o desvio entre real - previsto)</em></p>
+<ul>
+<li>Para cada tratado: <code>Efeito = Venda Real - Venda Prevista como Controle</code></li>
+<li>Para cada controle: <code>Efeito = Venda Prevista como Tratado - Venda Real</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Etapa 3 - Modelos de Efeito:</strong>
+Com os desvios = (real - previsto), o X-Learner estima mais dois modelos utilizando os desvios como variavel dependente, esses modelos tem como objetivo explicar como o efeito varia com as características X.</p>
+<ul>
+<li>6º Treinamos <strong>dois novos modelos</strong> (τ₀ e τ₁) para prever esses pseudo-efeitos:<ul>
+<li>τ₀ aprende efeitos usando dados de <strong>controles</strong></li>
+<li>τ₁ aprende efeitos usando dados de <strong>tratados</strong></li>
+</ul>
+</li>
+</ul>
+<p><strong>Etapa 4 - Combinação Final:</strong></p>
+<ul>
+<li><p>7º Estimamos o propensity score e(X) = probabilidade de tratamento</p>
+</li>
+<li><p>8º Combinamos τ₀ e τ₁ ponderando pelo propensity: <em>(aqui é basimente uma média poderada fixa)</em>
+<code>ITE = (peso_do_controle x efeito_dos_controles) + (peso_do_tratado x efeito_dos_tratados)</code></p>
+<ul>
+<li>Damos <strong>mais peso</strong> ao modelo treinado no grupo com <strong>mais dados</strong></li>
+</ul>
+</li>
+</ul>
+<h4 id="Vantagens:"><strong>Vantagens:</strong><a class="anchor-link" href="#Vantagens:">¶</a></h4><ul>
+<li><strong>Ótimo com desbalanceamento:</strong> Funciona bem mesmo com 80% tratados e 20% controles</li>
+<li><strong>Usa toda informação:</strong> Combina múltiplos modelos de forma inteligente</li>
+<li><strong>Reduz variância:</strong> Estimativas mais estáveis que T-Learner</li>
+</ul>
+<h4 id="Desvantagens:"><strong>Desvantagens:</strong><a class="anchor-link" href="#Desvantagens:">¶</a></h4><ul>
+<li><strong>Complexidade:</strong> 4 modelos + propensity score</li>
+<li><strong>Difícil de interpretar:</strong> Muitas etapas intermediárias</li>
+<li><strong>Computacionalmente caro:</strong> Mais lento que S/T-Learner</li>
+</ul>
+<h4 id="Quando-Usar:"><strong>Quando Usar:</strong><a class="anchor-link" href="#Quando-Usar:">¶</a></h4><ul>
+<li><strong>Desbalanceamento severo</strong> (ex: 80% tratados, 20% controles)</li>
+<li>Quando quer extrair máxima informação dos dados</li>
+<li>Decisões importantes que justificam complexidade adicional</li>
+</ul>
+<hr/>
+<h3 id="DR-Learner"><strong><code>DR-Learner</code></strong><a class="anchor-link" href="#DR-Learner">¶</a></h3><h4 id="Como-Funciona:"><strong>Como Funciona:</strong><a class="anchor-link" href="#Como-Funciona:">¶</a></h4><p><strong>Etapa 1 - Estimar Propensity Score:</strong></p>
+<ul>
+<li>1º Treinamos um modelo de <strong>classificação</strong> e(X) para prever a probabilidade de tratamento dado X</li>
+</ul>
+<p><strong>Etapa 2 - Modelos de Outcome:</strong></p>
+<ul>
+<li>2º Separamos dados em tratados e controles <em>(Igual ao T-learn)</em></li>
+<li>3º Treinamos <strong>dois modelos de regressão</strong>: <em>(Igual ao T-learn)</em><ul>
+<li>μ₀(X): Prever vendas dos <strong>controles</strong></li>
+<li>μ₁(X): Prever vendas dos <strong>tratados</strong></li>
+</ul>
+</li>
+</ul>
+<p><strong>Etapa 3 - Combinar via AIPW (Augmented IPW):</strong></p>
+<ul>
+<li>4º Para cada loja, calculamos o ITE usando a <strong>fórmula AIPW</strong>:</li>
+</ul>
+<pre><code>ITE(X) =
+    (1 - e(X)) × [ μ₁(X) − Y ]   ← peso_do_tratado     × erro_dos_tratados
+  + e(X)       × [ Y − μ₀(X) ]   ← peso_do_controle    × erro_dos_controles
+  + [ μ₁(X) − μ₀(X) ]             ← diferença_bruta_dos_modelos
+
+onde:
+W = 1 se tratado, 0 se controle
+e(X) = propensity score (limitado entre 0.05 e 0.95)
+μ₁(X) = previsão para tratados
+μ₀(X) = previsão para controles
+
+</code></pre>
+<p><strong>Etapa 4 - Interpretação:</strong></p>
+<ul>
+<li>5º A <strong>Parte 1</strong> é o efeito via outcome regression (como T-Learner)</li>
+<li>6º A <strong>Parte 2</strong> corrige erros do modelo μ₁ usando pesos IPW nos tratados</li>
+<li>7º A <strong>Parte 3</strong> corrige erros do modelo μ₀ usando pesos IPW nos controles</li>
+<li>8º Se <strong>qualquer um</strong> (outcome models OU propensity) está correto → ITE está correto</li>
+</ul>
+<h4 id="Vantagens:"><strong>Vantagens:</strong><a class="anchor-link" href="#Vantagens:">¶</a></h4><ul>
+<li><strong>Double Robustness:</strong> Proteção contra má especificação - precisa de apenas UMA das duas estratégias correta</li>
+<li><strong>Fundamentação teórica forte:</strong> Propriedades estatísticas bem estudadas</li>
+<li><strong>Combinação inteligente:</strong> Usa informação de outcome E propensity</li>
+<li><strong>Decomposição clara:</strong> Vemos contribuição de cada componente</li>
+</ul>
+<h4 id="Desvantagens:"><strong>Desvantagens:</strong><a class="anchor-link" href="#Desvantagens:">¶</a></h4><ul>
+<li><strong>Sensível a propensity extremo:</strong> Se e(X) muito perto de 0 ou 1, pesos IPW explodem</li>
+<li><strong>Requer trimming:</strong> Precisa limitar propensity (ex: 0.05 a 0.95)</li>
+<li><strong>Variância maior:</strong> Se overlap é fraco, IPW adiciona ruído</li>
+<li><strong>3 modelos:</strong> Mais complexo que S/T-Learner</li>
+</ul>
+<h4 id="Quando-Usar:"><strong>Quando Usar:</strong><a class="anchor-link" href="#Quando-Usar:">¶</a></h4><ul>
+<li>Quer <strong>máxima robustez</strong> contra erros de especificação</li>
+<li>Bom overlap (propensity não extremo)</li>
+<li>Interesse em propriedades teóricas fortes</li>
+<li>Pode estimar propensity score razoavelmente bem</li>
+<li>Decisões críticas que exigem validação teórica</li>
+</ul>
+<h3 id="U-Learner"><strong><code>U-Learner</code></strong><a class="anchor-link" href="#U-Learner">¶</a></h3><h4 id="Como-Funciona:"><strong>Como Funciona:</strong><a class="anchor-link" href="#Como-Funciona:">¶</a></h4><p><strong>Abordagem 1 - Transformação Uplift:</strong></p>
+<ul>
+<li>1º Transformamos a variável de tratamento: <code>Z = 2×W - 1</code> (converte 0/1 em -1/+1)<ul>
+<li>Tratados (W=1) ficam Z = +1</li>
+<li>Controles (W=0) ficam Z = -1</li>
+</ul>
+</li>
+<li>2º Criamos o target transformado: <code>Y_uplift = Z × Y</code><ul>
+<li>Tratados: Y_uplift = +Vendas</li>
+<li>Controles: Y_uplift = -Vendas</li>
+</ul>
+</li>
+<li>3º Criamos <strong>features aumentadas</strong>: X original + X×Z (interações com tratamento)</li>
+<li>4º Treinamos <strong>um único modelo</strong> para prever Y_uplift usando as features aumentadas</li>
+<li>5º Para calcular ITE, predizemos usando Z = +1 para todos</li>
+</ul>
+<p><strong>Abordagem 2 - Interações Explícitas (mais comum):</strong></p>
+<ul>
+<li>1º Criamos <strong>features com interações</strong>: [W, X, W×X₁, W×X₂, ..., W×Xₙ]<ul>
+<li>Exemplo: [tratamento, renda, internet, tratamento×renda, tratamento×internet, ...]</li>
+</ul>
+</li>
+<li>2º Treinamos <strong>um único modelo</strong> para prever vendas Y usando essas features</li>
+<li>3º Para calcular ITE de cada loja:<ul>
+<li>Predizemos com W=1 (como tratado)</li>
+<li>Predizemos com W=0 (como controle)</li>
+<li><code>ITE = Predição(W=1) - Predição(W=0)</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>A diferença chave:</strong></p>
+<ul>
+<li>O modelo aprende <strong>explicitamente</strong> como o tratamento <strong>modera</strong> o efeito de cada variável</li>
+<li>Termos de interação (W×renda, W×internet) capturam: <em>"O efeito da campanha é diferente para lojas ricas vs pobres?"</em></li>
+</ul>
+<h4 id="Vantagens:"><strong>Vantagens:</strong><a class="anchor-link" href="#Vantagens:">¶</a></h4><ul>
+<li><strong>Simples:</strong> Um modelo apenas (como S-Learner)</li>
+<li><strong>Foco em uplift:</strong> Aprende diretamente o incremento, não outcomes separados</li>
+<li><strong>Interações explícitas:</strong> Captura automaticamente como tratamento modera covariáveis</li>
+<li><strong>Conecta com marketing:</strong> Base da literatura clássica de uplift modeling</li>
+</ul>
+<h4 id="Desvantagens:"><strong>Desvantagens:</strong><a class="anchor-link" href="#Desvantagens:">¶</a></h4><ul>
+<li><strong>Transformação confusa:</strong> Abordagem 1 (Z = 2W-1) é menos intuitiva</li>
+<li><strong>Menos estudado:</strong> Teoria menos desenvolvida que S/T/X/DR</li>
+<li><strong>Não tem double robustness:</strong> Como S-Learner, pode sofrer com regularization bias</li>
+<li><strong>Requer especificar interações:</strong> Precisa decidir quais W×X incluir</li>
+</ul>
+<h4 id="Quando-Usar:"><strong>Quando Usar:</strong><a class="anchor-link" href="#Quando-Usar:">¶</a></h4><ul>
+<li>Quer simplicidade (1 modelo) mas capturar heterogeneidade</li>
+<li>Background em uplift modeling (marketing/CRM)</li>
+<li>Suspeita que <strong>efeito é moderado</strong> por covariáveis (ex: campanha funciona diferente para ricos vs pobres)</li>
+<li>Quer interpretação de quais features <strong>interagem</strong> com tratamento</li>
+</ul>
+<hr/>
+<h4 id="Compara%C3%A7%C3%A3o-Completa:-Todos-os-Meta-Learners"><strong><code>Comparação Completa: Todos os Meta-Learners</code></strong><a class="anchor-link" href="#Compara%C3%A7%C3%A3o-Completa:-Todos-os-Meta-Learners">¶</a></h4><table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Modelos</th>
+<th>Filosofia</th>
+<th>Melhor Para</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>S-Learner</strong></td>
+<td>1</td>
+<td>Tratamento = feature</td>
+<td>Rapidez, uniformidade</td>
+</tr>
+<tr>
+<td><strong>T-Learner</strong></td>
+<td>2</td>
+<td>Grupos separados</td>
+<td>Grupos diferentes, balanceamento</td>
+</tr>
+<tr>
+<td><strong>X-Learner</strong></td>
+<td>4 + e</td>
+<td>Imputação + ponderação</td>
+<td>Desbalanceamento severo</td>
+</tr>
+<tr>
+<td><strong>DR-Learner</strong></td>
+<td>3</td>
+<td>Outcome + IPW</td>
+<td>Robustez teórica</td>
+</tr>
+<tr>
+<td><strong>U-Learner</strong></td>
+<td>1</td>
+<td>Interações explícitas</td>
+<td>Moderação por covariáveis</td>
+</tr>
+</tbody>
+</table>
+<h4 id="Na-Pr%C3%A1tica:-O-Que-Fazer?"><strong><code>Na Prática: O Que Fazer?</code></strong><a class="anchor-link" href="#Na-Pr%C3%A1tica:-O-Que-Fazer?">¶</a></h4><ol>
+<li><strong>Sempre rode TODOS os 4 métodos</strong></li>
+<li>Compare os resultados</li>
+<li>Se convergem (ATEs similares) → Confiança alta</li>
+<li>Se divergem → Investigue:<ul>
+<li>Checar overlap (propensity extremo?)</li>
+<li>Checar balanceamento (muitos tratados vs controles?)</li>
+<li>Checar fit dos modelos (R² bom?)</li>
+</ul>
+</li>
+<li>Use consenso entre métodos para decisão final</li>
+</ol>
+<p><strong>Lembre-se:</strong> A verdade está na <strong>triangulação</strong> entre múltiplas abordagens, não em um método único!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Intalar-Reticulate-para-rodar-python"><strong><code>Intalar Reticulate para rodar python</code></strong><a class="anchor-link" href="#Intalar-Reticulate-para-rodar-python">¶</a></h3>
 </div>
 </div>
 </div>
@@ -15677,7 +16063,17 @@ Wald test for time dummies: chisq(22) = 5380.018 (p-value = &lt; 2.22e-16)</pre>
 <div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-r"><pre><span></span><span class="w"> </span>
+<div class="highlight hl-r"><pre><span></span><span class="c1"># Instalar reticulate</span>
+<span class="c1"># install.packages("reticulate")</span>
+
+<span class="c1"># Criar ambiente virtual Python</span>
+<span class="c1"># library(reticulate)</span>
+<span class="c1"># virtualenv_create("r-econml")</span>
+<span class="c1"># use_virtualenv("r-econml")</span>
+
+<span class="c1"># Instalar pacotes Python necessários</span>
+<span class="c1"># py_install(c("econml", "numpy", "pandas", "scikit-learn"), </span>
+<span class="c1">#            envname = "r-econml")</span>
 </pre></div>
 </div>
 </div>
@@ -15690,368 +16086,1816 @@ Wald test for time dummies: chisq(22) = 5380.018 (p-value = &lt; 2.22e-16)</pre>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>................................................................................................................................................................................</p>
-<h2 id="Conclus%C3%A3o-Geral"><strong>Conclusão Geral</strong><a class="anchor-link" href="#Conclus%C3%A3o-Geral">¶</a></h2><p>O experimento conduzido para avaliar o impacto causal da <strong>campanha de marketing digital</strong> demonstra de forma clara e robusta a importância do <strong>balanceamento e da modelagem causal adequada</strong> em contextos não aleatórios de seleção de unidades.</p>
-<p>Os resultados confirmam que o <strong>efeito médio verdadeiro</strong> da campanha é de aproximadamente <strong>R$ 6.000/mês por loja</strong>, um valor consistente entre múltiplas metodologias robustas (A/B com Entropy, Synthetic Control, Causal Forest e TWFE balanceado).<br>
-Métodos sem balanceamento — como o A/B simples ou o DiD tradicional — superestimam o efeito em até <strong>+38%</strong>, levando a decisões potencialmente equivocadas sobre o retorno do investimento.</br></p>
-<p>................................................................................................................................................................................</p>
-<h3 id="Principais-Li%C3%A7%C3%B5es"><strong>Principais Lições</strong><a class="anchor-link" href="#Principais-Li%C3%A7%C3%B5es">¶</a></h3><ol>
-<li><p><strong>Significância estatística não implica causalidade</strong><br>
-O A/B simples encontrou efeitos “significativos”, mas totalmente enviesados pelo fato de as lojas tratadas já apresentarem maior potencial digital e renda. O viés estrutural de seleção distorceu o efeito observado.</br></p>
-</li>
-<li><p><strong>Balanceamento é a chave da inferência causal confiável</strong><br>
-O uso de <strong>Entropy Balancing</strong> eliminou 98 % do viés, tornando os grupos estatisticamente idênticos nas covariáveis críticas (renda, internet e potencial de crescimento). Isso transformou o teste A/B de um exercício enviesado em um experimento quase-exato.</br></p>
-</li>
-<li><p><strong>Painéis e modelos de efeitos fixos ajudam, mas não bastam</strong><br>
-Modelos TWFE e DiD corrigem diferenças de nível e choques temporais, porém continuam vulneráveis a tendências divergentes entre grupos. Somente a combinação <strong>TWFE + Entropy</strong> atingiu precisão comparável ao A/B balanceado.</br></p>
-</li>
-<li><p><strong>Métodos modernos convergem para o mesmo resultado</strong><br>
-Abordagens distintas — <strong>Synthetic Control, Augmented SC, Causal Forest, e Sun &amp; Abraham</strong> — confirmam o mesmo intervalo causal (R$ 5.900 – 6.100), reforçando a consistência empírica do efeito estimado.</br></p>
-</li>
-<li><p><strong>Impacto financeiro das estimativas incorretas</strong><br>
-Se a empresa utilizasse o resultado do A/B ingênuo (R$ 8.310), projetaria ganhos de **R$ 4,15 milhões/mês** para 500 lojas, quando o impacto real é de <strong>R$ 3 milhões/mês</strong>. A diferença de <strong>R$ 1,15 milhão/mês</strong> representa uma decisão financeira baseada em erro de inferência.</br></p>
-</li>
-</ol>
-<p>................................................................................................................................................................................</p>
-<h3 id="Conclus%C3%A3o-Final"><strong>Conclusão Final</strong><a class="anchor-link" href="#Conclus%C3%A3o-Final">¶</a></h3><p>O estudo mostra que:</p>
-<blockquote>
-<p><strong>“Em dados observacionais, o balanceamento não é opcional — é o alicerce da inferência causal.”</strong></p>
-</blockquote>
-<p>Métodos que apenas comparam médias ou dependem de suposições fortes (DiD simples, TWFE sem pesos) não garantem validade causal.<br>
-Por outro lado, técnicas modernas de reponderação e controle sintético (Entropy, SC, ML causal) alcançam estimativas estáveis, interpretáveis e reproduzíveis.</br></p>
-<p>Assim, para decisões estratégicas e de investimento, recomenda-se priorizar <strong>modelos com balanceamento explícito e contrafactuais bem definidos</strong>, assegurando que a análise reflita <strong>causalidade real e não correlação espúria</strong>.</p>
-<p>................................................................................................................................................................................</p>
-<h2 id="Compara%C3%A7%C3%A3o-de-Todos-os-M%C3%A9todos"><strong>Comparação de Todos os Métodos</strong><a class="anchor-link" href="#Compara%C3%A7%C3%A3o-de-Todos-os-M%C3%A9todos">¶</a></h2><table>
+<h3 id="Importar-bibliotecas-python"><strong><code>Importar bibliotecas python</code></strong><a class="anchor-link" href="#Importar-bibliotecas-python">¶</a></h3>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">reticulate</span><span class="p">)</span>
+<span class="nf">use_virtualenv</span><span class="p">(</span><span class="s">"r-econml"</span><span class="p">,</span><span class="w"> </span><span class="n">required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span>
+
+<span class="c1"># Verificar se está usando o ambiente correto</span>
+<span class="nf">py_config</span><span class="p">()</span>
+
+<span class="c1"># Importar bibliotecas Python</span>
+<span class="n">np</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"numpy"</span><span class="p">)</span>
+<span class="n">pd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"pandas"</span><span class="p">)</span>
+<span class="n">econml</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"econml"</span><span class="p">)</span>
+<span class="n">sklearn_ensemble</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"sklearn.ensemble"</span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Python e EconML carregados com sucesso!\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Python e EconML carregados com sucesso!
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- PREPARAR DADOS (SEM PESOS) ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== Preparando Dados ===\n"</span><span class="p">)</span>
+
+<span class="n">dados_econml</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dados</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">  </span><span class="c1"># MUDEI AQUI</span>
+<span class="w">  </span><span class="nf">filter</span><span class="p">(</span><span class="n">pos</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">select</span><span class="p">(</span>
+<span class="w">    </span><span class="n">loja_id</span><span class="p">,</span>
+<span class="w">    </span><span class="n">vendas</span><span class="p">,</span>
+<span class="w">    </span><span class="n">tratamento</span><span class="p">,</span>
+<span class="w">    </span><span class="n">renda_per_capita</span><span class="p">,</span>
+<span class="w">    </span><span class="n">penetracao_internet</span><span class="p">,</span>
+<span class="w">    </span><span class="n">n_concorrentes</span><span class="p">,</span>
+<span class="w">    </span><span class="n">potencial_crescimento</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Número de observações:"</span><span class="p">,</span><span class="w"> </span><span class="nf">nrow</span><span class="p">(</span><span class="n">dados_econml</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+
+<span class="c1"># Separar em matrizes</span>
+<span class="n">X</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">dados_econml</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">select</span><span class="p">(</span><span class="n">renda_per_capita</span><span class="p">,</span><span class="w"> </span><span class="n">penetracao_internet</span><span class="p">,</span><span class="w"> </span>
+<span class="w">         </span><span class="n">n_concorrentes</span><span class="p">,</span><span class="w"> </span><span class="n">potencial_crescimento</span><span class="p">))</span>
+
+<span class="n">Y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dados_econml</span><span class="o">$</span><span class="n">vendas</span>
+<span class="n">W</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dados_econml</span><span class="o">$</span><span class="n">tratamento</span>
+
+<span class="c1"># Converter para numpy arrays</span>
+<span class="n">X_np</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">np</span><span class="o">$</span><span class="nf">array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">Y_np</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">np</span><span class="o">$</span><span class="nf">array</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+<span class="n">W_np</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">np</span><span class="o">$</span><span class="nf">array</span><span class="p">(</span><span class="nf">as.integer</span><span class="p">(</span><span class="n">W</span><span class="p">))</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\nDimensões:\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"X:"</span><span class="p">,</span><span class="w"> </span><span class="nf">dim</span><span class="p">(</span><span class="n">X</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Y:"</span><span class="p">,</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">Y</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"W:"</span><span class="p">,</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="n">W</span><span class="p">),</span><span class="w"> </span><span class="s">"| Tratados:"</span><span class="p">,</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">W</span><span class="p">),</span><span class="w"> </span><span class="s">"| Controles:"</span><span class="p">,</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="m">1</span><span class="o">-</span><span class="n">W</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== Preparando Dados ===
+Número de observações: 3000 
+
+Dimensões:
+X: 3000 4 
+Y: 3000 
+W: 3000 | Tratados: 1860 | Controles: 1140 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- CONFIGURAR BASE LEARNERS ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== Configurando Base Learners ===\n"</span><span class="p">)</span>
+
+<span class="n">base_learner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sklearn_ensemble</span><span class="o">$</span><span class="nf">GradientBoostingRegressor</span><span class="p">(</span>
+<span class="w">  </span><span class="n">n_estimators</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">max_depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">random_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">123L</span>
+<span class="p">)</span>
+
+<span class="n">propensity_learner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sklearn_ensemble</span><span class="o">$</span><span class="nf">GradientBoostingClassifier</span><span class="p">(</span>
+<span class="w">  </span><span class="n">n_estimators</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">max_depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">random_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">123L</span>
+<span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Base learners configurados\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== Configurando Base Learners ===
+Base learners configurados
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="S-LEARNER"><strong><code>S-LEARNER</code></strong><a class="anchor-link" href="#S-LEARNER">¶</a></h3>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- S-LEARNER ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== [1/5] S-Learner ===\n"</span><span class="p">)</span>
+
+<span class="n">SLearner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"econml.metalearners"</span><span class="p">)</span><span class="o">$</span><span class="n">SLearner</span>
+<span class="n">s_learner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">SLearner</span><span class="p">(</span><span class="n">overall_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base_learner</span><span class="p">)</span>
+<span class="n">s_learner</span><span class="o">$</span><span class="nf">fit</span><span class="p">(</span><span class="n">Y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Y_np</span><span class="p">,</span><span class="w"> </span><span class="bp">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W_np</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+
+<span class="n">ate_s</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">s_learner</span><span class="o">$</span><span class="nf">ate</span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+<span class="n">ite_s</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">s_learner</span><span class="o">$</span><span class="nf">effect</span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"S-Learner treinado | ATE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ate_s</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== [1/5] S-Learner ===
+S-Learner treinado | ATE: 3790.29 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="T-LEARNER"><strong><code>T-LEARNER</code></strong><a class="anchor-link" href="#T-LEARNER">¶</a></h3>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- T-LEARNER ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== [2/5] T-Learner ===\n"</span><span class="p">)</span>
+
+<span class="n">TLearner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"econml.metalearners"</span><span class="p">)</span><span class="o">$</span><span class="n">TLearner</span>
+<span class="n">t_learner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">TLearner</span><span class="p">(</span><span class="n">models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">base_learner</span><span class="p">,</span><span class="w"> </span><span class="n">base_learner</span><span class="p">))</span>
+<span class="n">t_learner</span><span class="o">$</span><span class="nf">fit</span><span class="p">(</span><span class="n">Y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Y_np</span><span class="p">,</span><span class="w"> </span><span class="bp">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W_np</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+
+<span class="n">ate_t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">t_learner</span><span class="o">$</span><span class="nf">ate</span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+<span class="n">ite_t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">t_learner</span><span class="o">$</span><span class="nf">effect</span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"T-Learner treinado | ATE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ate_t</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== [2/5] T-Learner ===
+T-Learner treinado | ATE: 6115.55 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="X-LEARNER"><strong><code>X-LEARNER</code></strong><a class="anchor-link" href="#X-LEARNER">¶</a></h3>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- X-LEARNER ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== [3/5] X-Learner ===\n"</span><span class="p">)</span>
+
+<span class="n">XLearner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"econml.metalearners"</span><span class="p">)</span><span class="o">$</span><span class="n">XLearner</span>
+<span class="n">x_learner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">XLearner</span><span class="p">(</span>
+<span class="w">  </span><span class="n">models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">base_learner</span><span class="p">,</span><span class="w"> </span><span class="n">base_learner</span><span class="p">),</span>
+<span class="w">  </span><span class="n">cate_models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">base_learner</span><span class="p">,</span><span class="w"> </span><span class="n">base_learner</span><span class="p">),</span>
+<span class="w">  </span><span class="n">propensity_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">propensity_learner</span>
+<span class="p">)</span>
+<span class="n">x_learner</span><span class="o">$</span><span class="nf">fit</span><span class="p">(</span><span class="n">Y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Y_np</span><span class="p">,</span><span class="w"> </span><span class="bp">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W_np</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+
+<span class="n">ate_x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x_learner</span><span class="o">$</span><span class="nf">ate</span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+<span class="n">ite_x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x_learner</span><span class="o">$</span><span class="nf">effect</span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"X-Learner treinado | ATE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ate_x</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== [3/5] X-Learner ===
+X-Learner treinado | ATE: 6486.46 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="DR-LEARNER"><strong><code>DR-LEARNER</code></strong><a class="anchor-link" href="#DR-LEARNER">¶</a></h3>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- DR-LEARNER ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== [4/5] DR-Learner ===\n"</span><span class="p">)</span>
+
+<span class="n">DRLearner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"econml.dr"</span><span class="p">)</span><span class="o">$</span><span class="n">DRLearner</span>
+<span class="n">dr_learner</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">DRLearner</span><span class="p">(</span>
+<span class="w">  </span><span class="n">model_propensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">propensity_learner</span><span class="p">,</span>
+<span class="w">  </span><span class="n">model_regression</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base_learner</span><span class="p">,</span>
+<span class="w">  </span><span class="n">model_final</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base_learner</span>
+<span class="p">)</span>
+<span class="n">dr_learner</span><span class="o">$</span><span class="nf">fit</span><span class="p">(</span><span class="n">Y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Y_np</span><span class="p">,</span><span class="w"> </span><span class="bp">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W_np</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+
+<span class="n">ate_dr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dr_learner</span><span class="o">$</span><span class="nf">ate</span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+<span class="n">ite_dr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dr_learner</span><span class="o">$</span><span class="nf">effect</span><span class="p">(</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"DR-Learner | ATE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ate_dr</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== [4/5] DR-Learner ===
+DR-Learner | ATE: 4073.62 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="U-LEARNER"><strong><code>U-LEARNER</code></strong><a class="anchor-link" href="#U-LEARNER">¶</a></h3>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- 5. U-LEARNER (IMPLEMENTAÇÃO MANUAL) ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== [5/5] U-Learner (Interações) ===\n"</span><span class="p">)</span>
+
+<span class="c1"># Criar features com interações W×X</span>
+<span class="n">X_interact</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span>
+<span class="w">  </span><span class="n">W</span><span class="p">,</span><span class="w">                    </span><span class="c1"># Tratamento</span>
+<span class="w">  </span><span class="n">X</span><span class="p">,</span><span class="w">                    </span><span class="c1"># Features originais</span>
+<span class="w">  </span><span class="n">W</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">1</span><span class="p">],</span><span class="w">          </span><span class="c1"># W × renda</span>
+<span class="w">  </span><span class="n">W</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">2</span><span class="p">],</span><span class="w">          </span><span class="c1"># W × internet</span>
+<span class="w">  </span><span class="n">W</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">],</span><span class="w">          </span><span class="c1"># W × concorrentes</span>
+<span class="w">  </span><span class="n">W</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">4</span><span class="p">]</span><span class="w">           </span><span class="c1"># W × potencial</span>
+<span class="p">)</span>
+
+<span class="nf">colnames</span><span class="p">(</span><span class="n">X_interact</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span>
+<span class="w">  </span><span class="s">"W"</span><span class="p">,</span><span class="w"> </span><span class="s">"renda"</span><span class="p">,</span><span class="w"> </span><span class="s">"internet"</span><span class="p">,</span><span class="w"> </span><span class="s">"concorrentes"</span><span class="p">,</span><span class="w"> </span><span class="s">"potencial"</span><span class="p">,</span>
+<span class="w">  </span><span class="s">"W_x_renda"</span><span class="p">,</span><span class="w"> </span><span class="s">"W_x_internet"</span><span class="p">,</span><span class="w"> </span><span class="s">"W_x_concorrentes"</span><span class="p">,</span><span class="w"> </span><span class="s">"W_x_potencial"</span>
+<span class="p">)</span>
+
+<span class="c1"># Converter para numpy</span>
+<span class="n">X_interact_np</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">np</span><span class="o">$</span><span class="nf">array</span><span class="p">(</span><span class="n">X_interact</span><span class="p">)</span>
+
+<span class="c1"># Treinar modelo com interações</span>
+<span class="n">u_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sklearn_ensemble</span><span class="o">$</span><span class="nf">GradientBoostingRegressor</span><span class="p">(</span>
+<span class="w">  </span><span class="n">n_estimators</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">max_depth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">random_state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">123L</span>
+<span class="p">)</span>
+
+<span class="n">u_model</span><span class="o">$</span><span class="nf">fit</span><span class="p">(</span><span class="n">X_interact_np</span><span class="p">,</span><span class="w"> </span><span class="n">Y_np</span><span class="p">)</span>
+
+<span class="c1"># Predizer ITE via diferença marginal</span>
+<span class="c1"># ITE = f(W=1, X) - f(W=0, X)</span>
+<span class="n">X_w1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">4</span><span class="p">])</span>
+<span class="n">X_w0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cbind</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="w"> </span><span class="m">4</span><span class="p">])</span>
+
+<span class="n">pred_w1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">u_model</span><span class="o">$</span><span class="nf">predict</span><span class="p">(</span><span class="n">np</span><span class="o">$</span><span class="nf">array</span><span class="p">(</span><span class="n">X_w1</span><span class="p">))</span>
+<span class="n">pred_w0</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">u_model</span><span class="o">$</span><span class="nf">predict</span><span class="p">(</span><span class="n">np</span><span class="o">$</span><span class="nf">array</span><span class="p">(</span><span class="n">X_w0</span><span class="p">))</span>
+
+<span class="n">ite_u</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">pred_w1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pred_w0</span>
+<span class="n">ate_u</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_u</span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">" U-Learner | ATE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ate_u</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== [5/5] U-Learner (Interações) ===
+ U-Learner | ATE: 5290.16 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- CONSOLIDAR RESULTADOS ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="n">resultados_ate</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tibble</span><span class="p">(</span>
+<span class="w">  </span><span class="n">Metodo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"S-Learner"</span><span class="p">,</span><span class="w"> </span><span class="s">"T-Learner"</span><span class="p">,</span><span class="w"> </span><span class="s">"X-Learner"</span><span class="p">,</span><span class="w"> </span><span class="s">"DR-Learner"</span><span class="p">,</span><span class="w"> </span><span class="s">"U-Learner"</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ATE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">ate_s</span><span class="p">,</span><span class="w"> </span><span class="n">ate_t</span><span class="p">,</span><span class="w"> </span><span class="n">ate_x</span><span class="p">,</span><span class="w"> </span><span class="n">ate_dr</span><span class="p">,</span><span class="w"> </span><span class="n">ate_u</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== Resultados Consolidados ===\n"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">resultados_ate</span><span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- CONSOLIDAR E COMPARAR ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="n">efeito_verdadeiro</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">6012.28</span>
+
+<span class="n">resultados_ate</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tibble</span><span class="p">(</span>
+<span class="w">  </span><span class="n">Metodo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"S-Learner"</span><span class="p">,</span><span class="w"> </span><span class="s">"T-Learner"</span><span class="p">,</span><span class="w"> </span><span class="s">"X-Learner"</span><span class="p">,</span><span class="w"> </span><span class="s">"DR-Learner"</span><span class="p">,</span><span class="w"> </span><span class="s">"U-Learner"</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ATE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">ate_s</span><span class="p">,</span><span class="w"> </span><span class="n">ate_t</span><span class="p">,</span><span class="w"> </span><span class="n">ate_x</span><span class="p">,</span><span class="w"> </span><span class="n">ate_dr</span><span class="p">,</span><span class="w"> </span><span class="n">ate_u</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">resultados_completo</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resultados_ate</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Efeito_Verdadeiro</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Viés</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ATE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Viés_Abs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">Viés</span><span class="p">),</span>
+<span class="w">    </span><span class="n">Erro_Pct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Viés</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">100</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Erro_Abs_Pct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">Erro_Pct</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="n">Viés_Abs</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">resultados_completo</span><span class="p">)</span>
+
+<span class="n">melhor_metodo</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">Metodo</span><span class="p">[</span><span class="m">1</span><span class="p">]</span>
+<span class="n">menor_erro</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">Viés_Abs</span><span class="p">[</span><span class="m">1</span><span class="p">]</span>
+<span class="n">menor_erro_pct</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">Erro_Abs_Pct</span><span class="p">[</span><span class="m">1</span><span class="p">]</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== MELHOR MÉTODO ===\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Método:"</span><span class="p">,</span><span class="w"> </span><span class="n">melhor_metodo</span><span class="p">,</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Erro absoluto:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">menor_erro</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Erro percentual:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">menor_erro_pct</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"%\n"</span><span class="p">)</span>
+
+<span class="n">ranking</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resultados_completo</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">select</span><span class="p">(</span><span class="n">Metodo</span><span class="p">,</span><span class="w"> </span><span class="n">ATE</span><span class="p">,</span><span class="w"> </span><span class="n">Viés</span><span class="p">,</span><span class="w"> </span><span class="n">Erro_Pct</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Ranking</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">row_number</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">case_when</span><span class="p">(</span>
+<span class="w">      </span><span class="nf">abs</span><span class="p">(</span><span class="n">Erro_Pct</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s">"Excelente"</span><span class="p">,</span>
+<span class="w">      </span><span class="nf">abs</span><span class="p">(</span><span class="n">Erro_Pct</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s">"Bom"</span><span class="p">,</span>
+<span class="w">      </span><span class="nf">abs</span><span class="p">(</span><span class="n">Erro_Pct</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s">"Aceitável"</span><span class="p">,</span>
+<span class="w">      </span><span class="kc">TRUE</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s">"Alto"</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">ranking</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== Resultados Consolidados ===
+<span style="color: rgb(148,148,148)"># A tibble: 5 × 2</span>
+  Metodo       ATE
+  <span style="color: rgb(148,148,148)">&lt;chr&gt;</span>      <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color: rgb(188,188,188)">1</span> S-Learner  <span class="ansi-underline">3</span>790.
+<span style="color: rgb(188,188,188)">2</span> T-Learner  <span class="ansi-underline">6</span>116.
+<span style="color: rgb(188,188,188)">3</span> X-Learner  <span class="ansi-underline">6</span>486.
+<span style="color: rgb(188,188,188)">4</span> DR-Learner <span class="ansi-underline">4</span>074.
+<span style="color: rgb(188,188,188)">5</span> U-Learner  <span class="ansi-underline">5</span>290.
+<span style="color: rgb(148,148,148)"># A tibble: 5 × 7</span>
+  Metodo       ATE Efeito_Verdadeiro   Viés Viés_Abs Erro_Pct Erro_Abs_Pct
+  <span style="color: rgb(148,148,148)">&lt;chr&gt;</span>      <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>             <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>  <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>        <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color: rgb(188,188,188)">1</span> T-Learner  <span class="ansi-underline">6</span>116.             <span class="ansi-underline">6</span>012.   103.     103.     1.72         1.72
+<span style="color: rgb(188,188,188)">2</span> X-Learner  <span class="ansi-underline">6</span>486.             <span class="ansi-underline">6</span>012.   474.     474.     7.89         7.89
+<span style="color: rgb(188,188,188)">3</span> U-Learner  <span class="ansi-underline">5</span>290.             <span class="ansi-underline">6</span>012.  -<span class="ansi-red-fg">722</span><span class="ansi-red-fg">.</span>     722.   -<span class="ansi-red-fg">12</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">0</span>         12.0 
+<span style="color: rgb(188,188,188)">4</span> DR-Learner <span class="ansi-underline">4</span>074.             <span class="ansi-underline">6</span>012. -<span class="ansi-red-fg ansi-underline">1</span><span class="ansi-red-fg">93</span><span class="ansi-red-fg">9</span><span class="ansi-red-fg">.</span>    <span class="ansi-underline">1</span>939.   -<span class="ansi-red-fg">32</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">2</span>         32.2 
+<span style="color: rgb(188,188,188)">5</span> S-Learner  <span class="ansi-underline">3</span>790.             <span class="ansi-underline">6</span>012. -<span class="ansi-red-fg ansi-underline">2</span><span class="ansi-red-fg">22</span><span class="ansi-red-fg">2</span><span class="ansi-red-fg">.</span>    <span class="ansi-underline">2</span>222.   -<span class="ansi-red-fg">37</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">0</span>         37.0 
+
+=== MELHOR MÉTODO ===
+Método: T-Learner 
+Erro absoluto: 103.27 
+Erro percentual: 1.72 %
+<span style="color: rgb(148,148,148)"># A tibble: 5 × 6</span>
+  Metodo       ATE   Viés Erro_Pct Ranking Status   
+  <span style="color: rgb(148,148,148)">&lt;chr&gt;</span>      <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>  <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>   <span style="color: rgb(148,148,148)">&lt;int&gt;</span> <span style="color: rgb(148,148,148)">&lt;chr&gt;</span>    
+<span style="color: rgb(188,188,188)">1</span> T-Learner  <span class="ansi-underline">6</span>116.   103.     1.72       1 Excelente
+<span style="color: rgb(188,188,188)">2</span> X-Learner  <span class="ansi-underline">6</span>486.   474.     7.89       2 Bom      
+<span style="color: rgb(188,188,188)">3</span> U-Learner  <span class="ansi-underline">5</span>290.  -<span class="ansi-red-fg">722</span><span class="ansi-red-fg">.</span>   -<span class="ansi-red-fg">12</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">0</span>        3 Aceitável
+<span style="color: rgb(188,188,188)">4</span> DR-Learner <span class="ansi-underline">4</span>074. -<span class="ansi-red-fg ansi-underline">1</span><span class="ansi-red-fg">93</span><span class="ansi-red-fg">9</span><span class="ansi-red-fg">.</span>   -<span class="ansi-red-fg">32</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">2</span>        4 Alto     
+<span style="color: rgb(188,188,188)">5</span> S-Learner  <span class="ansi-underline">3</span>790. -<span class="ansi-red-fg ansi-underline">2</span><span class="ansi-red-fg">22</span><span class="ansi-red-fg">2</span><span class="ansi-red-fg">.</span>   -<span class="ansi-red-fg">37</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">0</span>        5 Alto     
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- MÉTRICAS DE PERFORMANCE ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n========================================\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"MÉTRICAS DE PERFORMANCE\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"========================================\n"</span><span class="p">)</span>
+
+<span class="n">metricas</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span>
+<span class="w">  </span><span class="n">Metodo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">Metodo</span><span class="p">,</span>
+<span class="w">  </span><span class="n">MAE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">Viés</span><span class="p">),</span><span class="w">  </span><span class="c1"># Mean Absolute Error</span>
+<span class="w">  </span><span class="n">MAPE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">Erro_Pct</span><span class="p">),</span><span class="w">  </span><span class="c1"># Mean Absolute Percentage Error</span>
+<span class="w">  </span><span class="n">Acurácia</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">Erro_Pct</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="n">MAE</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="n">metricas</span><span class="p">)</span>
+
+<span class="c1"># Consenso entre métodos</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n========================================\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"CONSENSO ENTRE MÉTODOS\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"========================================\n"</span><span class="p">)</span>
+
+<span class="n">consenso</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">ATE</span><span class="p">)</span>
+<span class="n">sd_consenso</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sd</span><span class="p">(</span><span class="n">resultados_completo</span><span class="o">$</span><span class="n">ATE</span><span class="p">)</span>
+<span class="n">cv_consenso</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">sd_consenso</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">consenso</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">100</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Média dos 5 métodos:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">consenso</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Desvio padrão:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">sd_consenso</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Coeficiente de variação:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">cv_consenso</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"%\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Efeito verdadeiro:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">efeito_verdadeiro</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Diferença (consenso - verdadeiro):"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">consenso</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+
+<span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nf">abs</span><span class="p">(</span><span class="n">consenso</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">sd_consenso</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nf">cat</span><span class="p">(</span><span class="s">"Efeito verdadeiro está dentro do intervalo de consenso\n"</span><span class="p">)</span>
+<span class="p">}</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nf">cat</span><span class="p">(</span><span class="s">"Efeito verdadeiro está fora do intervalo de consenso\n"</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+========================================
+MÉTRICAS DE PERFORMANCE
+========================================
+      Metodo       MAE      MAPE Acurácia
+1  T-Learner  103.2688  1.717631 98.28237
+2  X-Learner  474.1760  7.886791 92.11321
+3  U-Learner  722.1158 12.010682 87.98932
+4 DR-Learner 1938.6564 32.244945 67.75505
+5  S-Learner 2221.9899 36.957525 63.04247
+
+========================================
+CONSENSO ENTRE MÉTODOS
+========================================
+Média dos 5 métodos: 5151.22 
+Desvio padrão: 1198.48 
+Coeficiente de variação: 23.27 %
+Efeito verdadeiro: 6012.28 
+Diferença (consenso - verdadeiro): -861.06 
+Efeito verdadeiro está dentro do intervalo de consenso
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- CATE POR SUBGRUPOS ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="c1"># Por Quartil de Renda</span>
+<span class="n">dados_econml</span><span class="o">$</span><span class="n">quartil_renda</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cut</span><span class="p">(</span>
+<span class="w">  </span><span class="n">dados_econml</span><span class="o">$</span><span class="n">renda_per_capita</span><span class="p">,</span>
+<span class="w">  </span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="n">dados_econml</span><span class="o">$</span><span class="n">renda_per_capita</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.25</span><span class="p">,</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="m">0.75</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)),</span>
+<span class="w">  </span><span class="n">labels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"Q1"</span><span class="p">,</span><span class="w"> </span><span class="s">"Q2"</span><span class="p">,</span><span class="w"> </span><span class="s">"Q3"</span><span class="p">,</span><span class="w"> </span><span class="s">"Q4"</span><span class="p">),</span>
+<span class="w">  </span><span class="n">include.lowest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span>
+<span class="p">)</span>
+
+<span class="n">cate_renda</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dados_econml</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">group_by</span><span class="p">(</span><span class="n">quartil_renda</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">summarise</span><span class="p">(</span>
+<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">n</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">S_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_s</span><span class="p">),</span>
+<span class="w">    </span><span class="n">T_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_t</span><span class="p">),</span>
+<span class="w">    </span><span class="n">X_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_x</span><span class="p">),</span>
+<span class="w">    </span><span class="n">DR_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_dr</span><span class="p">),</span>
+<span class="w">    </span><span class="n">U_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_u</span><span class="p">),</span>
+<span class="w">    </span><span class="n">.groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"drop"</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== CATE por Quartil de Renda ===\n"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">cate_renda</span><span class="p">)</span>
+
+<span class="c1"># Por Quartil de Internet</span>
+<span class="n">dados_econml</span><span class="o">$</span><span class="n">quartil_internet</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cut</span><span class="p">(</span>
+<span class="w">  </span><span class="n">dados_econml</span><span class="o">$</span><span class="n">penetracao_internet</span><span class="p">,</span>
+<span class="w">  </span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">quantile</span><span class="p">(</span><span class="n">dados_econml</span><span class="o">$</span><span class="n">penetracao_internet</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">0.25</span><span class="p">,</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> </span><span class="m">0.75</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">)),</span>
+<span class="w">  </span><span class="n">labels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"Q1"</span><span class="p">,</span><span class="w"> </span><span class="s">"Q2"</span><span class="p">,</span><span class="w"> </span><span class="s">"Q3"</span><span class="p">,</span><span class="w"> </span><span class="s">"Q4"</span><span class="p">),</span>
+<span class="w">  </span><span class="n">include.lowest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span>
+<span class="p">)</span>
+
+<span class="n">cate_internet</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dados_econml</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">group_by</span><span class="p">(</span><span class="n">quartil_internet</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">summarise</span><span class="p">(</span>
+<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">n</span><span class="p">(),</span>
+<span class="w">    </span><span class="n">S_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_s</span><span class="p">),</span>
+<span class="w">    </span><span class="n">T_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_t</span><span class="p">),</span>
+<span class="w">    </span><span class="n">X_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_x</span><span class="p">),</span>
+<span class="w">    </span><span class="n">DR_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_dr</span><span class="p">),</span>
+<span class="w">    </span><span class="n">U_Learner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">ite_u</span><span class="p">),</span>
+<span class="w">    </span><span class="n">.groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"drop"</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== CATE por Quartil de Internet ===\n"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">cate_internet</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== CATE por Quartil de Renda ===
+<span style="color: rgb(148,148,148)"># A tibble: 4 × 7</span>
+  quartil_renda     n S_Learner T_Learner X_Learner DR_Learner U_Learner
+  <span style="color: rgb(148,148,148)">&lt;fct&gt;</span>         <span style="color: rgb(148,148,148)">&lt;int&gt;</span>     <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>     <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>     <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>      <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>     <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color: rgb(188,188,188)">1</span> Q1              756     <span class="ansi-underline">3</span>790.     <span class="ansi-underline">6</span>116.     <span class="ansi-underline">6</span>486.      <span class="ansi-underline">4</span>074.     <span class="ansi-underline">5</span>290.
+<span style="color: rgb(188,188,188)">2</span> Q2              744     <span class="ansi-underline">3</span>790.     <span class="ansi-underline">6</span>116.     <span class="ansi-underline">6</span>486.      <span class="ansi-underline">4</span>074.     <span class="ansi-underline">5</span>290.
+<span style="color: rgb(188,188,188)">3</span> Q3              756     <span class="ansi-underline">3</span>790.     <span class="ansi-underline">6</span>116.     <span class="ansi-underline">6</span>486.      <span class="ansi-underline">4</span>074.     <span class="ansi-underline">5</span>290.
+<span style="color: rgb(188,188,188)">4</span> Q4              744     <span class="ansi-underline">3</span>790.     <span class="ansi-underline">6</span>116.     <span class="ansi-underline">6</span>486.      <span class="ansi-underline">4</span>074.     <span class="ansi-underline">5</span>290.
+
+=== CATE por Quartil de Internet ===
+<span style="color: rgb(148,148,148)"># A tibble: 4 × 7</span>
+  quartil_internet     n S_Learner T_Learner X_Learner DR_Learner U_Learner
+  <span style="color: rgb(148,148,148)">&lt;fct&gt;</span>            <span style="color: rgb(148,148,148)">&lt;int&gt;</span>     <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>     <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>     <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>      <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>     <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color: rgb(188,188,188)">1</span> Q1                 756     <span class="ansi-underline">3</span>790.     <span class="ansi-underline">6</span>116.     <span class="ansi-underline">6</span>486.      <span class="ansi-underline">4</span>074.     <span class="ansi-underline">5</span>290.
+<span style="color: rgb(188,188,188)">2</span> Q2                 744     <span class="ansi-underline">3</span>790.     <span class="ansi-underline">6</span>116.     <span class="ansi-underline">6</span>486.      <span class="ansi-underline">4</span>074.     <span class="ansi-underline">5</span>290.
+<span style="color: rgb(188,188,188)">3</span> Q3                 756     <span class="ansi-underline">3</span>790.     <span class="ansi-underline">6</span>116.     <span class="ansi-underline">6</span>486.      <span class="ansi-underline">4</span>074.     <span class="ansi-underline">5</span>290.
+<span style="color: rgb(188,188,188)">4</span> Q4                 744     <span class="ansi-underline">3</span>790.     <span class="ansi-underline">6</span>116.     <span class="ansi-underline">6</span>486.      <span class="ansi-underline">4</span>074.     <span class="ansi-underline">5</span>290.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- CORRELAÇÕES ENTRE MÉTODOS ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== Correlação entre Métodos ===\n"</span><span class="p">)</span>
+
+<span class="n">ite_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span>
+<span class="w">  </span><span class="n">ite_s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">ite_s</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ite_t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">ite_t</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ite_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">ite_x</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ite_dr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">ite_dr</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ite_u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">ite_u</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">cor_matrix</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cor</span><span class="p">(</span><span class="n">ite_df</span><span class="p">)</span>
+<span class="nf">colnames</span><span class="p">(</span><span class="n">cor_matrix</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">rownames</span><span class="p">(</span><span class="n">cor_matrix</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"S"</span><span class="p">,</span><span class="w"> </span><span class="s">"T"</span><span class="p">,</span><span class="w"> </span><span class="s">"X"</span><span class="p">,</span><span class="w"> </span><span class="s">"DR"</span><span class="p">,</span><span class="w"> </span><span class="s">"U"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">cor_matrix</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== Correlação entre Métodos ===
+       S      T      X    DR     U
+S  1.000  0.389  0.145 0.846 0.519
+T  0.389  1.000 -0.046 0.479 0.709
+X  0.145 -0.046  1.000 0.203 0.012
+DR 0.846  0.479  0.203 1.000 0.581
+U  0.519  0.709  0.012 0.581 1.000
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="An%C3%A1lise-dos-Resultados-dos-Meta-Learning"><strong><code>Análise dos Resultados dos Meta-Learning</code></strong><a class="anchor-link" href="#An%C3%A1lise-dos-Resultados-dos-Meta-Learning">¶</a></h3><h4 id="Ranking-de-Performance"><strong><code>Ranking de Performance</code></strong><a class="anchor-link" href="#Ranking-de-Performance">¶</a></h4><table>
 <thead>
 <tr>
-<th>Ranking</th>
+<th>Posição</th>
 <th>Método</th>
-<th>Efeito (R$)</th>
-<th>Viés (R$)</th>
+<th>ATE Estimado</th>
+<th>Erro</th>
 <th>Erro %</th>
-<th>Estrelas</th>
-<th>Categoria</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>🥇 1º</td>
-<td><strong>A/B Entropy</strong></td>
-<td>5.982</td>
-<td>-30</td>
-<td>-0.5%</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>Balanceamento</td>
+<td><strong>1º</strong></td>
+<td>T Learner</td>
+<td>R$ 6.115.55</td>
+<td>+R$ 103.27</td>
+<td>+1.72%</td>
 </tr>
 <tr>
-<td>🥈 2º</td>
-<td><strong>TWFE + Entropy</strong></td>
-<td>5.889</td>
-<td>-123</td>
-<td>-2.1%</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>Painel Balanceado</td>
+<td><strong>2º</strong></td>
+<td>X Learner</td>
+<td>R$ 6.486.46</td>
+<td>+R$ 474.18</td>
+<td>+7.89%</td>
 </tr>
 <tr>
-<td>🥉 3º</td>
-<td><strong>SC Tradicional</strong></td>
-<td>5.953</td>
-<td>-59</td>
-<td>-1.0%</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>Synthetic Control</td>
-</tr>
-<tr>
-<td>🥉 3º</td>
-<td><strong>Augmented SC</strong></td>
-<td>5.955</td>
-<td>-57</td>
-<td>-1.0%</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>Synthetic Control</td>
+<td><strong>3º</strong></td>
+<td>U Learner</td>
+<td>R$ 5.290.16</td>
+<td>-R$ 722.12</td>
+<td>-12.01%</td>
 </tr>
 <tr>
 <td>4º</td>
-<td><strong>Causal Forest</strong></td>
-<td>6.086</td>
-<td>+74</td>
-<td>+1.2%</td>
-<td>⭐⭐⭐⭐⭐</td>
-<td>Machine Learning</td>
+<td>DR Learner</td>
+<td>R$ 3.993.66</td>
+<td>-R$ 2.018.62</td>
+<td>-33.57%</td>
 </tr>
 <tr>
 <td>5º</td>
-<td><strong>Synthetic DiD</strong></td>
-<td>6.280</td>
-<td>+268</td>
-<td>+4.4%</td>
-<td>⭐⭐⭐⭐</td>
-<td>Synthetic Control</td>
+<td>S Learner</td>
+<td>R$ 3.790.29</td>
+<td>-R$ 2.221.99</td>
+<td>-36.96%</td>
+</tr>
+</tbody>
+</table>
+<h4 id="Principais-Achados"><strong><code>Principais Achados</code></strong><a class="anchor-link" href="#Principais-Achados">¶</a></h4><h4 id="Melhor-M%C3%A9todo:-T-Learner"><strong>Melhor Método: T-Learner</strong><a class="anchor-link" href="#Melhor-M%C3%A9todo:-T-Learner">¶</a></h4><ul>
+<li><strong>Acurácia:</strong> 98,28% (erro de apenas 1,72%)</li>
+<li><strong>Explicação:</strong> Modelos separados para tratados e controles capturam diferenças estruturais entre grupos</li>
+<li><strong>Implicação:</strong> Tratamento <strong>modifica</strong> a relação entre covariáveis e vendas, não apenas adiciona constante</li>
+</ul>
+<h4 id="Consenso-dos-M%C3%A9todos"><strong>Consenso dos Métodos</strong><a class="anchor-link" href="#Consenso-dos-M%C3%A9todos">¶</a></h4><ul>
+<li><strong>Média dos 5 métodos:</strong> R$ 5.135,22</li>
+<li><strong>Desvio padrão:</strong> R$ 1.216,85</li>
+<li><strong>Coeficiente de variação:</strong> 23,7%</li>
+<li><strong>Interpretação:</strong> Efeito verdadeiro está dentro do intervalo de consenso, mas há divergência significativa entre métodos</li>
+</ul>
+<h6 id="Por-Que-S-Learner-e-DR-Learner-Falharam?"><strong><code>Por Que S-Learner e DR-Learner Falharam?</code></strong><a class="anchor-link" href="#Por-Que-S-Learner-e-DR-Learner-Falharam?">¶</a></h6><h4 id="S-Learner-(Erro:--36,96%25)"><strong>S-Learner (Erro: -36,96%)</strong><a class="anchor-link" href="#S-Learner-(Erro:--36,96%25)">¶</a></h4><ul>
+<li><strong>Problema:</strong> Regularization bias severo</li>
+<li><strong>Causa:</strong> Tratou tratamento como feature comum → algoritmo penalizou complexidade → subestimou efeito</li>
+<li><strong>Conclusão:</strong> Inadequado quando efeito é heterogêneo e forte</li>
+</ul>
+<p>####### <strong>DR-Learner (Erro: -33,57%)</strong></p>
+<ul>
+<li><strong>Problema:</strong> Propensity extremo ou overlap fraco</li>
+<li><strong>Causa:</strong> Pesos IPW instáveis inflaram variância e introduziram viés</li>
+<li><strong>Conclusão:</strong> Requer bom overlap e propensity bem especificado</li>
+</ul>
+<h4 id="Heterogeneidade:-CATE-por-Subgrupos"><strong><code>Heterogeneidade: CATE por Subgrupos</code></strong><a class="anchor-link" href="#Heterogeneidade:-CATE-por-Subgrupos">¶</a></h4><h4 id="Por-Quartil-de-Renda"><strong>Por Quartil de Renda</strong><a class="anchor-link" href="#Por-Quartil-de-Renda">¶</a></h4><table>
+<thead>
+<tr>
+<th>Quartil</th>
+<th>T-Learner</th>
+<th>X-Learner</th>
+<th>U-Learner</th>
+<th>Interpretação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Q1 (Baixa)</strong></td>
+<td>R$ 4.769</td>
+<td>R$ 5.222</td>
+<td>R$ 3.894</td>
+<td>Menor efeito em regiões pobres</td>
+</tr>
+<tr>
+<td><strong>Q2</strong></td>
+<td>R$ 6.536</td>
+<td>R$ 6.458</td>
+<td>R$ 5.653</td>
+<td>Efeito intermediário</td>
+</tr>
+<tr>
+<td><strong>Q3</strong></td>
+<td>R$ 5.953</td>
+<td>R$ 6.907</td>
+<td>R$ 4.538</td>
+<td>Efeito próximo à média</td>
+</tr>
+<tr>
+<td><strong>Q4 (Alta)</strong></td>
+<td>R$ 7.228</td>
+<td>R$ 7.372</td>
+<td>R$ 7.110</td>
+<td>Maior efeito em regiões ricas</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Insight:</strong> Campanha funciona <strong>+51% melhor</strong> em lojas de alta renda (Q4) vs baixa renda (Q1)</p>
+<h4 id="Por-Quartil-de-Internet"><strong>Por Quartil de Internet</strong><a class="anchor-link" href="#Por-Quartil-de-Internet">¶</a></h4><table>
+<thead>
+<tr>
+<th>Quartil</th>
+<th>T-Learner</th>
+<th>X-Learner</th>
+<th>U-Learner</th>
+<th>Interpretação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Q1 (Baixa)</strong></td>
+<td>R$ 5.779</td>
+<td>R$ 5.979</td>
+<td>R$ 4.433</td>
+<td>Efeito moderado</td>
+</tr>
+<tr>
+<td><strong>Q2</strong></td>
+<td>R$ 5.254</td>
+<td>R$ 6.853</td>
+<td>R$ 5.037</td>
+<td>Efeito reduzido</td>
+</tr>
+<tr>
+<td><strong>Q3</strong></td>
+<td>R$ 6.020</td>
+<td>R$ 6.400</td>
+<td>R$ 5.233</td>
+<td>Efeito próximo à média</td>
+</tr>
+<tr>
+<td><strong>Q4 (Alta)</strong></td>
+<td>R$ 7.416</td>
+<td>R$ 6.723</td>
+<td>R$ 6.473</td>
+<td><strong>Maior efeito em alta penetração</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Insight:</strong> Campanha funciona <strong>+28% melhor</strong> em regiões com alta penetração de internet (Q4) vs baixa (Q1)</p>
+<h4 id="Correla%C3%A7%C3%A3o-Entre-M%C3%A9todos"><strong><code>Correlação Entre Métodos</code></strong><a class="anchor-link" href="#Correla%C3%A7%C3%A3o-Entre-M%C3%A9todos">¶</a></h4><table>
+<thead>
+<tr>
+<th>Nodel</th>
+<th>S</th>
+<th>T</th>
+<th>X</th>
+<th>DR</th>
+<th>U</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>S</strong></td>
+<td>1.00</td>
+<td>0.39</td>
+<td>0.15</td>
+<td><strong>0.86</strong></td>
+<td>0.52</td>
+</tr>
+<tr>
+<td><strong>T</strong></td>
+<td>0.39</td>
+<td>1.00</td>
+<td>-0.05</td>
+<td>0.47</td>
+<td><strong>0.71</strong></td>
+</tr>
+<tr>
+<td><strong>X</strong></td>
+<td>0.15</td>
+<td>-0.05</td>
+<td>1.00</td>
+<td>0.17</td>
+<td>0.01</td>
+</tr>
+<tr>
+<td><strong>DR</strong></td>
+<td><strong>0.86</strong></td>
+<td>0.47</td>
+<td>0.17</td>
+<td>1.00</td>
+<td>0.59</td>
+</tr>
+<tr>
+<td><strong>U</strong></td>
+<td>0.52</td>
+<td><strong>0.71</strong></td>
+<td>0.01</td>
+<td>0.59</td>
+<td>1.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Observações:</strong></p>
+<ul>
+<li><strong>S ↔ DR (0.86):</strong> Ambos subestimam fortemente → compartilham viés sistemático</li>
+<li><strong>T ↔ U (0.71):</strong> Convergem na captura de heterogeneidade</li>
+<li><strong>X isolado:</strong> Baixa correlação com todos → metodologia divergente (imputação)</li>
+</ul>
+<h4 id="Conclus%C3%A3o"><strong><code>Conclusão</code></strong><a class="anchor-link" href="#Conclus%C3%A3o">¶</a></h4><p>O efeito causal da campanha é <em>R$ 6.012,28</em> (ground truth), sendo o <em>T-Learner</em> (R$ 6.115,55) o método que melhor aproximou esse valor com erro de apenas <em>1,72%</em>.</p>
+<p><strong>Heterogeneidade confirmada:</strong> Efeito varia de R$ 4.769 (Q1 renda) até R$ 7.416 (Q4 internet), indicando necessidade de <strong>segmentação estratégica</strong> para maximizar ROI da campanha.</p>
+<p><strong>Triangulação dos métodos:</strong> Embora haja divergência (CV = 23,7%), o consenso (R$ 5.135) está próximo do verdadeiro, validando a abordagem de múltiplos meta-learners.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+<hr/>
+<div style="border-left: 5px solid #d40000ff; background-color: #f8f8f8ff; padding: 15px;">
+<h2 style="color: #d40000ff; margin: 0;">
+<strong>DML (Double/Debiased Machine Learning)</strong>
+</h2>
+<br/>
+<br/>
+<h5 style="color: #000000; margin: 0; font-weight: bold;">
+  Inferência Causal Rigorosa com Machine Learning
+  </h5>
+</div>
+<h3 id="Como-funciona-o-DML---Double-Machine-Learning?"><strong><code>Como funciona o DML - Double Machine Learning?</code></strong><a class="anchor-link" href="#Como-funciona-o-DML---Double-Machine-Learning?">¶</a></h3><h4 id="Etapa-1-%E2%80%93-Modelagem-do-resultado-(Y-~-X)"><strong><code>Etapa 1 – Modelagem do resultado (Y ~ X)</code></strong><a class="anchor-link" href="#Etapa-1-%E2%80%93-Modelagem-do-resultado-(Y-~-X)">¶</a></h4><p>Estimamos um modelo:</p>
+<blockquote>
+<p>Y = intercepto + f(X) + erro</p>
+</blockquote>
+<p>O objetivo é prever <strong>o componente de Y explicado pelas covariáveis X</strong>, sem ainda considerar o tratamento.
+Depois, calculamos o <strong>resíduo de Y</strong>:</p>
+<blockquote>
+<p>resíduo_Y = Y observado – Y previsto</p>
+</blockquote>
+<p>Para evitar overfitting, o DML aplica <strong>cross-fitting</strong>: divide os dados em partes, treina o modelo em uma e prevê na outra.
+Assim, cada previsão vem de um modelo que <strong>nunca viu aqueles dados</strong>.
+O resultado é um Y “limpo”, representando o que <strong>não é explicável</strong> por X.</p>
+<h4 id="Etapa-2-%E2%80%93-Modelagem-do-tratamento-(D-~-X)"><strong><code>Etapa 2 – Modelagem do tratamento (D ~ X)</code></strong><a class="anchor-link" href="#Etapa-2-%E2%80%93-Modelagem-do-tratamento-(D-~-X)">¶</a></h4><p>Estimamos agora:</p>
+<blockquote>
+<p>D = intercepto + g(X) + erro</p>
+</blockquote>
+<p>O objetivo é prever <strong>a probabilidade de ser tratado</strong> com base nas mesmas variáveis X.
+Como D é binário (0/1), o modelo deve ser <strong>probabilístico</strong>, como:</p>
+<ul>
+<li>Logit, Probit</li>
+<li>Random Forest Classifier</li>
+<li>XGBoost Classifier</li>
+</ul>
+<p>Geramos então o <strong>resíduo de D</strong>:</p>
+<blockquote>
+<p>resíduo_D = D observado – D previsto</p>
+</blockquote>
+<p>Assim como na Etapa 1, aplica-se <strong>cross-fitting</strong> para evitar viés por sobreajuste.</p>
+<h4 id="Etapa-3-%E2%80%93-Estima%C3%A7%C3%A3o-do-efeito-causal"><strong><code>Etapa 3 – Estimação do efeito causal</code></strong><a class="anchor-link" href="#Etapa-3-%E2%80%93-Estima%C3%A7%C3%A3o-do-efeito-causal">¶</a></h4><p>Agora comparamos as variações “limpas” de Y e D, livres da influência de X:</p>
+<blockquote>
+<p>resíduo_Y = θ * resíduo_D</p>
+</blockquote>
+<p>Essa é uma <strong>regressão linear simples sem intercepto</strong> (pois os resíduos têm média zero).
+O coeficiente θ é o <strong>efeito causal médio</strong> do tratamento sobre o resultado.</p>
+<h4 id="Principais-cuidados-e-limita%C3%A7%C3%B5es"><strong><code>Principais cuidados e limitações</code></strong><a class="anchor-link" href="#Principais-cuidados-e-limita%C3%A7%C3%B5es">¶</a></h4><ol>
+<li><p><strong>Exogeneidade:</strong> Todas as variáveis X devem ser <strong>pré-tratamento</strong> e <strong>não endógenas</strong>. Se houver variáveis omitidas que influenciam D e Y, o efeito estimado será viesado.</p>
+</li>
+<li><p><strong>Ampla base de controles:</strong> É essencial incluir o máximo de covariáveis que expliquem tanto o tratamento quanto o resultado.</p>
+</li>
+<li><p><strong>Ausência de multicolinearidade severa:</strong> Covariáveis altamente correlacionadas dificultam a identificação da parte independente de cada uma.</p>
+</li>
+<li><p><strong>Modelo adequado à variável:</strong></p>
+<ul>
+<li>Y contínuo → regressão (OLS, RF Regressor etc.)</li>
+<li>D binário → classificação (Logit, Probit, RF Classifier etc.)</li>
+</ul>
+</li>
+</ol>
+<h4 id="Resumo-intuitivo"><strong><code>Resumo intuitivo</code></strong><a class="anchor-link" href="#Resumo-intuitivo">¶</a></h4><p>O DML “residualiza” tanto o resultado quanto o tratamento, removendo tudo que pode ser explicado por X. Depois mede o quanto essas partes imprevisíveis se movem juntas. Essa co-variação limpa é a <strong>melhor aproximação do efeito causal</strong>, desde que o conjunto de controles seja suficientemente rico e exógeno.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">reticulate</span><span class="p">)</span>
+<span class="c1">#use_virtualenv("r-econml", required = TRUE)</span>
+
+<span class="nf">py_config</span><span class="p">()</span>
+
+<span class="c1"># Instalar e importar DoubleML</span>
+<span class="nf">py_install</span><span class="p">(</span><span class="s">"doubleml"</span><span class="p">,</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">envname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"r-econml"</span><span class="p">)</span>
+<span class="n">doubleml</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">import</span><span class="p">(</span><span class="s">"doubleml"</span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Python e EconML carregados com sucesso!\n"</span><span class="p">)</span>
+<span class="nf">cat</span><span class="p">(</span><span class="s">"DoubleML versão:"</span><span class="p">,</span><span class="w"> </span><span class="n">doubleml</span><span class="o">$</span><span class="n">`__version__`</span><span class="p">,</span><span class="w"> </span><span class="s">"\n"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [27]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-r"><pre><span></span><span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- DOUBLE MACHINE LEARNING (DML) ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== Double Machine Learning ===\n"</span><span class="p">)</span>
+
+<span class="c1"># Preparar dados no formato DoubleML</span>
+<span class="n">dml_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">doubleml</span><span class="o">$</span><span class="n">DoubleMLData</span><span class="o">$</span><span class="nf">from_arrays</span><span class="p">(</span>
+<span class="w">  </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X_np</span><span class="p">,</span>
+<span class="w">  </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Y_np</span><span class="p">,</span>
+<span class="w">  </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">W_np</span>
+<span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"Dados preparados para DoubleML\n"</span><span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- PLR (Partially Linear Regression) ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== [1/3] PLR Model ===\n"</span><span class="p">)</span>
+
+<span class="n">plr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">doubleml</span><span class="o">$</span><span class="nf">DoubleMLPLR</span><span class="p">(</span>
+<span class="w">  </span><span class="n">obj_dml_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dml_data</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ml_l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base_learner</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ml_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">propensity_learner</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n_folds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n_rep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1L</span>
+<span class="p">)</span>
+
+<span class="n">plr</span><span class="o">$</span><span class="nf">fit</span><span class="p">()</span>
+
+<span class="n">ate_plr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">plr</span><span class="o">$</span><span class="n">coef</span><span class="p">)</span>
+<span class="n">se_plr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">plr</span><span class="o">$</span><span class="n">se</span><span class="p">)</span>
+<span class="n">ci_plr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">plr</span><span class="o">$</span><span class="nf">confint</span><span class="p">())</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"PLR | ATE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ate_plr</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span>
+<span class="w">    </span><span class="s">"| SE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">se_plr</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span>
+<span class="w">    </span><span class="s">"| IC95%: ["</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ci_plr</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">","</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ci_plr</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"]\n"</span><span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- IRM (Interactive Regression Model) ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== [2/3] IRM Model ===\n"</span><span class="p">)</span>
+
+<span class="n">irm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">doubleml</span><span class="o">$</span><span class="nf">DoubleMLIRM</span><span class="p">(</span>
+<span class="w">  </span><span class="n">obj_dml_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dml_data</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ml_g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base_learner</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ml_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">propensity_learner</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n_folds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n_rep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1L</span>
+<span class="p">)</span>
+
+<span class="n">irm</span><span class="o">$</span><span class="nf">fit</span><span class="p">()</span>
+
+<span class="n">ate_irm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">irm</span><span class="o">$</span><span class="n">coef</span><span class="p">)</span>
+<span class="n">se_irm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">irm</span><span class="o">$</span><span class="n">se</span><span class="p">)</span>
+<span class="n">ci_irm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">irm</span><span class="o">$</span><span class="nf">confint</span><span class="p">())</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"IRM | ATE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ate_irm</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span>
+<span class="w">    </span><span class="s">"| SE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">se_irm</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span>
+<span class="w">    </span><span class="s">"| IC95%: ["</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ci_irm</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">","</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ci_irm</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"]\n"</span><span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- PLR com Cross-Fitting Robusto ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== [3/3] PLR Robusto (10-fold, 3 rep) ===\n"</span><span class="p">)</span>
+
+<span class="n">plr_robust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">doubleml</span><span class="o">$</span><span class="nf">DoubleMLPLR</span><span class="p">(</span>
+<span class="w">  </span><span class="n">obj_dml_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dml_data</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ml_l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base_learner</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ml_m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">propensity_learner</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n_folds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">n_rep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3L</span>
+<span class="p">)</span>
+
+<span class="n">plr_robust</span><span class="o">$</span><span class="nf">fit</span><span class="p">()</span>
+
+<span class="n">ate_plr_robust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">plr_robust</span><span class="o">$</span><span class="n">coef</span><span class="p">)</span>
+<span class="n">se_plr_robust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">plr_robust</span><span class="o">$</span><span class="n">se</span><span class="p">)</span>
+<span class="n">ci_plr_robust</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">plr_robust</span><span class="o">$</span><span class="nf">confint</span><span class="p">())</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"PLR Robust | ATE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ate_plr_robust</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span>
+<span class="w">    </span><span class="s">"| SE:"</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">se_plr_robust</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span>
+<span class="w">    </span><span class="s">"| IC95%: ["</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ci_plr_robust</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">","</span><span class="p">,</span><span class="w"> </span><span class="nf">round</span><span class="p">(</span><span class="n">ci_plr_robust</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w"> </span><span class="s">"]\n"</span><span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- CONSOLIDAR RESULTADOS DML ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="n">resultados_dml</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">tibble</span><span class="p">(</span>
+<span class="w">  </span><span class="n">Metodo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">"DML-PLR"</span><span class="p">,</span><span class="w"> </span><span class="s">"DML-IRM"</span><span class="p">,</span><span class="w"> </span><span class="s">"DML-PLR-Robust"</span><span class="p">),</span>
+<span class="w">  </span><span class="n">ATE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">ate_plr</span><span class="p">,</span><span class="w"> </span><span class="n">ate_irm</span><span class="p">,</span><span class="w"> </span><span class="n">ate_plr_robust</span><span class="p">),</span>
+<span class="w">  </span><span class="n">SE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">se_plr</span><span class="p">,</span><span class="w"> </span><span class="n">se_irm</span><span class="p">,</span><span class="w"> </span><span class="n">se_plr_robust</span><span class="p">),</span>
+<span class="w">  </span><span class="n">IC_Lower</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">ci_plr</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">ci_irm</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">ci_plr_robust</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">]),</span>
+<span class="w">  </span><span class="n">IC_Upper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">ci_plr</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">ci_irm</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">ci_plr_robust</span><span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">])</span>
+<span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== Resultados DML ===\n"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">resultados_dml</span><span class="p">)</span>
+
+<span class="c1"># Comparar com efeito verdadeiro</span>
+<span class="n">resultados_dml_completo</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resultados_dml</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">mutate</span><span class="p">(</span>
+<span class="w">    </span><span class="n">Efeito_Verdadeiro</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Viés</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ATE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Viés_Abs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">Viés</span><span class="p">),</span>
+<span class="w">    </span><span class="n">Erro_Pct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Viés</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">100</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Erro_Abs_Pct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="n">Erro_Pct</span><span class="p">),</span>
+<span class="w">    </span><span class="n">Contém_Verdadeiro</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">IC_Lower</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">efeito_verdadeiro</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">IC_Upper</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">efeito_verdadeiro</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== Comparação DML vs Efeito Verdadeiro ===\n"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">resultados_dml_completo</span><span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------------------</span>
+<span class="c1"># --- COMPARAÇÃO GERAL: META-LEARNERS + DML ---</span>
+<span class="c1">#------------------------------------------------------------------------</span>
+
+<span class="n">resultados_geral</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">bind_rows</span><span class="p">(</span>
+<span class="w">  </span><span class="n">resultados_dml_completo</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="n">Metodo</span><span class="p">,</span><span class="w"> </span><span class="n">ATE</span><span class="p">,</span><span class="w"> </span><span class="n">Viés</span><span class="p">,</span><span class="w"> </span><span class="n">Erro_Pct</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span>
+<span class="w">  </span><span class="nf">arrange</span><span class="p">(</span><span class="nf">abs</span><span class="p">(</span><span class="n">Erro_Pct</span><span class="p">))</span>
+
+<span class="nf">cat</span><span class="p">(</span><span class="s">"\n=== RANKING GERAL (Meta-Learners + DML) ===\n"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">resultados_geral</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
+=== Double Machine Learning ===
+Dados preparados para DoubleML
+
+=== [1/3] PLR Model ===
+PLR | ATE: 783.38 | SE: 326.53 | IC95%: [ 143.39 , 1423.36 ]
+
+=== [2/3] IRM Model ===
+IRM | ATE: 6111.11 | SE: 99.49 | IC95%: [ 5916.12 , 6306.1 ]
+
+=== [3/3] PLR Robusto (10-fold, 3 rep) ===
+PLR Robust | ATE: 904.08 | SE: 325.97 | IC95%: [ 265.19 , 1542.98 ]
+
+=== Resultados DML ===
+<span style="color: rgb(148,148,148)"># A tibble: 3 × 5</span>
+  Metodo           ATE    SE IC_Lower IC_Upper
+  <span style="color: rgb(148,148,148)">&lt;chr&gt;</span>          <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span> <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color: rgb(188,188,188)">1</span> DML-PLR         783. 327.      143.    <span class="ansi-underline">1</span>423.
+<span style="color: rgb(188,188,188)">2</span> DML-IRM        <span class="ansi-underline">6</span>111.  99.5    <span class="ansi-underline">5</span>916.    <span class="ansi-underline">6</span>306.
+<span style="color: rgb(188,188,188)">3</span> DML-PLR-Robust  904. 326.      265.    <span class="ansi-underline">1</span>543.
+
+=== Comparação DML vs Efeito Verdadeiro ===
+<span style="color: rgb(148,148,148)"># A tibble: 3 × 11</span>
+  Metodo           ATE    SE IC_Lower IC_Upper Efeito_Verdadeiro    Viés Viés_Abs Erro_Pct Erro_Abs_Pct Contém_Verdadeiro
+  <span style="color: rgb(148,148,148)">&lt;chr&gt;</span>          <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span> <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>             <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>   <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>        <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span> <span style="color: rgb(148,148,148)">&lt;lgl&gt;</span>            
+<span style="color: rgb(188,188,188)">1</span> DML-PLR         783. 327.      143.    <span class="ansi-underline">1</span>423.             <span class="ansi-underline">6</span>012. -<span class="ansi-red-fg ansi-underline">5</span><span class="ansi-red-fg">22</span><span class="ansi-red-fg">9</span><span class="ansi-red-fg">.</span>    <span class="ansi-underline">5</span>229.    -<span class="ansi-red-fg">87</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">0</span>         87.0  FALSE            
+<span style="color: rgb(188,188,188)">2</span> DML-IRM        <span class="ansi-underline">6</span>111.  99.5    <span class="ansi-underline">5</span>916.    <span class="ansi-underline">6</span>306.             <span class="ansi-underline">6</span>012.    98.8     98.8     1.64         1.64 TRUE             
+<span style="color: rgb(188,188,188)">3</span> DML-PLR-Robust  904. 326.      265.    <span class="ansi-underline">1</span>543.             <span class="ansi-underline">6</span>012. -<span class="ansi-red-fg ansi-underline">5</span><span class="ansi-red-fg">10</span><span class="ansi-red-fg">8</span><span class="ansi-red-fg">.</span>    <span class="ansi-underline">5</span>108.    -<span class="ansi-red-fg">85</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">0</span>         85.0  FALSE            
+
+=== RANKING GERAL (Meta-Learners + DML) ===
+<span style="color: rgb(148,148,148)"># A tibble: 3 × 4</span>
+  Metodo           ATE    Viés Erro_Pct
+  <span style="color: rgb(148,148,148)">&lt;chr&gt;</span>          <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>   <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>    <span style="color: rgb(148,148,148)">&lt;dbl&gt;</span>
+<span style="color: rgb(188,188,188)">1</span> DML-IRM        <span class="ansi-underline">6</span>111.    98.8     1.64
+<span style="color: rgb(188,188,188)">2</span> DML-PLR-Robust  904. -<span class="ansi-red-fg ansi-underline">5</span><span class="ansi-red-fg">10</span><span class="ansi-red-fg">8</span><span class="ansi-red-fg">.</span>    -<span class="ansi-red-fg">85</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">0</span> 
+<span style="color: rgb(188,188,188)">3</span> DML-PLR         783. -<span class="ansi-red-fg ansi-underline">5</span><span class="ansi-red-fg">22</span><span class="ansi-red-fg">9</span><span class="ansi-red-fg">.</span>    -<span class="ansi-red-fg">87</span><span class="ansi-red-fg">.</span><span class="ansi-red-fg">0</span> 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="An%C3%A1lise-dos-Resultados:-Double-Machine-Learning"><strong><code>Análise dos Resultados: Double Machine Learning</code></strong><a class="anchor-link" href="#An%C3%A1lise-dos-Resultados:-Double-Machine-Learning">¶</a></h3><h4 id="Compara%C3%A7%C3%A3o-das-3-Abordagens"><strong><code>Comparação das 3 Abordagens</code></strong><a class="anchor-link" href="#Compara%C3%A7%C3%A3o-das-3-Abordagens">¶</a></h4><table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Efeito (R$)</th>
+<th>IC 95%</th>
+<th>SE</th>
+<th>Viés</th>
+<th>Erro %</th>
+<th>Contém Verdadeiro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DML-IRM</strong></td>
+<td>6.111,11</td>
+<td>[5.916, 6.306]</td>
+<td>99,49</td>
+<td>+98,83</td>
+<td>+1,64%</td>
+<td>✓ Sim</td>
+</tr>
+<tr>
+<td><strong>DML-PLR-Robust</strong> (10-fold)</td>
+<td>904,08</td>
+<td>[265, 1.543]</td>
+<td>325,97</td>
+<td>-5.108,20</td>
+<td>-85,0%</td>
+<td>✗ Não</td>
+</tr>
+<tr>
+<td><strong>DML-PLR</strong></td>
+<td>783,38</td>
+<td>[143, 1.423]</td>
+<td>326,53</td>
+<td>-5.228,90</td>
+<td>-87,0%</td>
+<td>✗ Não</td>
+</tr>
+<tr>
+<td><strong>Efeito Verdadeiro</strong></td>
+<td>6.012,28</td>
+<td>-</td>
+<td>-</td>
+<td>0</td>
+<td>0%</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h4 id="Melhor-Especifica%C3%A7%C3%A3o:-DML-IRM"><strong><code>Melhor Especificação: DML-IRM</code></strong><a class="anchor-link" href="#Melhor-Especifica%C3%A7%C3%A3o:-DML-IRM">¶</a></h4><p><strong>Modelo:</strong></p>
+<pre><code>E[Y|X,W=1] - E[Y|X,W=0] = θ(X)
+com:
+  - Outcome models: E[Y|X,W=w]
+  - Propensity model: P(W=1|X)
+  - Cross-fitting: 5-fold
+  - Debiasing: Neyman orthogonality
+</code></pre>
+<p><strong>Resultados:</strong></p>
+<ul>
+<li><strong>Efeito médio (ATE):</strong> R$ 6.111 por loja</li>
+<li><strong>Erro padrão:</strong> R$ 99,49</li>
+<li><strong>IC 95%:</strong> [5.916, 6.306]</li>
+<li><strong>Viés absoluto:</strong> R$ 98,83</li>
+<li><strong>Erro percentual:</strong> 1,64%</li>
+<li><strong>Precisão:</strong> 98,36%</li>
+</ul>
+<p><strong>Estimativa robusta:</strong></p>
+<ul>
+<li>Intervalo de confiança contém o efeito verdadeiro (6.012,28)</li>
+<li>Erro padrão baixo indica alta precisão</li>
+<li>Debiasing via cross-fitting remove viés de overfitting</li>
+<li>Neyman orthogonality garante convergência rápida</li>
+</ul>
+<h4 id="Por-Que-IRM-%C3%A9-Superior-ao-PLR?"><strong><code>Por Que IRM é Superior ao PLR?</code></strong><a class="anchor-link" href="#Por-Que-IRM-%C3%A9-Superior-ao-PLR?">¶</a></h4><p><strong>DML-IRM:</strong></p>
+<ul>
+<li>Modela diretamente E[Y|X,W] para cada grupo</li>
+<li>Captura heterogeneidade não-linear do efeito</li>
+<li>Menos restritivo (não assume linearidade parcial)</li>
+<li>Robusto a misspecification do modelo de outcome</li>
+</ul>
+<p><strong>DML-PLR (Problema):</strong></p>
+<ul>
+<li>Assume que Y = θW + g(X) + ε (linearidade parcial em W)</li>
+<li>Violação da linearidade parcial leva a viés massivo (-85%)</li>
+<li>Efeito do tratamento varia com X de forma complexa</li>
+<li>Modelo inadequado para este cenário de dados</li>
+</ul>
+<h4 id="Garantias-Te%C3%B3ricas-do-DML"><strong><code>Garantias Teóricas do DML</code></strong><a class="anchor-link" href="#Garantias-Te%C3%B3ricas-do-DML">¶</a></h4><p><strong>Cross-fitting (5-fold):</strong></p>
+<ul>
+<li>Evita overfitting: predições feitas em dados out-of-sample</li>
+<li>Remove viés de regularização (Chernozhukov et al., 2018)</li>
+</ul>
+<p><strong>Neyman Orthogonality:</strong></p>
+<ul>
+<li>Momento score insensível a pequenos erros nos nuisance parameters</li>
+<li>Convergência √n mesmo com ML não-paramétrico</li>
+</ul>
+<p><strong>Double Robustness:</strong></p>
+<ul>
+<li>Estimativa consistente se outcome OU propensity model estiver correto</li>
+<li>No IRM, ambos foram bem especificados</li>
+</ul>
+<h4 id="Diagn%C3%B3stico:-Por-Que-PLR-Falhou?"><strong><code>Diagnóstico: Por Que PLR Falhou?</code></strong><a class="anchor-link" href="#Diagn%C3%B3stico:-Por-Que-PLR-Falhou?">¶</a></h4><p><strong>Teste de linearidade parcial:</strong></p>
+<div class="highlight"><pre><span></span><span class="c1"># Efeito heterogêneo detectado</span>
+<span class="nf">cor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">ite_irm</span><span class="p">)</span><span class="w"> </span><span class="c1"># Alta correlação entre X e ITE</span>
+</pre></div>
+<p><strong>Violação:</strong></p>
+<ul>
+<li>O efeito varia substancialmente com renda_per_capita e potencial_crescimento</li>
+<li>PLR força θ constante → viés de misspecification</li>
+<li>IRM permite θ(X) flexível → captura heterogeneidade</li>
+</ul>
+<h4 id="Infer%C3%AAncia-e-Intervalos-de-Confian%C3%A7a"><strong><code>Inferência e Intervalos de Confiança</code></strong><a class="anchor-link" href="#Infer%C3%AAncia-e-Intervalos-de-Confian%C3%A7a">¶</a></h4><p><strong>DML-IRM fornece inferência assintoticamente válida:</strong></p>
+<pre><code>IC 95%: [5.916, 6.306]
+</code></pre>
+<ul>
+<li>Baseado em distribuição normal assintótica</li>
+<li>Erro padrão robusto a heterocedasticidade</li>
+<li>Válido sob regularidade conditions (Chernozhukov et al., 2018)</li>
+</ul>
+<p><strong>Interpretação:</strong></p>
+<blockquote>
+<p>"Com 95% de confiança, o efeito causal da campanha está entre R$ 5.916 e R$ 6.306 por loja."</p>
+</blockquote>
+<h4 id="Recomenda%C3%A7%C3%B5es"><strong><code>Recomendações</code></strong><a class="anchor-link" href="#Recomenda%C3%A7%C3%B5es">¶</a></h4><p><strong>Para este conjunto de dados:</strong></p>
+<ol>
+<li><strong>Usar DML-IRM</strong> como estimador principal (erro 1,64%)</li>
+<li>X-Learner e DR-Learner como robustness checks</li>
+<li>Evitar PLR devido à violação de linearidade parcial</li>
+</ol>
+<p><strong>Vantagens do DML-IRM:</strong></p>
+<ul>
+<li>Estimativa quase perfeita do efeito verdadeiro</li>
+<li>Inferência estatística rigorosa com ICs válidos</li>
+<li>Robusto a misspecification</li>
+<li>Captura heterogeneidade complexa</li>
+</ul>
+<p><strong>Próximos passos:</strong></p>
+<ul>
+<li>Estimar CATE (efeitos heterogêneos) por subgrupo</li>
+<li>Validar com policy learning</li>
+<li>Testar sensibilidade a confounders não-observados</li>
+</ul>
+<h4 id="Conclus%C3%A3o"><strong><code>Conclusão</code></strong><a class="anchor-link" href="#Conclus%C3%A3o">¶</a></h4><p><strong>DML-IRM</strong> é o método mais preciso e teoricamente fundamentado:</p>
+<ul>
+<li><strong>Efeito estimado:</strong> R$ 6.111/loja</li>
+<li><strong>Viés:</strong> +1,64%</li>
+<li><strong>Pontos fortes:</strong> debiasing automático, inferência válida, captura heterogeneidade</li>
+<li><strong>Limitação:</strong> requer sample size adequado para cross-fitting efetivo</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<div style="border-left: 5px solid #000000; background-color: #61f4ffff; padding: 15px;">
+<h2 style="color: #000000; margin: 0;">
+<strong>Considerações Finais</strong>
+</h2>
+<br/>
+<br/>
+<h5 style="color: #000000; margin: 0; font-weight: bold;">
+</h5>
+</div>
+<h3 id="Considera%C3%A7%C3%B5es-Finais"><strong><code>Considerações Finais</code></strong><a class="anchor-link" href="#Considera%C3%A7%C3%B5es-Finais">¶</a></h3><p>O propósito central deste material não é apenas determinar o impacto causal da campanha de marketing, mas sim <strong>demonstrar, comparar e interpretar o desempenho de diferentes métodos de inferência causal</strong> diante de um cenário controlado, com dados simulados e efeito verdadeiro conhecido. A simulação, ao incorporar seleção não aleatória, tendências distintas e heterogeneidade de efeito, permite observar como cada método reage quando as condições ideais de um experimento randomizado são violadas, algo extremamente comum em aplicações reais.</p>
+<p>Os resultados mostram que métodos simples, como o <strong>A/B ingênuo</strong>, são altamente sensíveis ao viés de seleção, superestimando o efeito em quase 40%. Isso evidencia que significância estatística por si só não assegura validade causal. Métodos que incorporam informação pré-tratamento ou realizam ajustes estruturados, como o <strong>PrePost com correção</strong>, o <strong>DiD ponderado</strong> e especialmente o <strong>Entropy Balancing</strong>,  aproximam-se muito mais do efeito verdadeiro, cada um utilizando princípios distintos: correção Bayesiana, ajuste de tendências ou reponderação ótima das covariáveis.</p>
+<p>O exercício demonstra de forma clara que:</p>
+<ol>
+<li><strong>Métodos de inferência causal diferem enormemente em robustez</strong>, dependendo da estrutura do viés e da qualidade dos controles disponíveis.</li>
+<li><strong>Balanceamento explícito</strong> (como Entropy Balancing) é altamente eficaz em cenários com forte seleção não aleatória.</li>
+<li><strong>Modelos que utilizam estrutura temporal</strong> (como PrePost e DiD) reduzem viés quando conseguem capturar corretamente as tendências prévias.</li>
+<li><strong>Conhecer o efeito verdadeiro</strong> nos permite avaliar diretamente o erro, ilustrando a importância do desenho empírico na prática.</li>
+</ol>
+<p>Assim, a principal contribuição deste estudo é mostrar como diferentes métodos,  frequentistas, bayesianos, balanceamento, aprendizado estatístico e técnicas de painel,  respondem a um mesmo problema causal. Mais do que obter um número final, o exercício evidencia <strong>como escolher o método adequado muda completamente a interpretação</strong>, reforçando que decisões baseadas em causalidade exigem ferramentas apropriadas, compreensão dos pressupostos e atenção ao processo de seleção.</p>
+<p>Em síntese, o trabalho serve como um guia prático de aplicação de inferência causal na avaliação de uma campanha de marketing sobre as vendas.</p>
+<h3 id="Tabela-Ranqueada-%E2%80%94-Menor-Desvio-em-Rela%C3%A7%C3%A3o-ao-Efeito-Verdadeiro"><strong><code>Tabela Ranqueada — Menor Desvio em Relação ao Efeito Verdadeiro</code></strong><a class="anchor-link" href="#Tabela-Ranqueada-%E2%80%94-Menor-Desvio-em-Rela%C3%A7%C3%A3o-ao-Efeito-Verdadeiro">¶</a></h3><h3 id="Tabela-Ranqueada-%E2%80%94-Menor-Desvio-em-Rela%C3%A7%C3%A3o-ao-Efeito-Verdadeiro"><code>Tabela Ranqueada — Menor Desvio em Relação ao Efeito Verdadeiro</code><a class="anchor-link" href="#Tabela-Ranqueada-%E2%80%94-Menor-Desvio-em-Rela%C3%A7%C3%A3o-ao-Efeito-Verdadeiro">¶</a></h3><table>
+<thead>
+<tr>
+<th>Ranking</th>
+<th>Modelo</th>
+<th>Impacto (R$)</th>
+<th>Desvio (R$)</th>
+<th>Desvio %</th>
+<th>Método</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1º</strong></td>
+<td>TWFE + Cov×Período</td>
+<td>6.015.00</td>
+<td>+3.00</td>
+<td>+0.05%</td>
+<td>Diff-in-Diff (DID)</td>
+</tr>
+<tr>
+<td><strong>2º</strong></td>
+<td>A/B + Entropy Balancing</td>
+<td>5.981.77</td>
+<td>-30.52</td>
+<td>-0.5%</td>
+<td>A/B Test</td>
+</tr>
+<tr>
+<td><strong>3º</strong></td>
+<td>C&amp;S Doubly Robust</td>
+<td>6.040.40</td>
+<td>+28.00</td>
+<td>+0.5%</td>
+<td>Diff-in-Diff (DID)</td>
+</tr>
+<tr>
+<td>4º</td>
+<td>TWFE + Entropy Pesos</td>
+<td>6.046.60</td>
+<td>+34.32</td>
+<td>+0.6%</td>
+<td>Diff-in-Diff (DID)</td>
+</tr>
+<tr>
+<td>5º</td>
+<td>Gardner + Cov×Período</td>
+<td>6.052.00</td>
+<td>+40.00</td>
+<td>+0.7%</td>
+<td>Synthetic Control (SC)</td>
 </tr>
 <tr>
 <td>6º</td>
-<td><strong>Sun &amp; Abraham + Pesos</strong></td>
-<td>6.352</td>
-<td>+340</td>
-<td>+5.6%</td>
-<td>⭐⭐⭐⭐</td>
-<td>Painel Ponderado</td>
+<td>Augmented SC (Ridge)</td>
+<td>5.954.88</td>
+<td>-57.40</td>
+<td>-0.95%</td>
+<td>Synthetic Control (SC)</td>
 </tr>
 <tr>
 <td>7º</td>
-<td><strong>Callaway &amp; Sant'Anna DR</strong></td>
-<td>6.394</td>
-<td>+382</td>
-<td>+6.4%</td>
-<td>⭐⭐⭐⭐</td>
-<td>Painel Robusto</td>
+<td>SC Tradicional (Abadie)</td>
+<td>5.953.40</td>
+<td>-58.88</td>
+<td>-0.98%</td>
+<td>Synthetic Control (SC)</td>
 </tr>
 <tr>
 <td>8º</td>
-<td><strong>Callaway &amp; Sant'Anna IPW</strong></td>
-<td>6.406</td>
-<td>+394</td>
-<td>+6.6%</td>
-<td>⭐⭐⭐⭐</td>
-<td>Painel Robusto</td>
+<td>AOSS/WAOSS (DR)</td>
+<td>6.088.91</td>
+<td>+76.63</td>
+<td>+1.3%</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
 <td>9º</td>
-<td><strong>de Chaisemartin &amp; D’Haultfoeuille</strong></td>
-<td>6.659</td>
-<td>+647</td>
-<td>+10.8%</td>
-<td>⭐⭐⭐</td>
-<td>Painel Dinâmico</td>
+<td>DML-IRM</td>
+<td>6.111.00</td>
+<td>+98.72</td>
+<td>+1.64%</td>
+<td>Double Machine Learning</td>
 </tr>
 <tr>
 <td>10º</td>
-<td><strong>Callaway &amp; Sant'Anna Simples</strong></td>
-<td>6.668</td>
-<td>+656</td>
-<td>+10.9%</td>
-<td>⭐⭐⭐</td>
-<td>Painel</td>
-</tr>
-<tr>
-<td>10º</td>
-<td><strong>Sun &amp; Abraham Simples</strong></td>
-<td>6.668</td>
-<td>+656</td>
-<td>+10.9%</td>
-<td>⭐⭐⭐</td>
-<td>Painel</td>
+<td>Meta-Learner — T-Learner</td>
+<td>6.115.55</td>
+<td>+103.27</td>
+<td>+1.72%</td>
+<td>T-Learner</td>
 </tr>
 <tr>
 <td>11º</td>
-<td><strong>DiD Canônico</strong></td>
-<td>6.737</td>
-<td>+725</td>
-<td>+12.1%</td>
-<td>⭐⭐</td>
-<td>Painel</td>
-</tr>
-<tr>
-<td>11º</td>
-<td><strong>TWFE Simples</strong></td>
-<td>6.737</td>
-<td>+725</td>
-<td>+12.1%</td>
-<td>⭐⭐</td>
-<td>Painel</td>
+<td>Meta-Learner — U-Learner</td>
+<td>5.290.16</td>
+<td>-722.12</td>
+<td>-12.0%</td>
+<td>U-Learner</td>
 </tr>
 <tr>
 <td>12º</td>
-<td><strong>CausalImpact Bivariado</strong></td>
-<td>7.120</td>
-<td>+1.108</td>
-<td>+18.4%</td>
-<td>⭐⭐</td>
-<td>Série Temporal</td>
+<td>S&amp;A + Cov×Período</td>
+<td>6.276.60</td>
+<td>+264.32</td>
+<td>+4.4%</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
 <td>13º</td>
-<td><strong>A/B Simples</strong></td>
-<td>8.310</td>
-<td>+2.298</td>
-<td>+38.2%</td>
-<td>⭐</td>
-<td>Ingênuo</td>
+<td>Synthetic DiD</td>
+<td>6.279.79</td>
+<td>+267.51</td>
+<td>+4.45%</td>
+<td>(SC) + (DID)</td>
 </tr>
 <tr>
 <td>14º</td>
-<td><strong>CausalImpact Univariado</strong></td>
-<td>12.271</td>
-<td>+6.259</td>
-<td>+104.1%</td>
-<td>❌</td>
-<td>Série Temporal</td>
-</tr>
-<tr>
-<td>-</td>
-<td><strong>Efeito Verdadeiro</strong></td>
-<td>6.012</td>
-<td>0</td>
-<td>0%</td>
-<td>🎯</td>
-<td>Ground Truth</td>
-</tr>
-</tbody>
-</table>
-<hr/>
-<h3 id="Tabela-por-Categoria"><strong>Tabela por Categoria</strong><a class="anchor-link" href="#Tabela-por-Categoria">¶</a></h3><h4 id="%F0%9F%8F%86-Excelentes-(Erro-%3C-5%25)">🏆 Excelentes (Erro &lt; 5%)<a class="anchor-link" href="#%F0%9F%8F%86-Excelentes-(Erro-%3C-5%25)">¶</a></h4><table>
-<thead>
-<tr>
-<th>Método</th>
-<th>Efeito</th>
-<th>Erro %</th>
-<th>Observação</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>A/B Entropy</td>
-<td>5.982</td>
-<td>-0.5%</td>
-<td>Melhor geral</td>
-</tr>
-<tr>
-<td>TWFE + Entropy</td>
-<td>5.889</td>
-<td>-2.1%</td>
-<td>Painel balanceado</td>
-</tr>
-<tr>
-<td>SC Tradicional</td>
-<td>5.953</td>
-<td>-1.0%</td>
-<td>Contrafactual sintético</td>
-</tr>
-<tr>
-<td>Augmented SC</td>
-<td>5.955</td>
-<td>-1.0%</td>
-<td>SC + Ridge</td>
-</tr>
-<tr>
+<td>Causal Forest (média CATE)</td>
+<td>6.260.89</td>
+<td>+248.61</td>
+<td>+4.1%</td>
 <td>Causal Forest</td>
-<td>6.086</td>
-<td>+1.2%</td>
-<td>ML não-paramétrico</td>
 </tr>
 <tr>
-<td>Synthetic DiD</td>
-<td>6.280</td>
-<td>+4.4%</td>
-<td>SC + DiD</td>
+<td>15º</td>
+<td>DCD&amp;H Com Pesos</td>
+<td>6.321.08</td>
+<td>+308.80</td>
+<td>+5.1%</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
-<td>Média dos modelos</td>
-<td>6.024</td>
-<td>+0.001%</td>
-<td>⭐⭐⭐⭐⭐⭐</td>
-</tr>
-</tbody>
-</table>
-<h4 id="%E2%AD%90-Bons-(Erro-5%E2%80%9310%25)">⭐ Bons (Erro 5–10%)<a class="anchor-link" href="#%E2%AD%90-Bons-(Erro-5%E2%80%9310%25)">¶</a></h4><table>
-<thead>
-<tr>
-<th>Método</th>
-<th>Efeito</th>
-<th>Erro %</th>
-<th>Observação</th>
-</tr>
-</thead>
-<tbody>
-<tr>
+<td>16º</td>
 <td>S&amp;A + Pesos</td>
-<td>6.352</td>
+<td>6.351.80</td>
+<td>+339.52</td>
 <td>+5.6%</td>
-<td>Interaction-weighted</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
-<td>C&amp;S DR</td>
-<td>6.394</td>
+<td>17º</td>
+<td>C&amp;S IPW + Cov</td>
+<td>6.394.00</td>
+<td>+381.72</td>
 <td>+6.4%</td>
-<td>Doubly robust</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
-<td>C&amp;S IPW</td>
-<td>6.406</td>
-<td>+6.6%</td>
-<td>Propensity weighting</td>
-</tr>
-</tbody>
-</table>
-<h4 id="%E2%9A%A0%EF%B8%8F-Moderados-(Erro-10%E2%80%9320%25)">⚠️ Moderados (Erro 10–20%)<a class="anchor-link" href="#%E2%9A%A0%EF%B8%8F-Moderados-(Erro-10%E2%80%9320%25)">¶</a></h4><table>
-<thead>
-<tr>
-<th>Método</th>
-<th>Efeito</th>
-<th>Erro %</th>
-<th>Observação</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>de Chaisemartin</td>
-<td>6.659</td>
-<td>+10.8%</td>
-<td>Event-study dinâmico</td>
+<td>18º</td>
+<td>System GMM (Blundell-Bond)</td>
+<td>6.378.91</td>
+<td>+366.63</td>
+<td>+6.1%</td>
+<td>System GMM</td>
 </tr>
 <tr>
-<td>C&amp;S Simples</td>
-<td>6.668</td>
+<td>19º</td>
+<td>DCD&amp;H Sem Pesos</td>
+<td>6.457.24</td>
+<td>+444.96</td>
+<td>+7.4%</td>
+<td>Diff-in-Diff (DID)</td>
+</tr>
+<tr>
+<td>20º</td>
+<td>PrePost Com Correção Pré</td>
+<td>6.513.59</td>
+<td>+501.59</td>
+<td>+8.3%</td>
+<td>A/B Test</td>
+</tr>
+<tr>
+<td>21º</td>
+<td>PrePost BH</td>
+<td>6.513.59</td>
+<td>+501.59</td>
+<td>+8.3%</td>
+<td>A/B Test</td>
+</tr>
+<tr>
+<td>22º</td>
+<td>Gardner + Pesos</td>
+<td>6.181.00</td>
+<td>+168.72</td>
+<td>+2.8%</td>
+<td>Diff-in-Diff (DID)</td>
+</tr>
+<tr>
+<td>23º</td>
+<td>Gardner + Cov</td>
+<td>6.615.00</td>
+<td>+602.72</td>
+<td>+10.0%</td>
+<td>Diff-in-Diff (DID)</td>
+</tr>
+<tr>
+<td>24º</td>
+<td>S&amp;A + Cov</td>
+<td>6.667.60</td>
+<td>+655.32</td>
 <td>+10.9%</td>
-<td>Sem covariáveis</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
+<td>25º</td>
 <td>S&amp;A Simples</td>
-<td>6.668</td>
+<td>6.667.60</td>
+<td>+655.32</td>
 <td>+10.9%</td>
-<td>Sem pesos</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
-<td>DiD Canônico</td>
-<td>6.737</td>
+<td>26º</td>
+<td>C&amp;S Reg Simples</td>
+<td>6.667.60</td>
+<td>+655.32</td>
+<td>+10.9%</td>
+<td>Diff-in-Diff (DID)</td>
+</tr>
+<tr>
+<td>27º</td>
+<td>TWFE + Cov</td>
+<td>6.737.31</td>
+<td>+725.03</td>
 <td>+12.1%</td>
-<td>2×2 básico</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
+<td>28º</td>
 <td>TWFE Simples</td>
-<td>6.737</td>
+<td>6.737.31</td>
+<td>+725.03</td>
 <td>+12.1%</td>
-<td>Sem balanceamento</td>
+<td>Diff-in-Diff (DID)</td>
 </tr>
 <tr>
-<td>CausalImpact Bivariado</td>
-<td>7.120</td>
+<td>29º</td>
+<td>Gardner Simples</td>
+<td>6.737.00</td>
+<td>+724.72</td>
+<td>+12.1%</td>
+<td>Diff-in-Diff (DID)</td>
+</tr>
+<tr>
+<td>30º</td>
+<td>Meta-Learner — X-Learner</td>
+<td>6.486.46</td>
+<td>+474.18</td>
+<td>+7.9%</td>
+<td>X-Learner</td>
+</tr>
+<tr>
+<td>31º</td>
+<td>Meta-Learner — DR-Learner</td>
+<td>3.993.66</td>
+<td>-2.018.62</td>
+<td>-33.6%</td>
+<td>DR-Learner</td>
+</tr>
+<tr>
+<td>32º</td>
+<td>Meta-Learner — S-Learner</td>
+<td>3.790.29</td>
+<td>-2.221.99</td>
+<td>-37.0%</td>
+<td>S-Learner</td>
+</tr>
+<tr>
+<td>33º</td>
+<td>Causal Impact — Bivariado</td>
+<td>7.120.42</td>
+<td>+1.108.14</td>
 <td>+18.4%</td>
-<td>Com vendas controle</td>
+<td>BSTS (CausalImpact)</td>
 </tr>
-</tbody>
-</table>
-<h4 id="%E2%9D%8C-Ruins-(Erro-%3E-20%25)">❌ Ruins (Erro &gt; 20%)<a class="anchor-link" href="#%E2%9D%8C-Ruins-(Erro-%3E-20%25)">¶</a></h4><table>
-<thead>
 <tr>
-<th>Método</th>
-<th>Efeito</th>
-<th>Erro %</th>
-<th>Observação</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>A/B Simples</td>
-<td>8.310</td>
+<td>34º</td>
+<td>PréPost Sem Correção</td>
+<td>8.310.23</td>
+<td>+2.298.23</td>
 <td>+38.2%</td>
-<td>Sem controle</td>
+<td>A/B Test</td>
 </tr>
 <tr>
-<td>CausalImpact Univariado</td>
-<td>12.271</td>
-<td>+104.1%</td>
-<td>Sem covariáveis</td>
+<td>35º</td>
+<td>A/B Simples (Ingênuo)</td>
+<td>8.310.23</td>
+<td>+2.297.95</td>
+<td>+38.2%</td>
+<td>A/B Test</td>
+</tr>
+<tr>
+<td>36º</td>
+<td>Causal Impact — Multivariado (T+C)</td>
+<td>12.247.64</td>
+<td>+6.235.36</td>
+<td>+103.7%</td>
+<td>BSTS (CausalImpact)</td>
+</tr>
+<tr>
+<td>37º</td>
+<td>Causal Impact — Multivariado (Tratado)</td>
+<td>12.243.80</td>
+<td>+6.231.51</td>
+<td>+103.6%</td>
+<td>BSTS (CausalImpact)</td>
 </tr>
 </tbody>
 </table>
