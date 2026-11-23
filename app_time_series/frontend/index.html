@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TimeSeries Studio Pro — Análise e Previsão de Séries Temporais</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=2.1" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <div id="loadingBar" class="loading-bar"></div>
+  <div id="toastContainer" class="toast-container"></div>
+
+  <div class="app-shell">
+    <!-- ==================== SIDEBAR NAVIGATION ==================== -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">TS</div>
+        <div class="brand-text">
+          <h1>TimeSeries Studio</h1>
+          <span>Suite Analítica Unificada</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Dados &amp; Preparação</div>
+        <button class="nav-item active" data-view="view-data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Central de Dados</span>
+          <span class="nav-badge">XLSX/CSV</span>
+        </button>
+
+        <button class="nav-item" data-view="view-outliers">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Tratamento de Outliers</span>
+          <span class="nav-badge">6+7</span>
+        </button>
+
+        <div class="nav-section-label">Diagnóstico &amp; Edição</div>
+        <button class="nav-item" data-view="view-seasonality">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Sazonalidade &amp; Controle XmR</span>
+        </button>
+
+        <button class="nav-item" data-view="view-editor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span>Editor Avançado de Séries</span>
+        </button>
+
+        <div class="nav-section-label">Modelagem &amp; Projeções</div>
+        <button class="nav-item" data-view="view-arima">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Previsão ARIMA (Uni &amp; Multi)</span>
+        </button>
+
+        <button class="nav-item" data-view="view-autots">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span>Previsão AutoTS Multi-Modelos</span>
+        </button>
+
+        <button class="nav-item" data-view="view-growth">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          <span>Análise de Crescimento</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="active-dataset-pill">
+          <span class="status-dot"></span>
+          <span id="sidebarDatasetName">Carregando...</span>
+        </div>
+        <div id="sidebarDatasetMeta">0 linhas • 0 variáveis</div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT AREA ==================== -->
+    <div class="main-area">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+          <div class="page-title-group">
+            <h2 id="pageTitle">Central de Dados &amp; Configuração</h2>
+            <p id="pageSubtitle">Importe arquivos Excel (.xlsx) ou CSV, selecione abas e configure a coluna temporal</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <span class="meta-chip">Período: <strong id="headerDateRange">-- a --</strong></span>
+          <button id="themeToggleBtn" class="btn btn-outline btn-sm" title="Alternar Tema Claro/Escuro">
+            <span id="themeIcon">☀️ Tema Claro</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="content-container">
+
+        <!-- =================================================================
+             VIEW 1: DATA HUB & UPLOAD
+             ================================================================= -->
+        <section id="view-data" class="view-panel active">
+          <div class="grid-row grid-4">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Arquivo Ativo</div>
+                <div class="kpi-value" id="kpiFileName" style="font-size:17px;">ei_total_(PA).xlsx</div>
+                <div class="kpi-sub" id="kpiSheetName">Aba: Sheet 1</div>
+              </div>
+              <div class="kpi-icon">📁</div>
+            </div>
+            <div class="kpi-card emerald">
+              <div>
+                <div class="kpi-label">Total de Observações</div>
+                <div class="kpi-value" id="kpiTotalRows">0</div>
+                <div class="kpi-sub">Períodos temporais indexados</div>
+              </div>
+              <div class="kpi-icon">📅</div>
+            </div>
+            <div class="kpi-card cyan">
+              <div>
+                <div class="kpi-label">Variáveis Numéricas</div>
+                <div class="kpi-value" id="kpiTotalVars">0</div>
+                <div class="kpi-sub">Disponíveis para análise e previsão</div>
+              </div>
+              <div class="kpi-icon">📊</div>
+            </div>
+            <div class="kpi-card amber">
+              <div>
+                <div class="kpi-label">Amplitude Temporal</div>
+                <div class="kpi-value" id="kpiYearsSpan" style="font-size:18px;">--</div>
+                <div class="kpi-sub" id="kpiDateBounds">--</div>
+              </div>
+              <div class="kpi-icon">⏱️</div>
+            </div>
+          </div>
+
+          <div class="grid-row grid-2">
+            <!-- Upload Card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">📤 Upload de Arquivo (XLSX, XLS ou CSV)</div>
+                  <div class="card-subtitle">Arraste sua planilha ou utilize a base energética de demonstração</div>
+                </div>
+                <button id="btnLoadSample" class="btn btn-outline btn-sm">Recarregar Base Exemplo (PA)</button>
+              </div>
+              <div class="card-body">
+                <div id="dropzone" class="dropzone">
+                  <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;" />
+                  <div style="font-size:32px;">📄</div>
+                  <h4>Clique para selecionar ou arraste seu arquivo aqui</h4>
+                  <p>Suporta múltiplas abas do Excel (.xlsx) e arquivos .csv com detecção automática de separador</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Configuration Card -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">⚙️ Configuração de Aba e Coluna de Data</div>
+                  <div class="card-subtitle">Padronize a indexação temporal para todos os módulos da plataforma</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="grid-row grid-2" style="margin-bottom:10px;">
+                  <div class="form-group">
+                    <label class="form-label">Aba do Excel (Sheet)</label>
+                    <select id="cfgSheetSelect" class="form-select"></select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Coluna de Data</label>
+                    <select id="cfgDateColSelect" class="form-select"></select>
+                  </div>
+                </div>
+                <div class="grid-row grid-2" style="margin-bottom:14px;">
+                  <div class="form-group">
+                    <label class="form-label">Formato da Data</label>
+                    <select id="cfgDateFormatSelect" class="form-select">
+                      <option value="auto">Automático (Inteligente)</option>
+                      <option value="ymd">Ano-Mês-Dia (YMD)</option>
+                      <option value="dmy">Dia/Mês/Ano (DMY)</option>
+                      <option value="mdy">Mês/Dia/Ano (MDY)</option>
+                      <option value="ydm">Ano-Dia-Mês (YDM)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Separador CSV (se aplicável)</label>
+                    <select id="cfgCsvSepSelect" class="form-select">
+                      <option value="">Auto-detectar</option>
+                      <option value=",">Vírgula (,)</option>
+                      <option value=";">Ponto e vírgula (;)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="btn-group">
+                  <button id="btnProcessDataset" class="btn btn-emerald">✔ Processar e Aplicar Configuração</button>
+                  <a href="/api/dataset/export-sample" class="btn btn-outline">⬇ Exportar Base Processada (.xlsx)</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary of numeric variables -->
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📋 Resumo das Variáveis Numéricas</div>
+                <div class="card-subtitle">Inspecione cobertura temporal, valores ausentes (NA) e estatísticas rápidas por coluna</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper" style="max-height:280px;">
+                <table class="data-table" id="tableColSummaries">
+                  <thead>
+                    <tr>
+                      <th>Variável</th>
+                      <th>Observações Válidas</th>
+                      <th>Ausentes (NA)</th>
+                      <th>Média</th>
+                      <th>Mínimo</th>
+                      <th>Máximo</th>
+                      <th>Início</th>
+                      <th>Fim</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Preview Table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🔍 Pré-visualização dos Dados Importados (Primeiras 100 linhas)</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper" style="max-height:380px;">
+                <table class="data-table" id="tableDataPreview">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             VIEW 2: OUTLIER DETECTION & CORRECTION (app_10)
+             ================================================================= -->
+        <section id="view-outliers" class="view-panel">
+          <div class="grid-row grid-3">
+            <div class="kpi-card rose">
+              <div>
+                <div class="kpi-label">Outliers Identificados</div>
+                <div class="kpi-value" id="outKpiCount">0</div>
+                <div class="kpi-sub" id="outKpiNaInfo">0 valores NA ignorados</div>
+              </div>
+              <div class="kpi-icon">⚠️</div>
+            </div>
+            <div class="kpi-card amber">
+              <div>
+                <div class="kpi-label">Porcentagem de Outliers</div>
+                <div class="kpi-value" id="outKpiPercent">0%</div>
+                <div class="kpi-sub">Sobre o total da série</div>
+              </div>
+              <div class="kpi-icon">%</div>
+            </div>
+            <div class="kpi-card cyan">
+              <div>
+                <div class="kpi-label">Impacto na Média</div>
+                <div class="kpi-value" id="outKpiImpact">0%</div>
+                <div class="kpi-sub" id="outKpiMethodInfo">Aguardando correção</div>
+              </div>
+              <div class="kpi-icon">📉</div>
+            </div>
+          </div>
+
+          <div class="grid-row grid-sidebar-layout">
+            <!-- Outlier Controls -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">🛠️ Painel de Identificação &amp; Correção</div>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Coluna para Tratamento</label>
+                  <select id="outColSelect" class="form-select"></select>
+                </div>
+
+                <hr style="border:none;border-top:1px solid var(--border-color);margin:16px 0;" />
+                <div class="form-label" style="color:var(--accent-primary);">1. Identificação de Outliers</div>
+
+                <div class="form-group">
+                  <label class="form-label">Método de Detecção</label>
+                  <select id="outIdentMethod" class="form-select">
+                    <option value="zscore">Z-Score (Desvios Padrão)</option>
+                    <option value="iqr">IQR (Box Plot 1.5×IQR)</option>
+                    <option value="mahalanobis">Distância de Mahalanobis (Multivariado)</option>
+                    <option value="isolation_forest">Isolation Forest</option>
+                    <option value="lof">LOF (Local Outlier Factor)</option>
+                    <option value="svm">One-Class SVM</option>
+                  </select>
+                </div>
+
+                <div class="form-group" id="outThresholdGroup">
+                  <label class="form-label">Limiar (Threshold): <strong id="outThresholdVal">3.0</strong></label>
+                  <input type="range" id="outThresholdSlider" min="0.5" max="5.0" step="0.1" value="3.0" style="width:100%;" />
+                </div>
+
+                <button id="btnOutIdentify" class="btn btn-primary btn-block" style="margin-bottom:18px;">
+                  🔍 Identificar Outliers
+                </button>
+
+                <hr style="border:none;border-top:1px solid var(--border-color);margin:16px 0;" />
+                <div class="form-label" style="color:var(--accent-emerald);">2. Correção de Outliers</div>
+
+                <div class="form-group">
+                  <label class="form-label">Método de Correção</label>
+                  <select id="outCorrectMethod" class="form-select">
+                    <option value="linear_interp">Interpolação Linear</option>
+                    <option value="moving_average">Média Móvel Centralizada</option>
+                    <option value="mean">Média (Sem Outliers)</option>
+                    <option value="median">Mediana (Sem Outliers)</option>
+                    <option value="winsorize">Winsorização (P5 / P95)</option>
+                    <option value="arima">Auto ARIMA (Kalman Filter)</option>
+                    <option value="seasonal_decomp">Decomposição Sazonal (Tendência STL)</option>
+                  </select>
+                </div>
+
+                <div class="form-group" id="outWindowGroup" style="display:none;">
+                  <label class="form-label">Tamanho da Janela (Média Móvel)</label>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <button type="button" id="btnOutWinDec" class="btn btn-outline btn-sm">−</button>
+                    <input type="number" id="outWindowInput" class="form-control" value="5" min="2" max="50" style="text-align:center;" />
+                    <button type="button" id="btnOutWinInc" class="btn btn-outline btn-sm">+</button>
+                  </div>
+                </div>
+
+                <div class="btn-group" style="margin-bottom:12px;">
+                  <button id="btnOutCorrect" class="btn btn-emerald" style="flex:1;">🔧 Corrigir Outliers</button>
+                  <button id="btnOutUndo" class="btn btn-amber" title="Desfazer última correção">↩ Desfazer</button>
+                </div>
+
+                <button id="btnOutCommit" class="btn btn-outline btn-block" style="margin-bottom:8px;">
+                  💾 Salvar Série Tratada no Workspace
+                </button>
+                <button id="btnOutExport" class="btn btn-outline btn-block">
+                  ⬇ Exportar Excel (Dados + Metadados)
+                </button>
+              </div>
+            </div>
+
+            <!-- Outlier Visuals & Stats -->
+            <div>
+              <div class="grid-row grid-2">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">📊 Comparativo de Estatísticas Descritivas</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-wrapper">
+                      <table class="data-table" id="tableOutlierStats">
+                        <thead>
+                          <tr>
+                            <th>Estatística</th>
+                            <th>Original</th>
+                            <th>Tratado</th>
+                            <th>Variação / Status</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">📈 Distribuição (Histograma Original vs Tratado)</div>
+                  </div>
+                  <div class="card-body">
+                    <div id="plotOutlierHist" class="plot-box-sm"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-title">🔎 Visualização Temporal e Inspeção de Outliers</div>
+                  <div class="btn-group">
+                    <button class="btn btn-outline btn-sm active" id="btnOutViewTime">Série Temporal</button>
+                    <button class="btn btn-outline btn-sm" id="btnOutViewIndex">Por Índice / Subplot</button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="plotOutlierMain" class="plot-box"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             VIEW 3: SEASONALITY TESTS, PARTICIPATION, XmR & STL (app_5)
+             ================================================================= -->
+        <section id="view-seasonality" class="view-panel">
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-body" style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;">
+              <div class="form-group" style="margin-bottom:0;min-width:220px;flex:1;">
+                <label class="form-label">Variável para Análise</label>
+                <select id="seasColSelect" class="form-select"></select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;width:140px;">
+                <label class="form-label">Ano Inicial (Limites)</label>
+                <input type="number" id="seasStartYear" class="form-control" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;width:140px;">
+                <label class="form-label">Ano Final (Limites)</label>
+                <input type="number" id="seasEndYear" class="form-control" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;width:160px;">
+                <label class="form-label">Limiar STL (Desvios σ)</label>
+                <input type="number" id="seasStlSigma" class="form-control" value="2.0" step="0.1" min="1.0" max="4.0" />
+              </div>
+              <div class="btn-group">
+                <button id="btnRunSeasonality" class="btn btn-primary">▶ Executar Diagnóstico Sazonal &amp; XmR</button>
+                <button id="btnExportSeasonality" class="btn btn-outline">⬇ Exportar Tabelas (.xlsx)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-row grid-4">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Força Sazonal (STL)</div>
+                <div class="kpi-value" id="seasKpiStrength">--</div>
+                <div class="kpi-sub" id="seasKpiTestResult">Teste F / Kruskal-Wallis</div>
+              </div>
+              <div class="kpi-icon">🌊</div>
+            </div>
+            <div class="kpi-card emerald">
+              <div>
+                <div class="kpi-label">Média Individual (X̄)</div>
+                <div class="kpi-value" id="seasKpiMeanX">--</div>
+                <div class="kpi-sub" id="seasKpiLimitsX">LCL: -- | UCL: --</div>
+              </div>
+              <div class="kpi-icon">📏</div>
+            </div>
+            <div class="kpi-card amber">
+              <div>
+                <div class="kpi-label">Amplitude Móvel Média (MR̄)</div>
+                <div class="kpi-value" id="seasKpiMeanMR">--</div>
+                <div class="kpi-sub" id="seasKpiViolations">0 violações de controle</div>
+              </div>
+              <div class="kpi-icon">⚡</div>
+            </div>
+            <div class="kpi-card rose">
+              <div>
+                <div class="kpi-label">Anomalias STL Residuals</div>
+                <div class="kpi-value" id="seasKpiAnomalies">0</div>
+                <div class="kpi-sub">Resíduos fora da banda ±σ</div>
+              </div>
+              <div class="kpi-icon">🚨</div>
+            </div>
+          </div>
+
+          <!-- Participation Plot & Table -->
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📅 Gráfico de Participação Mensal e Banda de Limites (±1 DP)</div>
+                <div class="card-subtitle">Compara o perfil sazonal de cada ano com os limites históricos do período selecionado</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="plotSeasParticipation" class="plot-box"></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+              <div class="card-title">📋 Tabela de Limites e Participações Mensais por Ano</div>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper" style="max-height:360px;">
+                <table class="data-table" id="tableSeasLimits">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- XmR Chart -->
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🎛️ Gráfico de Controle Estatístico de Processo XmR (Valores Individuais X &amp; Amplitude Móvel MR)</div>
+                <div class="card-subtitle">Limites calculados por X̄ ± 2.66×MR̄ e UCL_MR = 3.0×MR̄</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="plotSeasXmR" class="plot-box-lg"></div>
+            </div>
+          </div>
+
+          <!-- STL Anomalies -->
+          <div class="grid-row grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">🔍 Detecção de Anomalias — STL Residuals</div>
+              </div>
+              <div class="card-body">
+                <div id="plotSeasSTL" class="plot-box-sm"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📑 Lista de Observações Anômalas (STL)</div>
+              </div>
+              <div class="card-body">
+                <div class="table-wrapper" style="max-height:340px;">
+                  <table class="data-table" id="tableSeasAnomalies">
+                    <thead>
+                      <tr>
+                        <th>Data</th>
+                        <th>Valor</th>
+                        <th>Tendência</th>
+                        <th>Sazonalidade</th>
+                        <th>Resíduo STL</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             VIEW 4: ADVANCED INTERACTIVE SERIES EDITOR (page 6)
+             ================================================================= -->
+        <section id="view-editor" class="view-panel">
+          <div class="grid-row grid-4">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Número de Períodos</div>
+                <div class="kpi-value" id="edKpiPeriods">0</div>
+                <div class="kpi-sub" id="edKpiModCount">0 pontos editados</div>
+              </div>
+              <div class="kpi-icon">🗓️</div>
+            </div>
+            <div class="kpi-card emerald">
+              <div>
+                <div class="kpi-label">Valor Máximo</div>
+                <div class="kpi-value" id="edKpiMax">--</div>
+                <div class="kpi-sub">Na série ajustada</div>
+              </div>
+              <div class="kpi-icon">⬆️</div>
+            </div>
+            <div class="kpi-card rose">
+              <div>
+                <div class="kpi-label">Valor Mínimo</div>
+                <div class="kpi-value" id="edKpiMin">--</div>
+                <div class="kpi-sub">Na série ajustada</div>
+              </div>
+              <div class="kpi-icon">⬇️</div>
+            </div>
+            <div class="kpi-card amber">
+              <div>
+                <div class="kpi-label">Média da Série</div>
+                <div class="kpi-value" id="edKpiMean">--</div>
+                <div class="kpi-sub">Atualizada em tempo real</div>
+              </div>
+              <div class="kpi-icon">🧮</div>
+            </div>
+          </div>
+
+          <div class="grid-row grid-sidebar-layout">
+            <!-- Editor Controls -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">✏️ Controles de Edição Interativa</div>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Série Temporal</label>
+                  <select id="edColSelect" class="form-select"></select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Pontos Selecionados no Gráfico</label>
+                  <div id="edSelectedBadge" style="padding:10px;border-radius:8px;background:var(--bg-input);border:1px solid var(--border-color);font-size:12.5px;color:var(--text-secondary);">
+                    Clique em um ponto ou use a seleção Laço/Caixa no gráfico ao lado.
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Tipo de Alteração</label>
+                  <select id="edChangeType" class="form-select">
+                    <option value="set">Definir Novo Valor Exato</option>
+                    <option value="absolute">Acréscimo / Decréscimo Absoluto (+ / −)</option>
+                    <option value="percentual">Variação Percentual (%)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Valor da Alteração</label>
+                  <input type="number" id="edChangeValue" class="form-control" step="any" placeholder="Ex: 520000 ou 10" />
+                </div>
+
+                <div class="btn-group" style="margin-bottom:12px;">
+                  <button id="btnEdApply" class="btn btn-primary" style="flex:1;">✔ Aplicar Alteração</button>
+                  <button id="btnEdUndo" class="btn btn-rose" title="Atalho: Ctrl+Z">↩ Desfazer (Ctrl+Z)</button>
+                </div>
+
+                <div class="btn-group" style="margin-bottom:12px;">
+                  <button id="btnEdClearSel" class="btn btn-outline btn-sm" style="flex:1;">Limpar Seleção</button>
+                  <button id="btnEdReset" class="btn btn-outline btn-sm" style="flex:1;">Restaurar Original</button>
+                </div>
+
+                <hr style="border:none;border-top:1px solid var(--border-color);margin:14px 0;" />
+
+                <button id="btnEdCommit" class="btn btn-emerald btn-block" style="margin-bottom:8px;">
+                  💾 Salvar Série Editada no Workspace
+                </button>
+                <button id="btnEdExport" class="btn btn-outline btn-block">
+                  ⬇ Exportar Séries &amp; Taxas (.xlsx)
+                </button>
+              </div>
+            </div>
+
+            <!-- Interactive Plot -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">📈 Editor Visual de Série Temporal (Clique ou Selecione com Laço/Caixa)</div>
+                  <div class="card-subtitle">Compare a Série Original (tracejada) com a Série Modificada e inspecione impactos nas taxas</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div id="plotEditorMain" class="plot-box"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Growth & Addition Rate Plots (MoM and YoY) -->
+          <div class="grid-row grid-2">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📊 Taxa de Crescimento Anual (%) e Mês a Mês (%)</div>
+              </div>
+              <div class="card-body">
+                <div id="plotEditorGrowthRates" class="plot-box-sm"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">📊 Variação Absoluta (Acréscimo) Mês a Mês e Anual</div>
+              </div>
+              <div class="card-body">
+                <div id="plotEditorAdditionRates" class="plot-box-sm"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multi-Resolution Line Charts (Monthly, Quarterly, Semiannual) -->
+          <div class="grid-row grid-3">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Valores Mensais ao Longo dos Anos</div></div>
+              <div class="card-body"><div id="plotEdMensal" class="plot-box-sm"></div></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Valores Trimestrais (Q1–Q4)</div></div>
+              <div class="card-body"><div id="plotEdTrimestral" class="plot-box-sm"></div></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Valores Semestrais (S1–S2)</div></div>
+              <div class="card-body"><div id="plotEdSemestral" class="plot-box-sm"></div></div>
+            </div>
+          </div>
+
+          <!-- Modification Log & Multi-Resolution Tables -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📑 Tabelas Consolidadas &amp; Histórico de Modificações</div>
+            </div>
+            <div class="card-body">
+              <div class="tabs-bar" id="edTablesTabBar">
+                <button class="tab-btn active" data-edtab="comp">Série Comparada &amp; Taxas</button>
+                <button class="tab-btn" data-edtab="log">Log de Modificações</button>
+                <button class="tab-btn" data-edtab="mensal">Visão Mensal</button>
+                <button class="tab-btn" data-edtab="trimestral">Visão Trimestral</button>
+                <button class="tab-btn" data-edtab="semestral">Visão Semestral</button>
+                <button class="tab-btn" data-edtab="anual">Visão Anual</button>
+              </div>
+              <div class="table-wrapper" style="max-height:380px;">
+                <table class="data-table" id="tableEditorDynamic">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             VIEW 5: ARIMA UNIVARIATE & MULTIVARIATE FORECASTING
+             ================================================================= -->
+        <section id="view-arima" class="view-panel">
+          <div class="grid-row grid-sidebar-layout">
+            <!-- ARIMA Configuration -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">⚙️ Configuração ARIMA / SARIMAX</div>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Variável Alvo (Target)</label>
+                  <select id="arimaTargetSelect" class="form-select"></select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Variáveis Explicativas (Exógenas — Opcional)</label>
+                  <div id="arimaExogContainer" class="pill-group" style="max-height:135px;overflow-y:auto;padding:8px;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-input);"></div>
+                  <div class="form-hint">Se selecionadas, ajusta modelos Univariados e Multivariados (ARIMAX) com verificação automática de colinearidade.</div>
+                </div>
+
+                <div class="grid-row grid-2" style="margin-bottom:10px;">
+                  <div class="form-group">
+                    <label class="form-label">Início do Treino</label>
+                    <input type="date" id="arimaStartDate" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Fim Realizado (Corte)</label>
+                    <input type="date" id="arimaEndDate" class="form-control" />
+                  </div>
+                </div>
+
+                <div class="grid-row grid-2" style="margin-bottom:10px;">
+                  <div class="form-group">
+                    <label class="form-label">Data Final da Previsão</label>
+                    <input type="date" id="arimaEndPredict" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Períodos de Teste (Validação)</label>
+                    <input type="number" id="arimaNTest" class="form-control" value="6" min="0" max="60" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Modo de Configuração</label>
+                  <select id="arimaModeSelect" class="form-select">
+                    <option value="auto">Automático (Auto.ARIMA + Variações Estocásticas)</option>
+                    <option value="manual">Manual — Especificar Ordem (p,d,q)(P,D,Q)</option>
+                  </select>
+                </div>
+
+                <!-- Auto options -->
+                <div id="arimaAutoBox">
+                  <div class="grid-row grid-2" style="margin-bottom:10px;">
+                    <div class="form-group">
+                      <label class="form-label">Nº de Variações ARIMA</label>
+                      <input type="number" id="arimaNumModels" class="form-control" value="5" min="1" max="15" />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Período Sazonal (s)</label>
+                      <input type="number" id="arimaPeriod" class="form-control" value="12" min="1" max="52" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Manual options -->
+                <div id="arimaManualBox" style="display:none;padding:12px;border-radius:8px;background:var(--bg-input);border:1px solid var(--border-color);margin-bottom:12px;">
+                  <div class="form-label">Ordem Não-Sazonal (p, d, q)</div>
+                  <div class="grid-row grid-3" style="margin-bottom:10px;">
+                    <input type="number" id="arimaP" class="form-control" value="1" min="0" max="6" placeholder="p" />
+                    <input type="number" id="arimaD" class="form-control" value="1" min="0" max="2" placeholder="d" />
+                    <input type="number" id="arimaQ" class="form-control" value="1" min="0" max="6" placeholder="q" />
+                  </div>
+                  <div class="form-label">Ordem Sazonal (P, D, Q)</div>
+                  <div class="grid-row grid-3" style="margin-bottom:0;">
+                    <input type="number" id="arimaSP" class="form-control" value="1" min="0" max="4" placeholder="P" />
+                    <input type="number" id="arimaSD" class="form-control" value="1" min="0" max="2" placeholder="D" />
+                    <input type="number" id="arimaSQ" class="form-control" value="1" min="0" max="4" placeholder="Q" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="pill-checkbox">
+                    <input type="checkbox" id="arimaSeasonalCheck" checked />
+                    <span>Incluir Sazonalidade no Modelo</span>
+                  </label>
+                </div>
+
+                <button id="btnRunArima" class="btn btn-emerald btn-block" style="margin-bottom:10px;">
+                  ▶ Executar Modelos ARIMA
+                </button>
+
+                <div style="display:flex;gap:8px;">
+                  <select id="arimaExportModelSelect" class="form-select" style="flex:1;">
+                    <option value="Todos">Todos os Modelos</option>
+                  </select>
+                  <button id="btnExportArima" class="btn btn-outline">⬇ XLSX</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ARIMA Results & Charts -->
+            <div>
+              <div id="arimaCollinearityBanner" style="display:none;padding:12px 16px;border-radius:8px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.4);color:#fbbf24;margin-bottom:16px;font-size:13px;"></div>
+
+              <!-- Recommendation & Error Tables -->
+              <div class="grid-row grid-2">
+                <div class="card">
+                  <div class="card-header">
+                    <div>
+                      <div class="card-title">🏆 Métricas de Erro (Ordenadas por RMSE)</div>
+                      <div class="card-subtitle">Avaliação de precisão no período de validação</div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-wrapper" style="max-height:260px;">
+                      <table class="data-table" id="tableArimaErrors">
+                        <thead>
+                          <tr>
+                            <th>Modelo</th>
+                            <th>Tipo</th>
+                            <th>Especificação</th>
+                            <th>RMSE</th>
+                            <th>MAE</th>
+                            <th>MAPE (%)</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div>
+                      <div class="card-title">🎯 Recomendação &amp; Score de Desvios</div>
+                      <div class="card-subtitle">Score ponderado pelos meses recentes e desvio máximo</div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-wrapper" style="max-height:260px;">
+                      <table class="data-table" id="tableArimaRec">
+                        <thead>
+                          <tr>
+                            <th>Modelo</th>
+                            <th>Meses</th>
+                            <th>Score</th>
+                            <th>Desv. Méd (%)</th>
+                            <th>Desv. Máx (%)</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ARIMA Forecast Plot -->
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">📈 Visualização de Previsões ARIMA (Treino, Teste e Projeção Futura)</div>
+                    <div class="card-subtitle">Linhas verticais indicam o corte de validação e o início da projeção futura</div>
+                  </div>
+                  <div class="btn-group">
+                    <button id="btnArimaToGrowth" class="btn btn-primary btn-sm">📊 Analisar Taxas de Crescimento deste Modelo</button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="plotArimaForecast" class="plot-box-lg"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             VIEW 6: AUTOTS UNIVARIATE MULTI-MODEL BENCHMARK
+             ================================================================= -->
+        <section id="view-autots" class="view-panel">
+          <div class="grid-row grid-sidebar-layout">
+            <!-- AutoTS Config -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">🤖 Configuração AutoTS Univariado</div>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label class="form-label">Variável para Projeção</label>
+                  <select id="autotsVarSelect" class="form-select"></select>
+                </div>
+
+                <div class="grid-row grid-2" style="margin-bottom:10px;">
+                  <div class="form-group">
+                    <label class="form-label">Início do Treino</label>
+                    <input type="date" id="autotsStartDate" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Fim do Treino</label>
+                    <input type="date" id="autotsEndDate" class="form-control" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Data Final da Previsão</label>
+                  <input type="date" id="autotsEndPredict" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Modelos a Utilizar</label>
+                  <div class="pill-group" id="autotsModelsGroup">
+                    <label class="pill-checkbox"><input type="checkbox" value="prophet" checked /><span>Prophet</span></label>
+                    <label class="pill-checkbox"><input type="checkbox" value="ets" checked /><span>ETS</span></label>
+                    <label class="pill-checkbox"><input type="checkbox" value="sarima" checked /><span>SARIMA</span></label>
+                    <label class="pill-checkbox"><input type="checkbox" value="tbats" checked /><span>TBATS</span></label>
+                    <label class="pill-checkbox"><input type="checkbox" value="bats" checked /><span>BATS</span></label>
+                    <label class="pill-checkbox"><input type="checkbox" value="stlm" checked /><span>STLM</span></label>
+                    <label class="pill-checkbox"><input type="checkbox" value="bagged" checked /><span>Bagged (Ensemble)</span></label>
+                  </div>
+                </div>
+
+                <hr style="border:none;border-top:1px solid var(--border-color);margin:14px 0;" />
+                <div class="form-label">Parâmetros do Ranking de Desvios</div>
+                <div class="grid-row grid-3" style="margin-bottom:12px;">
+                  <div>
+                    <label class="form-label" style="font-size:11px;">Meses Aval.</label>
+                    <input type="number" id="autotsMaxMonths" class="form-control" value="12" min="1" max="60" />
+                  </div>
+                  <div>
+                    <label class="form-label" style="font-size:11px;">Peso Recente</label>
+                    <input type="number" id="autotsWeightRecent" class="form-control" value="2.0" step="0.1" min="1.0" max="5.0" />
+                  </div>
+                  <div>
+                    <label class="form-label" style="font-size:11px;">Peso Máx</label>
+                    <input type="number" id="autotsWeightMax" class="form-control" value="0.4" step="0.1" min="0.0" max="1.0" />
+                  </div>
+                </div>
+
+                <button id="btnRunAutoTS" class="btn btn-emerald btn-block" style="margin-bottom:12px;">
+                  ▶ Executar Benchmark AutoTS
+                </button>
+
+                <div class="form-group">
+                  <label class="form-label">Destacar / Filtrar Modelo no Gráfico</label>
+                  <select id="autotsFocusModel" class="form-select">
+                    <option value="all">Mostrar Todos os Modelos</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="pill-checkbox">
+                    <input type="checkbox" id="autotsShowIntervals" checked />
+                    <span>Exibir Intervalos de Confiança (95% Lower/Upper)</span>
+                  </label>
+                </div>
+
+                <div class="btn-group">
+                  <button id="btnExportAutoTSAll" class="btn btn-outline btn-sm" style="flex:1;">⬇ Exportar Todos (.xlsx)</button>
+                  <button id="btnExportAutoTSSel" class="btn btn-outline btn-sm" style="flex:1;">⬇ Modelo Selecionado</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- AutoTS Tables & Plot -->
+            <div>
+              <div class="grid-row grid-2">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">🏆 Resultados de Erro AutoTS (RMSE, MAE, MAPE)</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-wrapper" style="max-height:270px;">
+                      <table class="data-table" id="tableAutoTSErrors">
+                        <thead>
+                          <tr>
+                            <th>Modelo</th>
+                            <th>RMSE</th>
+                            <th>MAE</th>
+                            <th>MAPE (%)</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">📊 Análise de Desvios &amp; Recomendação Automática</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-wrapper" style="max-height:270px;">
+                      <table class="data-table" id="tableAutoTSRec">
+                        <thead>
+                          <tr>
+                            <th>Modelo</th>
+                            <th>Meses</th>
+                            <th>Score</th>
+                            <th>Desv. Méd (%)</th>
+                            <th>Desv. Máx (%)</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">📈 Projeções AutoTS com Bandas de Confiança</div>
+                    <div class="card-subtitle">Série realizada (preto) e projeções futuras (média sólida + limites tracejados)</div>
+                  </div>
+                  <button id="btnAutoTSToGrowth" class="btn btn-primary btn-sm">📊 Analisar Crescimento deste Modelo</button>
+                </div>
+                <div class="card-body">
+                  <div id="plotAutoTSForecast" class="plot-box-lg"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================
+             VIEW 7: MULTI-RESOLUTION GROWTH & VARIATION ANALYTICS
+             ================================================================= -->
+        <section id="view-growth" class="view-panel">
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-body" style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
+              <div class="form-group" style="margin-bottom:0;width:190px;">
+                <label class="form-label">Origem dos Dados</label>
+                <select id="growthSourceSelect" class="form-select">
+                  <option value="dataset">Variável do Dataset</option>
+                  <option value="arima">Projeção ARIMA</option>
+                  <option value="autots">Projeção AutoTS</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;min-width:220px;flex:1;">
+                <label class="form-label">Série / Modelo</label>
+                <select id="growthTargetSelect" class="form-select"></select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;width:160px;">
+                <label class="form-label">Periodicidade</label>
+                <select id="growthPeriodSelect" class="form-select">
+                  <option value="mensal">Mensal (Jan–Dez)</option>
+                  <option value="trimestral">Trimestral (Q1–Q4)</option>
+                  <option value="semestral">Semestral (S1–S2)</option>
+                  <option value="anual">Anual</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;width:180px;">
+                <label class="form-label">Métrica do Gráfico</label>
+                <select id="growthMetricSelect" class="form-select">
+                  <option value="valores">Valores Absolutos</option>
+                  <option value="taxas">Taxas de Crescimento (%)</option>
+                  <option value="variacoes">Variações Absolutas</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0;width:150px;">
+                <label class="form-label">Estilo Visual</label>
+                <select id="growthChartStyle" class="form-select">
+                  <option value="combined">Combinado (Barras+Linha)</option>
+                  <option value="lines">Linhas com Marcadores</option>
+                  <option value="bars">Barras Coloridas (+/-)</option>
+                </select>
+              </div>
+              <div class="btn-group">
+                <button id="btnRunGrowth" class="btn btn-primary">▶ Atualizar Análise</button>
+                <button id="btnExportGrowth" class="btn btn-emerald">⬇ Exportar Excel Completo</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-header">
+              <div>
+                <div class="card-title" id="growthPlotTitle">📈 Visualização de Crescimento e Variação Temporal</div>
+                <div class="card-subtitle">Análise dinâmica de performance histórica e projetada</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;">
+                <label class="form-label" style="margin:0;">Filtrar Anos:</label>
+                <input type="number" id="growthYearStart" class="form-control" style="width:95px;padding:5px 8px;" />
+                <span>até</span>
+                <input type="number" id="growthYearEnd" class="form-control" style="width:95px;padding:5px 8px;" />
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="plotGrowthMain" class="plot-box"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 Matrizes Anuais de Valores, Taxas de Crescimento (%) e Variações Absolutas</div>
+            </div>
+            <div class="card-body">
+              <div class="tabs-bar" id="growthTablesTabBar">
+                <button class="tab-btn active" data-gtab="wide_valores">Matriz de Valores</button>
+                <button class="tab-btn" data-gtab="wide_taxas">Taxas de Crescimento YoY (%)</button>
+                <button class="tab-btn" data-gtab="wide_variacoes">Variações Absolutas YoY</button>
+              </div>
+              <div class="table-wrapper" style="max-height:420px;">
+                <table class="data-table" id="tableGrowthDynamic">
+                  <thead></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="/static/app.js?v=2.1"></script>
+</body>
+</html>

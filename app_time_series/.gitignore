@@ -1,0 +1,38 @@
+# =====================================================================
+# .gitignore — TimeSeries Studio Pro
+# =====================================================================
+
+# Pasta temporária de arquivos legados (R / Shiny antigos) para exclusão
+arquivos_para_excluir/
+arquivos para excluir/
+
+# Byte-compiled / cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+
+# Arquivos temporários do Excel e Sistema Operacional
+~$*.xlsx
+~$*.xls
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs e caches de ferramentas
+*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Configurações locais de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
