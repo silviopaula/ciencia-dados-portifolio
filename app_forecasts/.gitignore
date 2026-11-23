@@ -1,0 +1,36 @@
+# Ambiente Virtual Python e Cache
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Pasta de arquivos legados para exclusão
+arquivos apagar/
+
+# Arquivos temporários e de sistema
+*.tmp
+*.temp
+*.log
+.DS_Store
+Thumbs.db
+~$*
+
+# Modelos e exportações geradas localmente
+*.joblib
+*.pkl
+!data/*
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
