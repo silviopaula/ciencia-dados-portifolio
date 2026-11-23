@@ -331,8 +331,8 @@ MIT License - Sinta-se livre para usar em projetos acadêmicos ou comerciais.
 ## c Autor
 
 **Seu Nome**
-- GitHub: [@seu-usuario](https://github.com/silviopaula)
-- LinkedIn: [Seu Perfil](https://www.linkedin.com/in/silvio-paula/)
+- GitHub: https://github.com/silviopaula
+- LinkedIn: https://www.linkedin.com/in/silvio-paula/
 
 ---
 
