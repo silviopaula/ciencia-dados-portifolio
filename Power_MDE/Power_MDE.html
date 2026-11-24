@@ -7647,9 +7647,9 @@ Isso significa que <strong>qualquer impacto real menor que $0,252$ ficará invis
 <p>Vamos simular um cenário clássico de <strong>Dados em Painel</strong> (acompanhando várias unidades ao longo do tempo):</p>
 <ul>
 <li><strong>200 unidades ($N = 200$)</strong>: Imagine que são 200 lojas (ou 200 municípios).</li>
-<li><strong>10 períodos de tempo ($T = 10$)</strong>: Acompanhamos as vendas dessas 200 lojas durante 10 meses (totalizando $200 	imes 10 = 2.000$ linhas de dados).</li>
+<li><strong>10 períodos de tempo ($T = 10$)</strong>: Acompanhamos as vendas dessas 200 lojas durante 10 meses (totalizando $200 \times 10 = 2.000$ linhas de dados).</li>
 <li><strong>Quem recebe a intervenção?</strong>: Sorteamos metade das lojas (<strong>100 lojas tratadas</strong>) para receber uma nova campanha a partir do <strong>mês 6</strong>. As outras <strong>100 lojas (controle)</strong> continuam sem campanha.</li>
-<li><strong>Qual é o efeito verdadeiro que vamos colocar nos dados?</strong>: Vamos definir que a campanha aumenta as vendas em exatamente <strong>$	au_{	ext{verdadeiro}} = 2,00$ unidades</strong> (<code>tau_true = 2.0</code>).</li>
+<li><strong>Qual é o efeito verdadeiro que vamos colocar nos dados?</strong>: Vamos definir que a campanha aumenta as vendas em exatamente <strong>$\tau_{\text{verdadeiro}} = 2,00$ unidades</strong> (<code>tau_true = 2.0</code>).</li>
 </ul>
 <p>Além disso, para tornar os dados realistas, cada loja tem seu próprio tamanho base (efeito fixo da loja, <code>fe_i</code>), cada mês tem sua própria sazonalidade (efeito fixo de tempo, <code>fe_t</code>), e há uma variação aleatória natural do dia a dia (o ruído <code>eps</code>).</p>
 </div>
@@ -7970,8 +7970,7 @@ Primeiras 6 linhas do nosso painel simulado:
 <h2 id="7.-Passo-3:-Construindo-as-Fun%C3%A7%C3%B5es-de-Power-e-MDE-em-Python">7. Passo 3: Construindo as Funções de Power e MDE em Python<a class="anchor-link" href="#7.-Passo-3:-Construindo-as-Fun%C3%A7%C3%B5es-de-Power-e-MDE-em-Python">¶</a></h2><h3 id="O-que-vamos-fazer-agora-e-por-qu%C3%AA?">O que vamos fazer agora e por quê?<a class="anchor-link" href="#O-que-vamos-fazer-agora-e-por-qu%C3%AA?">¶</a></h3><p>Agora que já temos o Erro-Padrão do nosso estudo (<code>se_D = 0,0921</code>), queremos criar duas funções simples e reutilizáveis em Python:</p>
 <ol>
 <li><strong><code>calcular_power(efeito, se, alpha=0.05)</code></strong>: Você informa um tamanho de efeito hipotético (por exemplo, <em>"e se a campanha aumentasse as vendas em apenas 0,50?"</em>) e o <code>se</code> do seu modelo, e ela responde qual é a <strong>probabilidade ( de 0% a 100%)</strong> de o seu estudo conseguir detectar esse efeito.</li>
-<li><strong><code>calcular_mde(se, power_alvo=0.80, alpha=0.05)</code></strong>: Você informa o <code>se</code> do seu modelo e o poder desejado (ex.: 80%), e ela aplica a fórmula $\left(z_{1-lpha/2} + z_{1-eta}
-ight) 	imes SE$ para dizer <strong>qual é o menor efeito que o seu estudo consegue enxergar</strong>.</li>
+<li><strong><code>calcular_mde(se, power_alvo=0.80, alpha=0.05)</code></strong>: Você informa o <code>se</code> do seu modelo e o poder desejado (ex.: 80%), e ela aplica a fórmula $\left(z_{1-\alpha/2} + z_{1-\beta}\right) \times SE$ para dizer <strong>qual é o menor efeito que o seu estudo consegue enxergar</strong>.</li>
 </ol>
 </div>
 </div>
@@ -8145,8 +8144,8 @@ Se o efeito verdadeiro da campanha for de <strong><code>0,50</code></strong>, o 
 <h3 id="O-que-esse-n%C3%BAmero-MDE-=-0,2580-(aprox.-0,26)-nos-revela?">O que esse número <code>MDE = 0,2580</code> (aprox. <code>0,26</code>) nos revela?<a class="anchor-link" href="#O-que-esse-n%C3%BAmero-MDE-=-0,2580-(aprox.-0,26)-nos-revela?">¶</a></h3><p>Esse resultado é o coração da nossa análise:</p>
 <ol>
 <li><strong>O "tamanho mínimo visível" do nosso estudo é <code>0,2580</code></strong> (para 80% de poder).</li>
-<li>Se uma campanha tiver um impacto verdadeiro <strong>maior que <code>0,26</code></strong>, nosso modelo tem alta probabilidade ($\ge 80\%$) de mostrar um $p	ext{-valor} &lt; 0,05$.</li>
-<li><strong>O Perigo Oculto</strong>: Se uma campanha for positiva e der lucro para a empresa, mas o impacto verdadeiro dela for de <strong><code>0,15</code></strong> (menor que <code>0,26</code>), o nosso estudo provavelmente vai resultar em um <strong>$p	ext{-valor} &gt; 0,05$ (não significativo)</strong>!</li>
+<li>Se uma campanha tiver um impacto verdadeiro <strong>maior que <code>0,26</code></strong>, nosso modelo tem alta probabilidade ($\ge 80\%$) de mostrar um $p\text{-valor} &lt; 0,05$.</li>
+<li><strong>O Perigo Oculto</strong>: Se uma campanha for positiva e der lucro para a empresa, mas o impacto verdadeiro dela for de <strong><code>0,15</code></strong> (menor que <code>0,26</code>), o nosso estudo provavelmente vai resultar em um <strong>$p\text{-valor} &gt; 0,05$ (não significativo)</strong>!</li>
 </ol>
 <hr/>
 <h2 id="9.-Passo-5:-Visualizando-a-Curva-de-Poder-Estat%C3%ADstico-(Power-Curve)">9. Passo 5: Visualizando a Curva de Poder Estatístico (<em>Power Curve</em>)<a class="anchor-link" href="#9.-Passo-5:-Visualizando-a-Curva-de-Poder-Estat%C3%ADstico-(Power-Curve)">¶</a></h2><h3 id="O-que-vamos-fazer-agora-e-por-qu%C3%AA?">O que vamos fazer agora e por quê?<a class="anchor-link" href="#O-que-vamos-fazer-agora-e-por-qu%C3%AA?">¶</a></h3><p>Em vez de olhar para apenas um número isolado, a forma mais didática de apresentar a sensibilidade de um estudo para gestores ou clientes é desenhando a <strong>Curva de Poder (<em>Power Curve</em>)</strong>.</p>
@@ -8533,12 +8532,10 @@ Se o efeito verdadeiro da campanha for de <strong><code>0,50</code></strong>, o 
 <h2 id="11.-Conclus%C3%A3o-e-Checklist-Pr%C3%A1tico-para-Cientistas-de-Dados">11. Conclusão e Checklist Prático para Cientistas de Dados<a class="anchor-link" href="#11.-Conclus%C3%A3o-e-Checklist-Pr%C3%A1tico-para-Cientistas-de-Dados">¶</a></h2><p>Sempre que você conduzir uma avaliação de impacto causal (seja em <strong>Difference-in-Differences</strong>, <strong>Variáveis Instrumentais</strong>, <strong>RDD</strong> ou <strong>Testes A/B</strong>) e encontrar um resultado não significativo, siga este roteiro de 3 passos antes de tomar uma decisão:</p>
 <ol>
 <li><strong>Olhe para o Erro-Padrão ($SE$) além do P-Valor</strong>: O p-valor mistura o tamanho do efeito com o tamanho do ruído. O $SE$ isolado diz quão precisa é a sua "lente".</li>
-<li><strong>Calcule o MDE pela Regra do 2,8 ($	ext{MDE}_{80\%} pprox 2,8 	imes SE$)</strong>: Descubra imediatamente qual é o menor efeito que o seu banco de dados consegue enxergar com 80% de poder.</li>
+<li><strong>Calcule o MDE pela Regra do 2,8 ($\text{MDE}_{80\%} \approx 2,8 \times SE$)</strong>: Descubra imediatamente qual é o menor efeito que o seu banco de dados consegue enxergar com 80% de poder.</li>
 <li><strong>Compare o MDE com o Efeito Economicamente Relevante</strong>:<ul>
-<li>Se o <strong>MDE for pequeno</strong> (menor que a meta mínima de negócio) e o resultado não deu significativo $
-ightarrow$ Você tem evidência sólida de que a intervenção realmente não atingiu a meta.</li>
-<li>Se o <strong>MDE for alto</strong> (maior que a meta de negócio) e o resultado não deu significativo $
-ightarrow$ <strong>O estudo é inconclusivo (subdimensionado)</strong>. Para testar esse efeito no futuro, será necessário aumentar o número de unidades na amostra ou incluir variáveis de controle que reduzam o ruído residual.</li>
+<li>Se o <strong>MDE for pequeno</strong> (menor que a meta mínima de negócio) e o resultado não deu significativo $\rightarrow$ Você tem evidência sólida de que a intervenção realmente não atingiu a meta.</li>
+<li>Se o <strong>MDE for alto</strong> (maior que a meta de negócio) e o resultado não deu significativo $\rightarrow$ <strong>O estudo é inconclusivo (subdimensionado)</strong>. Para testar esse efeito no futuro, será necessário aumentar o número de unidades na amostra ou incluir variáveis de controle que reduzam o ruído residual.</li>
 </ul>
 </li>
 </ol>
