@@ -9,6 +9,7 @@
 
 import os
 import io
+import inspect
 import random
 import warnings
 from pathlib import Path
@@ -248,6 +249,17 @@ def function_chronos_forecast(
     if f"{target_col}_real" not in df_forecast.columns:
         df_forecast[f"{target_col}_real"] = df_forecast[target_col]
 
+    # Helper compatível com chronos-forecasting 1.x (context=) e 2.x (inputs=)
+    def call_predict_quantiles(pipe, ctx_tensor, pred_len, q_levels):
+        sig = inspect.signature(pipe.predict_quantiles)
+        if "inputs" in sig.parameters:
+            return pipe.predict_quantiles(
+                inputs=ctx_tensor, prediction_length=pred_len, quantile_levels=q_levels
+            )
+        return pipe.predict_quantiles(
+            context=ctx_tensor, prediction_length=pred_len, quantile_levels=q_levels
+        )
+
     # Previsão em blocos (>64)
     def predict_in_blocks(pipe, ctx_tensor, pred_len, q_levels):
         max_block = 64
@@ -256,9 +268,7 @@ def function_chronos_forecast(
         out_list = []
         while remaining > 0:
             step = min(max_block, remaining)
-            qs, _ = pipe.predict_quantiles(
-                context=y_ctx, prediction_length=step, quantile_levels=q_levels
-            )
+            qs, _ = call_predict_quantiles(pipe, y_ctx, step, q_levels)
             np_block = qs[0].detach().cpu().numpy()  # [step, len(q_levels)]
             out_list.append(np_block)
             # atualiza contexto com mediana (p50) para seguir
@@ -315,9 +325,7 @@ def function_chronos_forecast(
             if allow_long_horizon and n_periods > 64:
                 pvals = predict_in_blocks(pipe, context_base, n_periods, q_levels)
             else:
-                qs, _ = pipe.predict_quantiles(
-                    context=context_base, prediction_length=n_periods, quantile_levels=q_levels
-                )
+                qs, _ = call_predict_quantiles(pipe, context_base, n_periods, q_levels)
                 pvals = qs[0].detach().cpu().numpy()
         except Exception as e:
             print(f"[ERRO] Falha ao prever com '{label}': {e}")

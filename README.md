@@ -62,7 +62,7 @@ Atuo como Cientista de Dados combinando **inferência causal, econometria aplica
 
 | Projeto | Descrição | Técnicas & Stack |
 | :--- | :--- | :--- |
-| [**Time_Series_Forecast_Chronos_Amazon**](./Time_Series_Forecast_Chronos_Amazon/) | Previsão de séries temporais *zero-shot* utilizando o *Foundation Model* Amazon Chronos. | Python, Chronos, PyTorch, Hugging Face |
+| ⭐ [**Time_Series_Forecast_Chronos_Amazon**](./Time_Series_Forecast_Chronos_Amazon/) | Benchmark *Zero-Shot* dos *Foundation Models* Amazon Chronos (Bolt & T5) vs. Holt-Winters e Seasonal Naive sobre 21 anos de consumo elétrico (EPE), projeção de 36 meses (P10–P90) e app Streamlit. | Python, Chronos 2.x, PyTorch, Statsmodels, Streamlit |
 | [**LSTM_forecast_Keras_Tensor_Flow**](./LSTM_forecast_Keras_Tensor_Flow/) | Modelagem preditiva de séries temporais com redes neurais recorrentes LSTM. | Python, TensorFlow, Keras |
 | [**VECM_cointegracao_forecast**](./VECM_cointegracao_forecast/) | Projeção da taxa de desocupação utilizando cointegração e Modelo Vetorial de Correção de Erros (VECM). | R, Econometria, Cointegração, VECM |
 | [**SEM-energy-forecasting**](./SEM-energy-forecasting/) | Modelagem de equações estruturais (SEM) aplicada à previsão de demanda de energia. | R, SEM, Econometria |
