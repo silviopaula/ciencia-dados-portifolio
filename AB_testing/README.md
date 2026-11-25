@@ -126,7 +126,6 @@ AB_testing/
 │   └── cover.png             # Imagem de capa do projeto
 ├── AB_testing.ipynb          # Jupyter Notebook principal com toda a análise e gráficos
 ├── AB_Testing.html           # Versão exportada em HTML para visualização rápida
-├── AB_Testing.pdf            # Relatório estático em PDF
 ├── requirements.txt          # Dependências Python do projeto
 └── README.md                 # Documentação executiva do projeto
 ```
