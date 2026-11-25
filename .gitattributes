@@ -1,2 +1,26 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Padronização de fim de linha (LF) para código, notebooks e documentação
+*.py text eol=lf
+*.R text eol=lf
+*.Rmd text eol=lf
+*.ipynb text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+
+# Arquivos binários (evita corrupção de EOL pelo Git no Windows)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.xlsx binary
+*.parquet binary
+*.joblib binary
+*.pkl binary
