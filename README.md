@@ -30,6 +30,7 @@ Atuo como Cientista de Dados combinando **inferência causal, econometria aplica
 | ⭐ [**AB_testing**](./AB_testing/) | Avaliação estatística rigorosa do posicionamento de *gates* na retenção de 90.189 jogadores (*Cookie Cats*), com diagnóstico SRM, Bootstrap (10k), análise de *compliance* e *Cohen's h*. | Python, SciPy, Statsmodels, Bootstrap |
 | ⭐ [**Power_MDE**](./Power_MDE/) | Guia didático sobre a "armadilha do p-valor": cálculo de Poder Estatístico (*Power*) e *Minimum Detectable Effect* (MDE) em painel *Difference-in-Differences* (TWFE). | Python, Statsmodels, SciPy, DiD TWFE |
 | ⭐ [**MQO_vs_IV**](./MQO_vs_IV/) | Demonstração prática do viés de endogeneidade na elasticidade-preço, correção via Variáveis Instrumentais (IV / 2SLS) e o paradoxo entre RMSE histórico e decisão de *Pricing*. | Python, Linearmodels (`IV2SLS`), Statsmodels |
+| ⭐ [**Painel_Dinamico_GMM**](./Painel_Dinamico_GMM/) | Guia completo de Painel Dinâmico (*Two-Step System-GMM* + Windmeijer): simulação Monte Carlo provando o Viés de Nickell, replicação do artigo na RBE (27 UFs, 1996–2015), proliferação de instrumentos, Efeitos de Longo Prazo (Método Delta) e *Specification Curve*. | Python, `pydynpd`, Linearmodels, SciPy, Stata (`xtabond2`) |
 | [**Causal_impact_app**](./Causal_impact_app/) | Aplicação interativa para estimação contrafactual de impacto causal em séries temporais (*Bayesian Structural Time Series*). | Python / R, CausalImpact, BSTS |
 | [**Databricks_spark_causal_impact_Lei_12034-2009**](./Databricks_spark_causal_impact_Lei_12034-2009/) | Avaliação de impacto causal da Lei 12.034/2009 processada em larga escala com Apache Spark / Databricks. | PySpark, Databricks, CausalImpact |
 | [**Marketing_causal_inference**](./Marketing_causal_inference/) | Inferência causal aplicada a campanhas de marketing e avaliação de incrementalidade. | Econometria, Inferência Causal |
@@ -112,7 +113,7 @@ Atuo como Cientista de Dados combinando **inferência causal, econometria aplica
 | Ecossistema | Principais Bibliotecas e Ferramentas |
 | :--- | :--- |
 | **Python — Dados & Big Data** | `pandas`, `numpy`, `pyspark`, `polars`, `duckdb`, `pyarrow` |
-| **Python — ML, Econometria & Sobrevivência** | `scikit-learn`, `lightgbm`, `xgboost`, `catboost`, `statsmodels`, `linearmodels`, `scipy`, `lifelines`, `tensorflow`, `torch`, `mlflow`, `chronos-forecasting` |
+| **Python — ML, Econometria & Sobrevivência** | `scikit-learn`, `lightgbm`, `xgboost`, `catboost`, `statsmodels`, `linearmodels`, `pydynpd`, `scipy`, `lifelines`, `tensorflow`, `torch`, `mlflow`, `chronos-forecasting` |
 | **Python — Visualização, APIs & LLMs** | `matplotlib`, `seaborn`, `plotly`, `fastapi`, `pydantic`, `uvicorn`, `streamlit`, `langchain`, `huggingface_hub` |
 | **R — Econometria, Séries & Relatórios** | `tidyverse`, `data.table`, `fixest`, `did`, `CausalImpact`, `bsts`, `vars`, `urca`, `forecast`, `fable`, `tidymodels`, `survival`, `ggplot2`, `shiny`, `quarto` |
 | **Ambientes & Versionamento** | Git, GitHub, Databricks, Jupyter, VS Code, Positron, RStudio, MLflow |
