@@ -78,7 +78,7 @@ Atuo como Cientista de Dados combinando **inferência causal, econometria aplica
 
 | Projeto | Descrição | Técnicas & Stack |
 | :--- | :--- | :--- |
-| [**Analise_sentimento_COPOM**](./Analise_sentimento_COPOM/) | Análise de sentimento e mineração de texto sobre as atas do Comitê de Política Monetária (COPOM / Banco Central). | Python, NLP, Dicionário Loughran-McDonald |
+| ⭐ [**Analise_sentimento_COPOM**](./Analise_sentimento_COPOM/) | NLP financeiro e de política monetária sobre **111 atas oficiais do COPOM (2012–2026, até a 282ª Reunião)**: Índice *Hawkish–Dovish* (`r = +0,44` com a decisão seguinte da Selic), sentimento *Loughran–McDonald*, 5 tópicos latentes (TF-IDF + NMF), validação *Walk-Forward* e comparação entre 4 gestões do BCB. | Python, NLP, TF-IDF/NMF, Scikit-Learn, Statsmodels |
 | [**NLP_ecommerce_Brasil**](./NLP_ecommerce_Brasil/) | Classificação e análise de avaliações de clientes no e-commerce brasileiro. | Python, NLP, Machine Learning |
 | [**NLP_Spark_classificação**](./NLP_Spark_classificação/) | Pipeline distribuído de classificação de textos com Apache Spark MLlib. | PySpark, MLlib, NLP |
 | [**app_macro-rag-assistant**](./app_macro-rag-assistant/) | Assistente de pesquisa macroeconômica baseado em *Retrieval-Augmented Generation* (RAG). | Python, LLMs, LangChain, RAG |
