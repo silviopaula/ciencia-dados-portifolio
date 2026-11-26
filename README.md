@@ -82,7 +82,7 @@ Atuo como Cientista de Dados combinando **inferência causal, econometria aplica
 | [**NLP_ecommerce_Brasil**](./NLP_ecommerce_Brasil/) | Classificação e análise de avaliações de clientes no e-commerce brasileiro. | Python, NLP, Machine Learning |
 | [**NLP_Spark_classificação**](./NLP_Spark_classificação/) | Pipeline distribuído de classificação de textos com Apache Spark MLlib. | PySpark, MLlib, NLP |
 | [**app_macro-rag-assistant**](./app_macro-rag-assistant/) | Assistente de pesquisa macroeconômica baseado em *Retrieval-Augmented Generation* (RAG). | Python, LLMs, LangChain, RAG |
-| [**app_rag_papers**](./app_rag_papers/) | Aplicação RAG para consulta semântica e síntese de artigos científicos em PDF. | Python, LLMs, RAG, Embeddings |
+| ⭐ [**app_rag_papers**](./app_rag_papers/) | Aplicação web *full-stack* (**PaperRAG Studio**) para RAG científico híbrido e didático sobre PDFs acadêmicos: limpeza NFKC de ligaduras LaTeX, **Okapi BM25 + Vetores Densos LSA/Subword + RRF + MMR**, ponte bilíngue PT↔EN, guardrail anti-alucinação, Laboratório de Chunking com visualização de *overlap*, Raio-X do Retrieval/Prompt e suporte offline + Ollama/OpenAI/Gemini. | Python, FastAPI, Scikit-Learn, PyPDF, React, TypeScript, Tailwind, Recharts |
 
 ---
 
