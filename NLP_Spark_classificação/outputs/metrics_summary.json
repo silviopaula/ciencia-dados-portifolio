@@ -1,0 +1,421 @@
+{
+  "spark_version": "4.0.1",
+  "elapsed_total_sec": 221.14,
+  "dataset": {
+    "total_reviews": 50000,
+    "null_rows": 0,
+    "parquet_size_mb": 16.17,
+    "train_n": 35000,
+    "val_n": 7500,
+    "test_n": 7500,
+    "target_definition": "Positivo (4–5★) = 1.0 (40%) vs Não-Positivo (1–3★) = 0.0 (60%)",
+    "eda_by_star": [
+      {
+        "stars": 1,
+        "n": 10000,
+        "avg_words": 151.8,
+        "avg_chars": 805.147,
+        "avg_excl": 1.571,
+        "avg_upper": 0.04
+      },
+      {
+        "stars": 2,
+        "n": 10000,
+        "avg_words": 153.286,
+        "avg_chars": 818.381,
+        "avg_excl": 0.798,
+        "avg_upper": 0.034
+      },
+      {
+        "stars": 3,
+        "n": 10000,
+        "avg_words": 141.382,
+        "avg_chars": 758.009,
+        "avg_excl": 0.796,
+        "avg_upper": 0.034
+      },
+      {
+        "stars": 4,
+        "n": 10000,
+        "avg_words": 125.689,
+        "avg_chars": 678.25,
+        "avg_excl": 1.338,
+        "avg_upper": 0.036
+      },
+      {
+        "stars": 5,
+        "n": 10000,
+        "avg_words": 104.723,
+        "avg_chars": 567.665,
+        "avg_excl": 1.928,
+        "avg_upper": 0.042
+      }
+    ]
+  },
+  "hash_collision_ablation_val": [
+    {
+      "num_features": 50,
+      "val_roc_auc": 0.677,
+      "val_f1": 0.3235,
+      "val_acc": 0.6375,
+      "fit_sec": 6.05
+    },
+    {
+      "num_features": 256,
+      "val_roc_auc": 0.7782,
+      "val_f1": 0.5973,
+      "val_acc": 0.7187,
+      "fit_sec": 5.4
+    },
+    {
+      "num_features": 1024,
+      "val_roc_auc": 0.8555,
+      "val_f1": 0.7165,
+      "val_acc": 0.7868,
+      "fit_sec": 5.04
+    },
+    {
+      "num_features": 4096,
+      "val_roc_auc": 0.8863,
+      "val_f1": 0.7677,
+      "val_acc": 0.8191,
+      "fit_sec": 6.36
+    },
+    {
+      "num_features": 16384,
+      "val_roc_auc": 0.89,
+      "val_f1": 0.768,
+      "val_acc": 0.8172,
+      "fit_sec": 6.95
+    }
+  ],
+  "word2vec_train_sec": 16.62,
+  "word2vec_synonyms": {
+    "delicious": [
+      [
+        "tasty",
+        0.747
+      ],
+      [
+        "delish",
+        0.739
+      ],
+      [
+        "yummy",
+        0.733
+      ],
+      [
+        "amazing",
+        0.673
+      ],
+      [
+        "fantastic",
+        0.672
+      ]
+    ],
+    "terrible": [
+      [
+        "horrible",
+        0.907
+      ],
+      [
+        "awful",
+        0.854
+      ],
+      [
+        "poor",
+        0.767
+      ],
+      [
+        "bad",
+        0.753
+      ],
+      [
+        "horrendous",
+        0.704
+      ]
+    ],
+    "friendly": [
+      [
+        "helpful",
+        0.887
+      ],
+      [
+        "polite",
+        0.867
+      ],
+      [
+        "courteous",
+        0.859
+      ],
+      [
+        "knowledgeable",
+        0.848
+      ],
+      [
+        "accommodating",
+        0.847
+      ]
+    ],
+    "overpriced": [
+      [
+        "average",
+        0.74
+      ],
+      [
+        "mediocre",
+        0.719
+      ],
+      [
+        "subpar",
+        0.663
+      ],
+      [
+        "expensive",
+        0.656
+      ],
+      [
+        "justified",
+        0.618
+      ]
+    ]
+  },
+  "hybrid_best_regParam": 0.08,
+  "champion_model": "10. LogisticRegression (Híbrido TF-IDF+W2V)",
+  "models_benchmark": [
+    {
+      "model": "10. LogisticRegression (Híbrido TF-IDF+W2V)",
+      "representation": "Fusão Híbrida",
+      "roc_auc": 0.9155,
+      "roc_ci_low": 0.9083,
+      "roc_ci_high": 0.9213,
+      "pr_auc": 0.8778,
+      "f1": 0.7991,
+      "f1_ci_low": 0.7873,
+      "f1_ci_high": 0.8111,
+      "accuracy": 0.8436,
+      "precision": 0.8218,
+      "recall": 0.7777,
+      "train_sec": 7.38,
+      "infer_ms_1k": 38.9
+    },
+    {
+      "model": "7. LogisticRegression (Word2Vec 64D)",
+      "representation": "Word2Vec Spark 64D",
+      "roc_auc": 0.9025,
+      "roc_ci_low": 0.895,
+      "roc_ci_high": 0.9094,
+      "pr_auc": 0.8549,
+      "f1": 0.7702,
+      "f1_ci_low": 0.7568,
+      "f1_ci_high": 0.7811,
+      "accuracy": 0.8256,
+      "precision": 0.8143,
+      "recall": 0.7307,
+      "train_sec": 6.23,
+      "infer_ms_1k": 44.62
+    },
+    {
+      "model": "6. LogisticRegression (TF-IDF 16k)",
+      "representation": "TF-IDF (1–2g, 16k)",
+      "roc_auc": 0.892,
+      "roc_ci_low": 0.884,
+      "roc_ci_high": 0.899,
+      "pr_auc": 0.8417,
+      "f1": 0.781,
+      "f1_ci_low": 0.7693,
+      "f1_ci_high": 0.792,
+      "accuracy": 0.8273,
+      "precision": 0.7927,
+      "recall": 0.7697,
+      "train_sec": 7.6,
+      "infer_ms_1k": 30.41
+    },
+    {
+      "model": "5. LinearSVC (TF-IDF 16k)",
+      "representation": "TF-IDF (1–2g, 16k)",
+      "roc_auc": 0.8833,
+      "roc_ci_low": 0.8754,
+      "roc_ci_high": 0.8906,
+      "pr_auc": 0.8294,
+      "f1": 0.7684,
+      "f1_ci_low": 0.7563,
+      "f1_ci_high": 0.7792,
+      "accuracy": 0.8143,
+      "precision": 0.7665,
+      "recall": 0.7703,
+      "train_sec": 12.04,
+      "infer_ms_1k": 35.0
+    },
+    {
+      "model": "4. Multinomial NaiveBayes (TF-IDF 16k)",
+      "representation": "TF-IDF (1–2g, 16k)",
+      "roc_auc": 0.8821,
+      "roc_ci_low": 0.8735,
+      "roc_ci_high": 0.8902,
+      "pr_auc": 0.8158,
+      "f1": 0.7786,
+      "f1_ci_low": 0.7667,
+      "f1_ci_high": 0.7895,
+      "accuracy": 0.812,
+      "precision": 0.7359,
+      "recall": 0.8267,
+      "train_sec": 0.49,
+      "infer_ms_1k": 34.65
+    },
+    {
+      "model": "9. GBTClassifier (Word2Vec 64D + Meta)",
+      "representation": "Word2Vec Spark 64D",
+      "roc_auc": 0.8674,
+      "roc_ci_low": 0.8593,
+      "roc_ci_high": 0.8749,
+      "pr_auc": 0.8154,
+      "f1": 0.7292,
+      "f1_ci_low": 0.7146,
+      "f1_ci_high": 0.7418,
+      "accuracy": 0.7933,
+      "precision": 0.7662,
+      "recall": 0.6957,
+      "train_sec": 18.97,
+      "infer_ms_1k": 38.04
+    },
+    {
+      "model": "8. RandomForest (Word2Vec 64D + Meta)",
+      "representation": "Word2Vec Spark 64D",
+      "roc_auc": 0.862,
+      "roc_ci_low": 0.8534,
+      "roc_ci_high": 0.8696,
+      "pr_auc": 0.8123,
+      "f1": 0.7017,
+      "f1_ci_low": 0.6873,
+      "f1_ci_high": 0.7161,
+      "accuracy": 0.7853,
+      "precision": 0.7898,
+      "recall": 0.6313,
+      "train_sec": 5.72,
+      "infer_ms_1k": 54.03
+    },
+    {
+      "model": "3. GBTClassifier (BoW 50 — Legado)",
+      "representation": "BoW Colidido (50)",
+      "roc_auc": 0.7344,
+      "roc_ci_low": 0.7243,
+      "roc_ci_high": 0.7455,
+      "pr_auc": 0.6572,
+      "f1": 0.5701,
+      "f1_ci_low": 0.5562,
+      "f1_ci_high": 0.5863,
+      "accuracy": 0.6928,
+      "precision": 0.6475,
+      "recall": 0.5093,
+      "train_sec": 16.05,
+      "infer_ms_1k": 39.07
+    },
+    {
+      "model": "2. LogisticRegression (BoW 50 — Legado)",
+      "representation": "BoW Colidido (50)",
+      "roc_auc": 0.7269,
+      "roc_ci_low": 0.7157,
+      "roc_ci_high": 0.738,
+      "pr_auc": 0.6237,
+      "f1": 0.4819,
+      "f1_ci_low": 0.4646,
+      "f1_ci_high": 0.4995,
+      "accuracy": 0.6817,
+      "precision": 0.6907,
+      "recall": 0.37,
+      "train_sec": 5.13,
+      "infer_ms_1k": 30.97
+    },
+    {
+      "model": "1. Baseline Majoritário (Dummy)",
+      "representation": "Baseline",
+      "roc_auc": 0.5,
+      "roc_ci_low": 0.5,
+      "roc_ci_high": 0.5,
+      "pr_auc": 0.4,
+      "f1": 0.0,
+      "f1_ci_low": 0.0,
+      "f1_ci_high": 0.0,
+      "accuracy": 0.6,
+      "precision": 0.0,
+      "recall": 0.0,
+      "train_sec": 0.0,
+      "infer_ms_1k": 0.01
+    }
+  ],
+  "calibration_and_threshold": {
+    "brier_score": 0.1128,
+    "opt_threshold_val": 0.37,
+    "test_f1_at_opt": 0.809,
+    "test_acc_at_opt": 0.8367,
+    "test_prec_at_opt": 0.7599,
+    "test_rec_at_opt": 0.865
+  },
+  "slice_error_analysis": [
+    {
+      "Dimensão": "Nota Original (Estrelas)",
+      "Fatia": "1★ (Não-Positivo)",
+      "N": 1500,
+      "Acurácia": 0.9667,
+      "Prob Média Positivo": 0.1089,
+      "ROC-AUC": NaN
+    },
+    {
+      "Dimensão": "Nota Original (Estrelas)",
+      "Fatia": "2★ (Não-Positivo)",
+      "N": 1500,
+      "Acurácia": 0.9427,
+      "Prob Média Positivo": 0.1486,
+      "ROC-AUC": NaN
+    },
+    {
+      "Dimensão": "Nota Original (Estrelas)",
+      "Fatia": "3★ (Não-Positivo)",
+      "N": 1500,
+      "Acurácia": 0.7533,
+      "Prob Média Positivo": 0.3239,
+      "ROC-AUC": NaN
+    },
+    {
+      "Dimensão": "Nota Original (Estrelas)",
+      "Fatia": "4★ (Positivo)",
+      "N": 1500,
+      "Acurácia": 0.694,
+      "Prob Média Positivo": 0.6333,
+      "ROC-AUC": NaN
+    },
+    {
+      "Dimensão": "Nota Original (Estrelas)",
+      "Fatia": "5★ (Positivo)",
+      "N": 1500,
+      "Acurácia": 0.8613,
+      "Prob Média Positivo": 0.7694,
+      "ROC-AUC": NaN
+    },
+    {
+      "Dimensão": "Tamanho do Review",
+      "Fatia": "Curto (≤40 pal.)",
+      "N": 1328,
+      "Acurácia": 0.8373,
+      "Prob Média Positivo": 0.4995,
+      "ROC-AUC": 0.9232
+    },
+    {
+      "Dimensão": "Tamanho do Review",
+      "Fatia": "Médio (41–120 pal.)",
+      "N": 3076,
+      "Acurácia": 0.8449,
+      "Prob Média Positivo": 0.4274,
+      "ROC-AUC": 0.9232
+    },
+    {
+      "Dimensão": "Tamanho do Review",
+      "Fatia": "Longo (>120 pal.)",
+      "N": 3096,
+      "Acurácia": 0.845,
+      "Prob Média Positivo": 0.3224,
+      "ROC-AUC": 0.9044
+    }
+  ]
+}
