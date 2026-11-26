@@ -70,7 +70,7 @@ Atuo como Cientista de Dados combinando **inferência causal, econometria aplica
 | ⭐ [**app_forecast_ARIMA**](./app_forecast_ARIMA/) | Aplicação web *full-stack* interativa e didática (*SARIMAX Forecast Studio*) com fluxo Box-Jenkins guiado (ADF/KPSS, ACF/PACF), Auto/Manual SARIMA & SARIMAX com variáveis exógenas, backtest vs. Seasonal Naive, diagnóstico Ljung-Box e exportação Excel. | Python, FastAPI, Statsmodels, React, TypeScript, Tailwind, Recharts |
 | [**app_forecasts**](./app_forecasts/) | Aplicação interativa para previsão de séries temporais com múltiplos modelos estatísticos. | Python, Streamlit, Statsmodels |
 | [**app_time_series**](./app_time_series/) / [**app_teste_estatistico_ts**](./app_teste_estatistico_ts/) | Ferramentas interativas de exploração, decomposição e testes de estacionariedade/raiz unitária em séries temporais. | Python, Streamlit, SciPy, Statsmodels |
-| [**Macroeconomia_app**](./Macroeconomia_app/) | Aplicação analítica para acompanhamento e modelagem de indicadores macroeconômicos. | Python, Macroeconomia |
+| ⭐ [**Macroeconomia_app**](./Macroeconomia_app/) | Aplicação web *full-stack* (**Observatório Macro Brasil Studio**) conectada às APIs oficiais do Banco Central (**SGS + Olinda Focus**) com cache colunar **DuckDB/Parquet** (`76` séries BCB + `37` tabelas = `43.109` registros) e **60 estudos macroeconométricos autorais** (`M01`–`M60`, 10 por pilar), incluindo 6 laboratórios interativos (**Dominância Fiscal VAR/Granger**, **Projeção DBGG ARIMA**, **Regra de Taylor HAC**, **Inércia Rolling AR(1)**, **SARIMA IPCA** e **Curva de Phillips**). | Python, FastAPI, DuckDB, Parquet, Statsmodels, React, TypeScript, Tailwind, Recharts |
 
 ---
 

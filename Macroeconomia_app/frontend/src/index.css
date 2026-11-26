@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 15% -10%, rgba(16, 185, 129, 0.10), transparent),
+      radial-gradient(ellipse 70% 45% at 88% -5%, rgba(56, 189, 248, 0.09), transparent);
+    min-height: 100vh;
+  }
+}
+
+/* Custom sleek scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0a101f;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
