@@ -1,51 +1,19 @@
-# Python
+# Python & Jupyter
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+.ipynb_checkpoints/
+.pytest_cache/
 
-# MLflow
-mlflow-server/
+# MLflow local tracking store (reproduzível via python src/churn_mlops.py)
+mlflow_store/
 mlruns/
 mlartifacts/
+mlflow-server/
+*.db
+*.db-journal
 
-# Jupyter
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
+# Ambientes & OS
+.venv/
+venv/
 .DS_Store
 Thumbs.db
-
-# Environment
-.env
-.venv
-
-# Data (se sensível)
-# data/*.csv

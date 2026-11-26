@@ -44,7 +44,7 @@ Atuo como Cientista de Dados combinando **inferência causal, econometria aplica
 | :--- | :--- | :--- |
 | ⭐ [**Aplicando Survival Analysis**](./Aplicando%20Survival%20Analysis/) | Estudo completo de *Time-to-Churn* com censura à direita: *Swimmer Plot*, Kaplan-Meier, Log-Rank, Nelson-Aalen, Regressão de Cox (*Hazard Ratios*) e XGBoost `survival:cox`. | Python, Lifelines, XGBoost, Scikit-Learn |
 | ⭐ [**Gestao_Estoques_Classif_Cluster**](./Gestao_Estoques_Classif_Cluster/) | Pipeline *end-to-end* sem *Data Leakage* sobre 198.917 SKUs combinando Clusterização (`PCA`, `K-Means`, `GMM`, `KNN`) + Classificação (`LightGBM`, `XGBoost`) e otimização de *threshold* para decisão de inventário. | Python, Scikit-Learn, LightGBM, XGBoost |
-| [**aplicacao_mlflow**](./aplicacao_mlflow/) | Rastreamento de experimentos, versionamento de métricas, artefatos e registro de modelos com MLflow. | Python, MLflow, Scikit-Learn |
+| ⭐ [**aplicacao_mlflow**](./aplicacao_mlflow/) | Pipeline MLOps *end-to-end* com **MLflow 3.3** (SQLite Tracking Store + **Model Registry** + Aliases `@baseline` / `@challenger` / `@champion` + **Quality Gate automatizado**) sobre ABT temporal de churn (**4.055 registros, 1.506 clientes, Abr–Nov/2024**): split cronológico *Out-of-Time* sem vazamento, `ChurnFeatureEngineer` embutido no artefato (**Zero *Training-Serving Skew*** `1,1e-16`), benchmark de **9 modelos** (`@champion Soft-Voting`: `OOT ROC-AUC 0,8339`, `PR-AUC 0,8069`, `Brier 0,1707`), monitoramento de **Data Drift (PSI)**, otimização de **ROI de retenção** (`τ = 0,29`, `+36%` lucro sobre abordar todos), *Slice Error Analysis* e CLI de inferência via `models:/churn-predictor@champion`. | Python, MLflow 3.3, Scikit-Learn, SQLite, Unittest |
 
 ---
 

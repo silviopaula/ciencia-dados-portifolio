@@ -1,0 +1,559 @@
+{
+  "mlflow_version": "3.3.1",
+  "tracking_uri": "sqlite:///mlflow_store/mlflow.db",
+  "experiment_name": "churn_mlops_oot_benchmark",
+  "experiment_id": "1",
+  "registered_model_name": "churn-predictor",
+  "elapsed_sec": 106.39,
+  "dataset": {
+    "total_rows": 4055,
+    "unique_clients": 1506,
+    "n_raw_features": 92,
+    "n_engineered_features": 104,
+    "overall_churn_rate": 0.4343,
+    "train_n": 2692,
+    "val_n": 820,
+    "oot_test_n": 543,
+    "train_churn_rate": 0.4205,
+    "val_churn_rate": 0.4256,
+    "oot_churn_rate": 0.5157,
+    "cohorts": [
+      {
+        "ym": "2024-04",
+        "n": 1104,
+        "unique_clients": 797,
+        "churn_rate": 0.4139,
+        "pct_inativo_d7": 0.3859,
+        "pct_inativo_d14": 0.2255
+      },
+      {
+        "ym": "2024-05",
+        "n": 527,
+        "unique_clients": 514,
+        "churn_rate": 0.3871,
+        "pct_inativo_d7": 0.3871,
+        "pct_inativo_d14": 0.2543
+      },
+      {
+        "ym": "2024-06",
+        "n": 522,
+        "unique_clients": 518,
+        "churn_rate": 0.4291,
+        "pct_inativo_d7": 0.364,
+        "pct_inativo_d14": 0.2165
+      },
+      {
+        "ym": "2024-07",
+        "n": 539,
+        "unique_clients": 503,
+        "churn_rate": 0.4583,
+        "pct_inativo_d7": 0.3822,
+        "pct_inativo_d14": 0.2301
+      },
+      {
+        "ym": "2024-08",
+        "n": 420,
+        "unique_clients": 399,
+        "churn_rate": 0.3857,
+        "pct_inativo_d7": 0.3619,
+        "pct_inativo_d14": 0.2333
+      },
+      {
+        "ym": "2024-09",
+        "n": 400,
+        "unique_clients": 400,
+        "churn_rate": 0.4675,
+        "pct_inativo_d7": 0.4725,
+        "pct_inativo_d14": 0.32
+      },
+      {
+        "ym": "2024-10",
+        "n": 385,
+        "unique_clients": 365,
+        "churn_rate": 0.5299,
+        "pct_inativo_d7": 0.4753,
+        "pct_inativo_d14": 0.2675
+      },
+      {
+        "ym": "2024-11",
+        "n": 158,
+        "unique_clients": 158,
+        "churn_rate": 0.481,
+        "pct_inativo_d7": 0.5063,
+        "pct_inativo_d14": 0.3987
+      }
+    ]
+  },
+  "leakage_audit": {
+    "random_split_rf_auc": 0.8045,
+    "oot_split_rf_auc": 0.8345,
+    "auc_inflation_pp": -3.0,
+    "random_client_overlap": 479,
+    "oot_client_overlap": 260
+  },
+  "models_benchmark": [
+    {
+      "model": "4. RandomForest (300 árv.)",
+      "family": "Bagging",
+      "run_id": "f3a51d1eec8341bfbe796656eb2f2e2a",
+      "val_roc_auc": 0.8031,
+      "val_brier": 0.1792,
+      "oot_roc_auc": 0.8345,
+      "oot_roc_ci_low": 0.7991,
+      "oot_roc_ci_high": 0.8685,
+      "oot_pr_auc": 0.803,
+      "oot_f1": 0.7234,
+      "oot_f1_ci_low": 0.6841,
+      "oot_f1_ci_high": 0.7684,
+      "oot_accuracy": 0.7366,
+      "oot_precision": 0.789,
+      "oot_recall": 0.6679,
+      "oot_brier": 0.1718,
+      "train_sec": 0.78
+    },
+    {
+      "model": "6. GradientBoosting (Clássico)",
+      "family": "Boosting",
+      "run_id": "7df552c48bb5449db648417c4ce552af",
+      "val_roc_auc": 0.8028,
+      "val_brier": 0.1794,
+      "oot_roc_auc": 0.8344,
+      "oot_roc_ci_low": 0.8002,
+      "oot_roc_ci_high": 0.8688,
+      "oot_pr_auc": 0.8052,
+      "oot_f1": 0.7297,
+      "oot_f1_ci_low": 0.6887,
+      "oot_f1_ci_high": 0.7768,
+      "oot_accuracy": 0.7366,
+      "oot_precision": 0.7751,
+      "oot_recall": 0.6893,
+      "oot_brier": 0.1696,
+      "train_sec": 4.59
+    },
+    {
+      "model": "8. Soft-Voting Ensemble (HGB+RF+LR)",
+      "family": "Ensemble",
+      "run_id": "8671575fb5c6458189091a8c505489e8",
+      "val_roc_auc": 0.8037,
+      "val_brier": 0.1785,
+      "oot_roc_auc": 0.8339,
+      "oot_roc_ci_low": 0.7964,
+      "oot_roc_ci_high": 0.8706,
+      "oot_pr_auc": 0.8069,
+      "oot_f1": 0.7252,
+      "oot_f1_ci_low": 0.6834,
+      "oot_f1_ci_high": 0.7698,
+      "oot_accuracy": 0.7348,
+      "oot_precision": 0.7787,
+      "oot_recall": 0.6786,
+      "oot_brier": 0.1707,
+      "train_sec": 1.83
+    },
+    {
+      "model": "9. Calibrated (Soft-Voting Ensemble + Platt)",
+      "family": "Calibrado",
+      "run_id": "764f1494cb6b4939b0ab414b81fc6f98",
+      "val_roc_auc": 0.8037,
+      "val_brier": 0.1789,
+      "oot_roc_auc": 0.8339,
+      "oot_roc_ci_low": 0.7964,
+      "oot_roc_ci_high": 0.8706,
+      "oot_pr_auc": 0.8069,
+      "oot_f1": 0.7287,
+      "oot_f1_ci_low": 0.6876,
+      "oot_f1_ci_high": 0.7731,
+      "oot_accuracy": 0.7422,
+      "oot_precision": 0.7966,
+      "oot_recall": 0.6714,
+      "oot_brier": 0.1751,
+      "train_sec": 0.56
+    },
+    {
+      "model": "5. ExtraTrees (300 árv.)",
+      "family": "Bagging",
+      "run_id": "133f8c336f2e4b719ea844d572d415f5",
+      "val_roc_auc": 0.8007,
+      "val_brier": 0.181,
+      "oot_roc_auc": 0.8333,
+      "oot_roc_ci_low": 0.7973,
+      "oot_roc_ci_high": 0.8699,
+      "oot_pr_auc": 0.7964,
+      "oot_f1": 0.7244,
+      "oot_f1_ci_low": 0.6838,
+      "oot_f1_ci_high": 0.7681,
+      "oot_accuracy": 0.7422,
+      "oot_precision": 0.807,
+      "oot_recall": 0.6571,
+      "oot_brier": 0.1724,
+      "train_sec": 0.59
+    },
+    {
+      "model": "2. DecisionTree (Legado OOT)",
+      "family": "Árvore Legada",
+      "run_id": "386f0e73f489448ebded212003c29719",
+      "val_roc_auc": 0.7804,
+      "val_brier": 0.1896,
+      "oot_roc_auc": 0.8287,
+      "oot_roc_ci_low": 0.7953,
+      "oot_roc_ci_high": 0.865,
+      "oot_pr_auc": 0.7883,
+      "oot_f1": 0.7227,
+      "oot_f1_ci_low": 0.6787,
+      "oot_f1_ci_high": 0.7649,
+      "oot_accuracy": 0.7385,
+      "oot_precision": 0.7974,
+      "oot_recall": 0.6607,
+      "oot_brier": 0.1753,
+      "train_sec": 0.12
+    },
+    {
+      "model": "7. HistGradientBoosting",
+      "family": "Boosting",
+      "run_id": "4a7395c28ec24b9bb5b752a14befdbd9",
+      "val_roc_auc": 0.7864,
+      "val_brier": 0.188,
+      "oot_roc_auc": 0.8209,
+      "oot_roc_ci_low": 0.7817,
+      "oot_roc_ci_high": 0.857,
+      "oot_pr_auc": 0.79,
+      "oot_f1": 0.7218,
+      "oot_f1_ci_low": 0.6806,
+      "oot_f1_ci_high": 0.7649,
+      "oot_accuracy": 0.7274,
+      "oot_precision": 0.7619,
+      "oot_recall": 0.6857,
+      "oot_brier": 0.1769,
+      "train_sec": 2.74
+    },
+    {
+      "model": "3. LogisticRegression (L2)",
+      "family": "Linear Regularizado",
+      "run_id": "d4a36ef1f462485287d6818eec7e1001",
+      "val_roc_auc": 0.7955,
+      "val_brier": 0.1817,
+      "oot_roc_auc": 0.8164,
+      "oot_roc_ci_low": 0.7771,
+      "oot_roc_ci_high": 0.8501,
+      "oot_pr_auc": 0.8054,
+      "oot_f1": 0.6747,
+      "oot_f1_ci_low": 0.625,
+      "oot_f1_ci_high": 0.718,
+      "oot_accuracy": 0.6998,
+      "oot_precision": 0.7647,
+      "oot_recall": 0.6036,
+      "oot_brier": 0.184,
+      "train_sec": 0.2
+    },
+    {
+      "model": "1. DummyClassifier (Baseline)",
+      "family": "Baseline",
+      "run_id": "c36d65dfe30846d4ba13afc3b9bcb350",
+      "val_roc_auc": 0.5,
+      "val_brier": 0.2445,
+      "oot_roc_auc": 0.5,
+      "oot_roc_ci_low": 0.5,
+      "oot_roc_ci_high": 0.5,
+      "oot_pr_auc": 0.5157,
+      "oot_f1": 0.0,
+      "oot_f1_ci_low": 0.0,
+      "oot_f1_ci_high": 0.0,
+      "oot_accuracy": 0.4843,
+      "oot_precision": 0.0,
+      "oot_recall": 0.0,
+      "oot_brier": 0.2588,
+      "train_sec": 0.1
+    }
+  ],
+  "registry_governance": {
+    "champion_model": "8. Soft-Voting Ensemble (HGB+RF+LR)",
+    "challenger_model": "4. RandomForest (300 árv.)",
+    "baseline_model": "2. DecisionTree (Legado OOT)",
+    "versions": [
+      {
+        "version": 1,
+        "alias": "@baseline",
+        "model": "2. DecisionTree (Legado OOT)",
+        "run_id": "386f0e73f489448ebded212003c29719",
+        "val_roc_auc": 0.7804,
+        "oot_roc_auc": 0.8287,
+        "oot_brier": 0.1753
+      },
+      {
+        "version": 2,
+        "alias": "@challenger",
+        "model": "4. RandomForest (300 árv.)",
+        "run_id": "f3a51d1eec8341bfbe796656eb2f2e2a",
+        "val_roc_auc": 0.8031,
+        "oot_roc_auc": 0.8345,
+        "oot_brier": 0.1718
+      },
+      {
+        "version": 3,
+        "alias": "@champion",
+        "model": "8. Soft-Voting Ensemble (HGB+RF+LR)",
+        "run_id": "8671575fb5c6458189091a8c505489e8",
+        "val_roc_auc": 0.8037,
+        "oot_roc_auc": 0.8339,
+        "oot_brier": 0.1707
+      }
+    ],
+    "quality_gate_checks": {
+      "val_beats_legacy_by_2pp": true,
+      "oot_beats_legacy_and_brier": true,
+      "registry_serve_zero_skew": true,
+      "drift_audit_logged": true
+    },
+    "promotion_approved": true,
+    "serve_roundtrip_max_diff": 1.1102230246251565e-16
+  },
+  "roi_optimization": {
+    "val_opt_threshold": 0.29,
+    "theoretical_breakeven_prob": 0.3333,
+    "oot_at_opt_threshold": {
+      "threshold": 0.29,
+      "contacted": 364,
+      "contacted_pct": 67.0,
+      "tp_saved_targets": 256,
+      "expected_revenue_saved": 34560.0,
+      "campaign_cost": 16380.0,
+      "net_profit": 18180.0,
+      "roi_pct": 111.0,
+      "treat_all_profit": 13365.0,
+      "gain_vs_treat_all": 4815.0
+    },
+    "oot_at_default_050": {
+      "threshold": 0.5,
+      "contacted": 244,
+      "contacted_pct": 44.9,
+      "tp_saved_targets": 190,
+      "expected_revenue_saved": 25650.0,
+      "campaign_cost": 10980.0,
+      "net_profit": 14670.0,
+      "roi_pct": 133.6,
+      "treat_all_profit": 13365.0,
+      "gain_vs_treat_all": 1305.0
+    },
+    "oot_metrics_at_opt": {
+      "roc_auc": 0.8339,
+      "roc_ci_low": 0.7964,
+      "roc_ci_high": 0.8706,
+      "pr_auc": 0.8069,
+      "f1": 0.795,
+      "f1_ci_low": 0.762,
+      "f1_ci_high": 0.8311,
+      "accuracy": 0.7569,
+      "precision": 0.7033,
+      "recall": 0.9143,
+      "brier": 0.1707
+    }
+  },
+  "drift_monitoring": {
+    "max_psi": 1.5239,
+    "n_features_warn_010": 23,
+    "n_features_crit_025": 9,
+    "top_12_psi": [
+      {
+        "feature": "dias_primeira_iteracao_life",
+        "psi": 1.5239,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "pct_transacao_tarde_life",
+        "psi": 0.4378,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "ratio_iter_d28_life",
+        "psi": 0.435,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "pct_transacao_manha_life",
+        "psi": 0.4187,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "frequencia_life",
+        "psi": 0.3951,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "saldo_atual_life",
+        "psi": 0.2874,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "ratio_freq_d7_life",
+        "psi": 0.2774,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "pontos_acum_life",
+        "psi": 0.264,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "pct_transacao_dia05_life",
+        "psi": 0.2533,
+        "status": "Crítico (>0,25)"
+      },
+      {
+        "feature": "qtd_iteracoes_life",
+        "psi": 0.2479,
+        "status": "Atenção (0,10–0,25)"
+      },
+      {
+        "feature": "pct_transacao_dia06_life",
+        "psi": 0.213,
+        "status": "Atenção (0,10–0,25)"
+      },
+      {
+        "feature": "qtd_mensagens_life",
+        "psi": 0.1946,
+        "status": "Atenção (0,10–0,25)"
+      }
+    ]
+  },
+  "top_15_permutation_importance": [
+    {
+      "feature": "qtd_iteracoes_d28",
+      "imp_mean": 0.01929,
+      "imp_std": 0.00525
+    },
+    {
+      "feature": "frequencia_life",
+      "imp_mean": 0.01651,
+      "imp_std": 0.00582
+    },
+    {
+      "feature": "dias_ultima_iteracao_life",
+      "imp_mean": 0.0099,
+      "imp_std": 0.00516
+    },
+    {
+      "feature": "dias_primeira_iteracao_life",
+      "imp_mean": 0.00929,
+      "imp_std": 0.00243
+    },
+    {
+      "feature": "media_dias_recorrencia_life",
+      "imp_mean": 0.00776,
+      "imp_std": 0.00211
+    },
+    {
+      "feature": "frequencia_d7",
+      "imp_mean": 0.00717,
+      "imp_std": 0.0048
+    },
+    {
+      "feature": "pontos_acum_life",
+      "imp_mean": 0.00656,
+      "imp_std": 0.00368
+    },
+    {
+      "feature": "pontos_acum_d28",
+      "imp_mean": 0.00651,
+      "imp_std": 0.00244
+    },
+    {
+      "feature": "pontos_neg_life",
+      "imp_mean": 0.00342,
+      "imp_std": 0.00282
+    },
+    {
+      "feature": "qtd_resgate_poneis_life",
+      "imp_mean": 0.0033,
+      "imp_std": 0.00217
+    },
+    {
+      "feature": "qtd_iteracoes_d14",
+      "imp_mean": 0.00305,
+      "imp_std": 0.00254
+    },
+    {
+      "feature": "mediana_dias_recorrencia_d28",
+      "imp_mean": 0.00287,
+      "imp_std": 0.00174
+    },
+    {
+      "feature": "qtd_iteracoes_d7",
+      "imp_mean": 0.00269,
+      "imp_std": 0.00208
+    },
+    {
+      "feature": "frequencia_d28",
+      "imp_mean": 0.00254,
+      "imp_std": 0.00185
+    },
+    {
+      "feature": "frequencia_d14",
+      "imp_mean": 0.0022,
+      "imp_std": 0.00309
+    }
+  ],
+  "slice_error_analysis": [
+    {
+      "Dimensão": "Safra OOT",
+      "Fatia": "2024-10",
+      "N": 385,
+      "Taxa Churn": 0.5299,
+      "ROC-AUC": 0.8324,
+      "F1 (τ ROI)": 0.7939,
+      "Acurácia": 0.7532
+    },
+    {
+      "Dimensão": "Safra OOT",
+      "Fatia": "2024-11",
+      "N": 158,
+      "Taxa Churn": 0.481,
+      "ROC-AUC": 0.8347,
+      "F1 (τ ROI)": 0.7978,
+      "Acurácia": 0.7658
+    },
+    {
+      "Dimensão": "Atividade Recente (d7)",
+      "Fatia": "Ativo últimos 7d",
+      "N": 280,
+      "Taxa Churn": 0.275,
+      "ROC-AUC": 0.8167,
+      "F1 (τ ROI)": 0.6455,
+      "Acurácia": 0.7607
+    },
+    {
+      "Dimensão": "Atividade Recente (d7)",
+      "Fatia": "Inativo últimos 7d",
+      "N": 263,
+      "Taxa Churn": 0.7719,
+      "ROC-AUC": 0.6291,
+      "F1 (τ ROI)": 0.8571,
+      "Acurácia": 0.7529
+    },
+    {
+      "Dimensão": "Tempo de Casa (Tenure)",
+      "Fatia": "Intermediário (31–120d)",
+      "N": 107,
+      "Taxa Churn": 0.5421,
+      "ROC-AUC": 0.8068,
+      "F1 (τ ROI)": 0.7656,
+      "Acurácia": 0.7196
+    },
+    {
+      "Dimensão": "Tempo de Casa (Tenure)",
+      "Fatia": "Novo (≤30d)",
+      "N": 134,
+      "Taxa Churn": 0.4925,
+      "ROC-AUC": 0.7447,
+      "F1 (τ ROI)": 0.7305,
+      "Acurácia": 0.6642
+    },
+    {
+      "Dimensão": "Tempo de Casa (Tenure)",
+      "Fatia": "Veterano (>120d)",
+      "N": 302,
+      "Taxa Churn": 0.5166,
+      "ROC-AUC": 0.8779,
+      "F1 (τ ROI)": 0.8367,
+      "Acurácia": 0.8113
+    }
+  ]
+}
