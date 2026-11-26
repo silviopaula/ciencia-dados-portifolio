@@ -1,0 +1,601 @@
+{
+  "spark_version": "4.0.1",
+  "elapsed_spark_sec": 31.21,
+  "audit": {
+    "export_rows": 13779191,
+    "import_rows": 22702125,
+    "total_rows": 36481316,
+    "export_fob_total_usd": 3848575919399.0,
+    "import_fob_total_usd": 3241669313123.0,
+    "period": "2010–Jun/2025",
+    "raw_ag_rows": 13717,
+    "dedup_sh4_rows": 1455,
+    "fob_12m_true_usd": 335958139058.0,
+    "fob_12m_bug_fanout_usd": 3587929984531.0,
+    "fob_12m_clean_broadcast_usd": 335958139058.0,
+    "fanout_inflation_factor": 10.68,
+    "benchmark_broadcast_sec": 1.802,
+    "benchmark_sortmerge_sec": 3.734,
+    "benchmark_speedup_x": 2.07
+  },
+  "balanca_2024": {
+    "CO_ANO": 2024,
+    "export_fob": 337046161710,
+    "export_kg": 809834588105,
+    "import_fob": 262869606174,
+    "import_kg": 185124462140,
+    "saldo_fob": 74176555536,
+    "corrente_fob": 599915767884,
+    "preco_medio_exp_usd_kg": 0.4161913638421923,
+    "preco_medio_imp_usd_kg": 1.419961485020847
+  },
+  "hhi_2010_vs_2024": {
+    "2010": {
+      "CO_ANO": 2010,
+      "hhi_parceiros": 529.0,
+      "hhi_produtos_sh4": 409.0,
+      "share_china_pct": 15.34,
+      "share_eua_pct": 9.63
+    },
+    "2024": {
+      "CO_ANO": 2024,
+      "hhi_parceiros": 1020.4,
+      "hhi_produtos_sh4": 530.8,
+      "share_china_pct": 28.0,
+      "share_eua_pct": 11.98
+    }
+  },
+  "top5_parceiros_12m": [
+    {
+      "CO_PAIS": 160,
+      "export_fob": 90482952117,
+      "import_fob": 70126737561,
+      "corrente_fob": 160609689678,
+      "saldo_fob": 20356214556,
+      "NO_PAIS": "China"
+    },
+    {
+      "CO_PAIS": 249,
+      "export_fob": 41206958664,
+      "import_fob": 42885887953,
+      "corrente_fob": 84092846617,
+      "saldo_fob": -1678929289,
+      "NO_PAIS": "Estados Unidos"
+    },
+    {
+      "CO_PAIS": 63,
+      "export_fob": 17028375805,
+      "import_fob": 13672627570,
+      "corrente_fob": 30701003375,
+      "saldo_fob": 3355748235,
+      "NO_PAIS": "Argentina"
+    },
+    {
+      "CO_PAIS": 23,
+      "export_fob": 6011819114,
+      "import_fob": 13988344065,
+      "corrente_fob": 20000163179,
+      "saldo_fob": -7976524951,
+      "NO_PAIS": "Alemanha"
+    },
+    {
+      "CO_PAIS": 573,
+      "export_fob": 11728094460,
+      "import_fob": 2137925403,
+      "corrente_fob": 13866019863,
+      "saldo_fob": 9590169057,
+      "NO_PAIS": "Países Baixos (Holanda)"
+    }
+  ],
+  "top5_municipios_12m": [
+    {
+      "CO_MUN": 3304557,
+      "export_fob": 32713262075,
+      "export_kg": 63649052316,
+      "NO_MUN": "Rio de Janeiro",
+      "SG_UF": "RJ",
+      "municipio_uf": "Rio de Janeiro - RJ"
+    },
+    {
+      "CO_MUN": 3301702,
+      "export_fob": 6975525362,
+      "export_kg": 12686378572,
+      "NO_MUN": "Duque de Caxias",
+      "SG_UF": "RJ",
+      "municipio_uf": "Duque de Caxias - RJ"
+    },
+    {
+      "CO_MUN": 4118204,
+      "export_fob": 6597505696,
+      "export_kg": 12674764036,
+      "NO_MUN": "Paranaguá",
+      "SG_UF": "PR",
+      "municipio_uf": "Paranaguá - PR"
+    },
+    {
+      "CO_MUN": 3448500,
+      "export_fob": 6346949161,
+      "export_kg": 12307889368,
+      "NO_MUN": "Santos",
+      "SG_UF": "SP",
+      "municipio_uf": "Santos - SP"
+    },
+    {
+      "CO_MUN": 1502152,
+      "export_fob": 6312198756,
+      "export_kg": 83520748660,
+      "NO_MUN": "Canaã dos Carajás",
+      "SG_UF": "PA",
+      "municipio_uf": "Canaã dos Carajás - PA"
+    }
+  ],
+  "top5_exposicao_eua": [
+    {
+      "categoria_agregada": "Aviões e Similares",
+      "CO_PAIS": 249,
+      "pais_fob": 2471704115,
+      "total_cat_fob": 3644569022,
+      "share_pct": 67.81883125494008
+    },
+    {
+      "categoria_agregada": "Madeira e Derivados",
+      "CO_PAIS": 249,
+      "pais_fob": 1837283616,
+      "total_cat_fob": 4507239381,
+      "share_pct": 40.762947354093505
+    },
+    {
+      "categoria_agregada": "Metais e Produtos",
+      "CO_PAIS": 249,
+      "pais_fob": 7000572101,
+      "total_cat_fob": 17296744286,
+      "share_pct": 40.47335143103358
+    },
+    {
+      "categoria_agregada": "Frutas e Derivados",
+      "CO_PAIS": 249,
+      "pais_fob": 1505326071,
+      "total_cat_fob": 3801947267,
+      "share_pct": 39.59355470460817
+    },
+    {
+      "categoria_agregada": "Carne Bovina e Animais Vivos",
+      "CO_PAIS": 249,
+      "pais_fob": 562653536,
+      "total_cat_fob": 1623687173,
+      "share_pct": 34.652828781077034
+    }
+  ],
+  "top5_exposicao_china": [
+    {
+      "categoria_agregada": "Minerais Não Metálicos",
+      "CO_PAIS": 160,
+      "pais_fob": 18643267034,
+      "total_cat_fob": 28025711462,
+      "share_pct": 66.52201161522113
+    },
+    {
+      "categoria_agregada": "Soja e Derivados",
+      "CO_PAIS": 160,
+      "pais_fob": 30471810496,
+      "total_cat_fob": 50739564200,
+      "share_pct": 60.05532561511436
+    },
+    {
+      "categoria_agregada": "Petróleo",
+      "CO_PAIS": 160,
+      "pais_fob": 18315124831,
+      "total_cat_fob": 42519387685,
+      "share_pct": 43.0747614868904
+    },
+    {
+      "categoria_agregada": "Outros Minerais Metálicos",
+      "CO_PAIS": 160,
+      "pais_fob": 1516076878,
+      "total_cat_fob": 5249358709,
+      "share_pct": 28.881182674765466
+    },
+    {
+      "categoria_agregada": "Carne Bovina e Animais Vivos",
+      "CO_PAIS": 160,
+      "pais_fob": 416078605,
+      "total_cat_fob": 1623687173,
+      "share_pct": 25.62553993890546
+    }
+  ],
+  "top5_russia_import": [
+    {
+      "NO_CUCI_DIVISAO": "Petróleo, produtos petrolíferos e materiais relacionados",
+      "CO_PAIS": 676,
+      "vl_fob": 5845950064,
+      "total_div_fob": 22640337724,
+      "share_pct": 25.820949030291946
+    },
+    {
+      "NO_CUCI_DIVISAO": "Adubos (exceto os do grupo 272)",
+      "CO_PAIS": 676,
+      "vl_fob": 4183305043,
+      "total_div_fob": 14589881885,
+      "share_pct": 28.67264502875035
+    },
+    {
+      "NO_CUCI_DIVISAO": "Ferro e aço",
+      "CO_PAIS": 676,
+      "vl_fob": 216771986,
+      "total_div_fob": 6714910616,
+      "share_pct": 3.228218488619715
+    },
+    {
+      "NO_CUCI_DIVISAO": "Cereais e preparações de cereais",
+      "CO_PAIS": 676,
+      "vl_fob": 120469826,
+      "total_div_fob": 3740974767,
+      "share_pct": 3.220279031622776
+    },
+    {
+      "NO_CUCI_DIVISAO": "Carvão, coque e briquetes",
+      "CO_PAIS": 676,
+      "vl_fob": 95979049,
+      "total_div_fob": 3633254487,
+      "share_pct": 2.641682528526937
+    }
+  ],
+  "russia_alternativos": [
+    {
+      "NO_CUCI_DIVISAO": "Adubos (exceto os do grupo 272)",
+      "rank": 1,
+      "NO_PAIS": "China",
+      "vl_fob": 2366422507,
+      "share_pct": 16.2196138779776
+    },
+    {
+      "NO_CUCI_DIVISAO": "Adubos (exceto os do grupo 272)",
+      "rank": 2,
+      "NO_PAIS": "Marrocos",
+      "vl_fob": 1371712324,
+      "share_pct": 9.401805544500471
+    },
+    {
+      "NO_CUCI_DIVISAO": "Adubos (exceto os do grupo 272)",
+      "rank": 3,
+      "NO_PAIS": "Canadá",
+      "vl_fob": 1305881452,
+      "share_pct": 8.950596463310573
+    },
+    {
+      "NO_CUCI_DIVISAO": "Carvão, coque e briquetes",
+      "rank": 1,
+      "NO_PAIS": "Estados Unidos",
+      "vl_fob": 1352665057,
+      "share_pct": 37.23012141978812
+    },
+    {
+      "NO_CUCI_DIVISAO": "Carvão, coque e briquetes",
+      "rank": 2,
+      "NO_PAIS": "Colômbia",
+      "vl_fob": 896239184,
+      "share_pct": 24.667668813368206
+    },
+    {
+      "NO_CUCI_DIVISAO": "Carvão, coque e briquetes",
+      "rank": 3,
+      "NO_PAIS": "Austrália",
+      "vl_fob": 827456834,
+      "share_pct": 22.774535528977935
+    },
+    {
+      "NO_CUCI_DIVISAO": "Cereais e preparações de cereais",
+      "rank": 1,
+      "NO_PAIS": "Argentina",
+      "vl_fob": 1751767899,
+      "share_pct": 46.82650934865287
+    },
+    {
+      "NO_CUCI_DIVISAO": "Cereais e preparações de cereais",
+      "rank": 2,
+      "NO_PAIS": "Paraguai",
+      "vl_fob": 762460991,
+      "share_pct": 20.381345464445364
+    },
+    {
+      "NO_CUCI_DIVISAO": "Cereais e preparações de cereais",
+      "rank": 3,
+      "NO_PAIS": "Uruguai",
+      "vl_fob": 638194581,
+      "share_pct": 17.059579942363186
+    },
+    {
+      "NO_CUCI_DIVISAO": "Ferro e aço",
+      "rank": 1,
+      "NO_PAIS": "China",
+      "vl_fob": 3114073661,
+      "share_pct": 46.375504293086486
+    },
+    {
+      "NO_CUCI_DIVISAO": "Ferro e aço",
+      "rank": 2,
+      "NO_PAIS": "Alemanha",
+      "vl_fob": 581093687,
+      "share_pct": 8.653781416172466
+    },
+    {
+      "NO_CUCI_DIVISAO": "Ferro e aço",
+      "rank": 3,
+      "NO_PAIS": "Coreia do Sul",
+      "vl_fob": 376208363,
+      "share_pct": 5.602581843808716
+    },
+    {
+      "NO_CUCI_DIVISAO": "Petróleo, produtos petrolíferos e materiais relacionados",
+      "rank": 1,
+      "NO_PAIS": "Estados Unidos",
+      "vl_fob": 6848449590,
+      "share_pct": 30.248884418098886
+    },
+    {
+      "NO_CUCI_DIVISAO": "Petróleo, produtos petrolíferos e materiais relacionados",
+      "rank": 2,
+      "NO_PAIS": "Arábia Saudita",
+      "vl_fob": 2088404295,
+      "share_pct": 9.224262996687443
+    },
+    {
+      "NO_CUCI_DIVISAO": "Petróleo, produtos petrolíferos e materiais relacionados",
+      "rank": 3,
+      "NO_PAIS": "Argélia",
+      "vl_fob": 1207815561,
+      "share_pct": 5.334794806173095
+    }
+  ],
+  "suco_top5_destinos_12m": [
+    {
+      "CO_PAIS": 249,
+      "vl_fob": 1494673628,
+      "kg_liquido": 1275818228,
+      "NO_PAIS": "Estados Unidos"
+    },
+    {
+      "CO_PAIS": 87,
+      "vl_fob": 1092327230,
+      "kg_liquido": 485910039,
+      "NO_PAIS": "Bélgica"
+    },
+    {
+      "CO_PAIS": 573,
+      "vl_fob": 735925374,
+      "kg_liquido": 438163739,
+      "NO_PAIS": "Países Baixos (Holanda)"
+    },
+    {
+      "CO_PAIS": 399,
+      "vl_fob": 135863748,
+      "kg_liquido": 26575978,
+      "NO_PAIS": "Japão"
+    },
+    {
+      "CO_PAIS": 160,
+      "vl_fob": 107985474,
+      "kg_liquido": 33197295,
+      "NO_PAIS": "China"
+    }
+  ],
+  "econometrics": {
+    "panel_n_months": 186,
+    "recommended_spec": "M2",
+    "specs": [
+      {
+        "id": "M1",
+        "label": "M1: MQO Simples (Log-Log)",
+        "elasticity": -0.8706,
+        "se": 0.1492,
+        "pvalue": 0.0,
+        "r2": 0.1561,
+        "nobs": 186,
+        "notes": "Baseline sem controles sazonais ou correção HAC."
+      },
+      {
+        "id": "M2",
+        "label": "M2: MQO + Sazonalidade + Tendência (HAC)",
+        "elasticity": -0.4818,
+        "se": 0.1808,
+        "pvalue": 0.0077,
+        "r2": 0.4735,
+        "nobs": 186,
+        "notes": "Erros Newey-West HAC (6 lags) + dummies mensais + tendência."
+      },
+      {
+        "id": "M3",
+        "label": "M3: ARDL(1,0) Dinâmico (HAC — Curto/Longo Prazo)",
+        "elasticity": -0.46,
+        "elasticity_long_run": -0.43,
+        "rho_lag": -0.0698,
+        "se": 0.1753,
+        "pvalue": 0.0087,
+        "r2": 0.474,
+        "nobs": 185,
+        "notes": "Elasticidade CP=-0.460 | Elasticidade LP=-0.430 (ρ=-0.070)."
+      },
+      {
+        "id": "M4",
+        "label": "M4: 2SLS / IV (Instr.: Preço Resto do Mundo, HAC)",
+        "elasticity": 0.1059,
+        "se": 0.2688,
+        "pvalue": 0.6935,
+        "first_stage_f": 41.98,
+        "first_stage_r2": 0.3236,
+        "hausman_pvalue": 0.0103,
+        "nobs": 186,
+        "notes": "1º Estágio F=42.0 (Stock-Yogo > 10) | Hausman p=0.0103."
+      }
+    ]
+  },
+  "monte_carlo_primary": {
+    "n_sims": 10000,
+    "beta_used": -0.4818,
+    "se_used": 0.1808,
+    "baseline_12m": {
+      "p_fob_usd_kg": 1.172,
+      "volume_kton": 1275.8,
+      "fob_musd": 1494.7
+    },
+    "scenarios": [
+      {
+        "scenario": "C1: Tarifa Vigente (10% + US$415/t)",
+        "ad_valorem_pct": 10.0,
+        "specific_usd_ton": 415.0,
+        "p_fob_base_usd_kg": 1.172,
+        "p_landed_usd_kg": 1.704,
+        "delta_price_pct": 45.42,
+        "dq_p10_pct": -23.61,
+        "dq_median_pct": -16.58,
+        "dq_p90_pct": -8.95,
+        "q0_annual_kton": 1275.8,
+        "q_new_median_kton": 1064.3,
+        "fob0_annual_musd": 1494.7,
+        "fob_delta_median_musd": -247.9,
+        "fob_delta_p10_musd": -353.0,
+        "fob_delta_p90_musd": -133.8
+      },
+      {
+        "scenario": "C2: Estresse Moderado (25% + US$415/t)",
+        "ad_valorem_pct": 25.0,
+        "specific_usd_ton": 415.0,
+        "p_fob_base_usd_kg": 1.172,
+        "p_landed_usd_kg": 1.879,
+        "delta_price_pct": 60.42,
+        "dq_p10_pct": -28.82,
+        "dq_median_pct": -20.45,
+        "dq_p90_pct": -11.16,
+        "q0_annual_kton": 1275.8,
+        "q_new_median_kton": 1014.9,
+        "fob0_annual_musd": 1494.7,
+        "fob_delta_median_musd": -305.7,
+        "fob_delta_p10_musd": -430.8,
+        "fob_delta_p90_musd": -166.8
+      },
+      {
+        "scenario": "C3: Sobretaxa Extrema (50% + US$415/t)",
+        "ad_valorem_pct": 50.0,
+        "specific_usd_ton": 415.0,
+        "p_fob_base_usd_kg": 1.172,
+        "p_landed_usd_kg": 2.172,
+        "delta_price_pct": 85.42,
+        "dq_p10_pct": -35.86,
+        "dq_median_pct": -25.84,
+        "dq_p90_pct": -14.33,
+        "q0_annual_kton": 1275.8,
+        "q_new_median_kton": 946.1,
+        "fob0_annual_musd": 1494.7,
+        "fob_delta_median_musd": -386.2,
+        "fob_delta_p10_musd": -536.1,
+        "fob_delta_p90_musd": -214.1
+      }
+    ]
+  },
+  "monte_carlo_m1_sensitivity": [
+    {
+      "scenario": "C1: Tarifa Vigente (10% + US$415/t)",
+      "ad_valorem_pct": 10.0,
+      "specific_usd_ton": 415.0,
+      "p_fob_base_usd_kg": 1.172,
+      "p_landed_usd_kg": 1.704,
+      "delta_price_pct": 45.42,
+      "dq_p10_pct": -32.93,
+      "dq_median_pct": -27.87,
+      "dq_p90_pct": -22.47,
+      "q0_annual_kton": 1275.8,
+      "q_new_median_kton": 920.2,
+      "fob0_annual_musd": 1494.7,
+      "fob_delta_median_musd": -416.6,
+      "fob_delta_p10_musd": -492.2,
+      "fob_delta_p90_musd": -335.9
+    },
+    {
+      "scenario": "C2: Estresse Moderado (25% + US$415/t)",
+      "ad_valorem_pct": 25.0,
+      "specific_usd_ton": 415.0,
+      "p_fob_base_usd_kg": 1.172,
+      "p_landed_usd_kg": 1.879,
+      "delta_price_pct": 60.42,
+      "dq_p10_pct": -39.6,
+      "dq_median_pct": -33.8,
+      "dq_p90_pct": -27.47,
+      "q0_annual_kton": 1275.8,
+      "q_new_median_kton": 844.7,
+      "fob0_annual_musd": 1494.7,
+      "fob_delta_median_musd": -505.1,
+      "fob_delta_p10_musd": -591.8,
+      "fob_delta_p90_musd": -410.7
+    },
+    {
+      "scenario": "C3: Sobretaxa Extrema (50% + US$415/t)",
+      "ad_valorem_pct": 50.0,
+      "specific_usd_ton": 415.0,
+      "p_fob_base_usd_kg": 1.172,
+      "p_landed_usd_kg": 2.172,
+      "delta_price_pct": 85.42,
+      "dq_p10_pct": -48.24,
+      "dq_median_pct": -41.65,
+      "dq_p90_pct": -34.27,
+      "q0_annual_kton": 1275.8,
+      "q_new_median_kton": 744.4,
+      "fob0_annual_musd": 1494.7,
+      "fob_delta_median_musd": -622.6,
+      "fob_delta_p10_musd": -721.1,
+      "fob_delta_p90_musd": -512.3
+    }
+  ],
+  "monte_carlo_m2_hac": [
+    {
+      "scenario": "C1: Tarifa Vigente (10% + US$415/t)",
+      "ad_valorem_pct": 10.0,
+      "specific_usd_ton": 415.0,
+      "p_fob_base_usd_kg": 1.172,
+      "p_landed_usd_kg": 1.704,
+      "delta_price_pct": 45.42,
+      "dq_p10_pct": -23.61,
+      "dq_median_pct": -16.58,
+      "dq_p90_pct": -8.95,
+      "q0_annual_kton": 1275.8,
+      "q_new_median_kton": 1064.3,
+      "fob0_annual_musd": 1494.7,
+      "fob_delta_median_musd": -247.9,
+      "fob_delta_p10_musd": -353.0,
+      "fob_delta_p90_musd": -133.8
+    },
+    {
+      "scenario": "C2: Estresse Moderado (25% + US$415/t)",
+      "ad_valorem_pct": 25.0,
+      "specific_usd_ton": 415.0,
+      "p_fob_base_usd_kg": 1.172,
+      "p_landed_usd_kg": 1.879,
+      "delta_price_pct": 60.42,
+      "dq_p10_pct": -28.82,
+      "dq_median_pct": -20.45,
+      "dq_p90_pct": -11.16,
+      "q0_annual_kton": 1275.8,
+      "q_new_median_kton": 1014.9,
+      "fob0_annual_musd": 1494.7,
+      "fob_delta_median_musd": -305.7,
+      "fob_delta_p10_musd": -430.8,
+      "fob_delta_p90_musd": -166.8
+    },
+    {
+      "scenario": "C3: Sobretaxa Extrema (50% + US$415/t)",
+      "ad_valorem_pct": 50.0,
+      "specific_usd_ton": 415.0,
+      "p_fob_base_usd_kg": 1.172,
+      "p_landed_usd_kg": 2.172,
+      "delta_price_pct": 85.42,
+      "dq_p10_pct": -35.86,
+      "dq_median_pct": -25.84,
+      "dq_p90_pct": -14.33,
+      "q0_annual_kton": 1275.8,
+      "q_new_median_kton": 946.1,
+      "fob0_annual_musd": 1494.7,
+      "fob_delta_median_musd": -386.2,
+      "fob_delta_p10_musd": -536.1,
+      "fob_delta_p90_musd": -214.1
+    }
+  ]
+}

@@ -54,7 +54,7 @@ Atuo como Cientista de Dados combinando **inferência causal, econometria aplica
 | :--- | :--- | :--- |
 | ⭐ [**API_python**](./API_python/) | API REST modular de alta performance para ingestão e consultas analíticas sobre 100.000 usuários em JSON aninhado (67 MB) com latência `< 2 ms` e suíte de testes automatizados. | Python, FastAPI, Pydantic v2, Uvicorn, Unittest |
 | ⭐ [**Otimização_joins_spark**](./Otimização_joins_spark/) | Benchmark real no Apache Spark 4.0 (15M linhas, 95% *Data Skew*) comparando `SortMergeJoin`, `Repartition`, `Salting Manual`, `AQE Skew Join` e `Broadcast Hash Join` (20,7x *speedup*). | PySpark 4.0, Catalyst Explain, AQE, Salting |
-| [**Comercio_exterior_spark_análise**](./Comercio_exterior_spark_análise/) | Processamento e análise exploratória de dados massivos de comércio exterior brasileiro com Apache Spark. | PySpark, Big Data |
+| ⭐ [**Comercio_exterior_spark_análise**](./Comercio_exterior_spark_análise/) | Engenharia distribuída em **Apache Spark 4.0** sobre **36,5M de registros oficiais SECEX (`2010–Jun/2025`, US\$ 7,09 tri)** com auditoria *Star-Schema* (eliminação de *fan-out* de `10,7×`), `BroadcastHashJoin` (`2,07×` *speedup*), evolução do **HHI**, exposição EUA/China/Rússia, econometria da demanda de suco de laranja (`MQO`, `HAC`, `ARDL` e teste crítico `2SLS/IV`) e **Monte Carlo (10.000 cenários tarifários EUA: 10%, 25% e 50% + US\$ 415/t)**. | PySpark 4.0, AQE, Broadcast Join, Statsmodels, Monte Carlo, Parquet |
 | [**projeto-plataforma-dados**](./projeto-plataforma-dados/) | Arquitetura e implementação de plataforma de dados end-to-end. | Engenharia de Dados, Pipelines |
 
 ---

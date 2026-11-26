@@ -1,79 +1,110 @@
-# Comércio Exterior — Análise com PySpark e Método de Simulação
+# 🚢 Comércio Exterior Brasileiro em Apache Spark 4.0 — Concentração Geoeconômica, Econometria & Simulação Tarifária
 
-Este projeto apresenta uma análise exploratória e econométrica do **comércio exterior brasileiro**, com destaque para a relação com os **Estados Unidos** e o **impacto tarifário sobre o suco de laranja**.  
-A análise foi desenvolvida em um Jupyter Notebook (`Comércio_exterior_com_Google_colab_e_spark.ipynb`) utilizando **PySpark** para processamento de dados em larga escala e **métodos de simulação** para estimar a incerteza dos resultados.
+Análise distribuída de Big Data e Econometria de Comércio Internacional sobre **`36.481.316` registros municipais oficiais da SECEX/ComexStat (`2010–Jun/2025`, US\$ 7,09 trilhões acumulados)** utilizando **Apache Spark 4.0.1 (`PySpark`)**, **Adaptive Query Execution (AQE)**, **Broadcast Hash Joins**, **Índice de Concentração HHI**, **Econometria de Demanda (MQO, Newey-West HAC, ARDL Dinâmico e teste crítico 2SLS/IV)** e **Simulação Monte Carlo (10.000 cenários tarifários dos EUA)**.
 
----
-
-## Objetivo
-
-- Explorar o comércio exterior brasileiro sob diferentes perspectivas: **geográfica, setorial e temporal**.  
-- Quantificar a importância de parceiros comerciais (como China, EUA e Rússia) e produtos-chave nas exportações.  
-- Avaliar o **impacto de políticas tarifárias** sobre produtos específicos, aplicando um modelo de **elasticidade-preço da demanda** com simulação Monte Carlo.
+> 📄 **Leitura Rápida (Relatório HTML Standalone):** abra [comercio_exterior_pyspark_tarifas.html](./comercio_exterior_pyspark_tarifas.html) diretamente no navegador (todas as figuras embutidas).
 
 ---
 
-## Tecnologias Utilizadas
+## 🎯 Principais Destaques de Engenharia & Econometria
 
-- **Python / PySpark** → Processamento distribuído de grandes bases (SECEX/ComexStat).  
-- **Pandas / NumPy** → Manipulação e cálculo de métricas.  
-- **Plotly / Seaborn / Matplotlib** → Visualizações interativas e exploratórias.  
-- **Statsmodels** → Regressão log-log e estimação da elasticidade-preço.  
-- **Monte Carlo Simulation** → Avaliação da incerteza das estimativas.  
-- **Google Colab** → Execução em ambiente em nuvem, com suporte ao PySpark.
+### 1. Engenharia Big Data em Apache Spark 4.0.1 (`36,5M` linhas)
+- **Auditoria Star-Schema & Eliminação de *Fan-Out* (`10,68×` → `1,00×` exato):** a tabela fato municipal da SECEX está no grão `SH4`, enquanto dicionários NCM/SH6 possuem `13.717` linhas para `1.455` códigos `SH4` únicos. Um join ingênuo sem deduplicação multiplicava as exportações de 12 meses de **US\$ 335,96 bi** para **US\$ 3.587,9 bi (`10,68×`)**. Nossa deduplicação 1:1 pela moda no grão `SH4` garante **100,00% de conservação do Valor FOB**.
+- **Otimização Catalyst (`BroadcastHashJoin` vs. `SortMergeJoin`):** validado diretamente via `explain("formatted")` sobre os **`13.779.191`** registros de exportação, alcançando **`2,07×` de speedup** (`1,80 s` vs. `3,73 s`) com **zero shuffle** na tabela fato.
 
----
+### 2. Concentração Geoeconômica & Vulnerabilidades Bilaterais (`2010–Jun/2025`)
+- **Balança Comercial 2024:** Exportações de **US\$ 337,0 bi**, Importações de **US\$ 262,9 bi** e Superávit de **US\$ 74,2 bi** (corrente total de **US\$ 599,9 bi**).
+- **Alta do Índice HHI (2010 → 2024):** o **HHI de Parceiros** quase dobrou (`529` → **`1.020`**), acompanhando o avanço da participação chinesa (`15,3%` → **`28,0%`**), enquanto o **HHI de Produtos (`SH4`)** subiu de `409` para **`531`**.
+- **Assimetria EUA vs. China (Jul/2024–Jun/2025):**
+  - **China** lidera a corrente total (**US\$ 160,6 bi**, superávit de **US\$ 20,4 bi**) concentrada em commodities (*Minerais Não Metálicos* `66,5%`, *Soja* `60,1%`, *Petróleo* `43,1%`).
+  - **Estados Unidos** (**US\$ 84,1 bi** de corrente) absorvem a pauta de maior valor agregado e mais exposta a choques tarifários: *Aviões e Similares* (**`67,8%`**, US\$ 2,47 bi), *Madeira* (`40,8%`), *Metais* (`40,5%`, US\$ 7,00 bi) e *Frutas/Sucos* (`39,6%`, US\$ 1,51 bi).
+  - **Rússia (Importações Críticas):** responde por **`28,7%`** das importações brasileiras de *Adubos/Fertilizantes* (US\$ 4,18 bi; alternativas: China, Marrocos, Canadá) e **`25,8%`** de *Derivados de Petróleo/Diesel* (US\$ 5,85 bi; alternativas: EUA, Arábia Saudita, Argélia).
+  - **Polo Municipal:** **Rio de Janeiro – RJ** lidera as exportações municipais (**US\$ 32,7 bi**), seguido por Duque de Caxias – RJ (`US$ 7,0 bi`), Paranaguá – PR (`US$ 6,6 bi`), Santos – SP (`US$ 6,3 bi`) e Canaã dos Carajás – PA (`US$ 6,3 bi`).
 
-## Estrutura da Análise
+### 3. Estudo de Caso: Elasticidade-Preço & Monte Carlo Tarifário do Suco de Laranja (Brasil → EUA)
 
-1. **Carregamento e tratamento dos dados**  
-   - Leitura de arquivos `.parquet` e integração com dicionários auxiliares (NCM e países).  
-   - Limpeza, filtragem e criação de indicadores agregados.
+Painel mensal de **186 meses (`2010–Jun/2025`, `SH4 2009`)**, base 12 meses de **US\$ 1.494,7 milhões** (`1.275,8 mil t`, preço FOB médio de **US\$ 1,172/kg**):
 
-2. **Exploração descritiva**  
-   - Identificação dos principais destinos de exportação e produtos líderes por valor e quantidade.  
-   - Análise regional dos municípios com maior volume comercializado.  
-   - Estudo de sazonalidade e concentração geográfica das exportações.
+| Especificação Econométrica | Elasticidade ($\hat{\beta}$) | Erro-Padrão | p-valor | Diagnóstico |
+| :--- | :---: | :---: | :---: | :--- |
+| **M1: MQO Simples (Log-Log)** | `-0,8706` | `0,1492` | `0,0000` | Baseline sem controles sazonais/HAC (`R² = 0,156`) |
+| ⭐ **M2: MQO + Sazonalidade + Tendência (HAC)** | **`-0,4818`** | `0,1808` | **`0,0077`** | **Especificação Principal** (Newey-West 6 lags, demanda inelástica) |
+| **M3: ARDL(1,0) Dinâmico (HAC)** | `-0,4600` *(LP: `-0,430`)* | `0,1753` | `0,0087` | Confirma estabilidade entre curto e longo prazo ($\rho = -0,070$) |
+| **M4: Teste Crítico 2SLS / IV (Preço RoW)** | `+0,1059` | `0,2688` | `0,6935` | 1º Estágio forte (`F = 42,0`), mas viola restrição de exclusão (choques na Flórida movem preço global) |
 
-3. **Estudo de Caso — Suco de Laranja**  
-   - Estimação da **elasticidade-preço da demanda** para os EUA com modelo log-log.  
-   - Aplicação de **simulação Monte Carlo** para mensurar incerteza e efeitos de variações de preço.  
-   - Avaliação de cenários tarifários, incluindo a tarifa vigente de **10% ad valorem + US$ 415/tonelada**.
+#### Simulação Monte Carlo (`10.000` sorteios com especificação principal `M2 HAC`)
 
-4. **Resultados principais**  
-   - Elasticidade estimada ≈ **−1,5**, indicando **demanda elástica**.  
-   - As tarifas atuais elevam o preço efetivo ao importador em cerca de **38%**, reduzindo as compras em magnitude semelhante.  
-   - O comércio brasileiro mantém forte concentração em poucos parceiros e produtos, refletindo **vulnerabilidade externa e baixa diversificação**.
-
----
-
-## Método de Simulação
-
-O método de Monte Carlo foi utilizado para avaliar como **incertezas no parâmetro de elasticidade** afetam as projeções de consumo.
-
-Etapas principais:
-1. Estimação do modelo `ln(Q) = α + β ln(P)` para obter a elasticidade-preço.  
-2. Amostragem de milhares de valores possíveis de β, segundo sua distribuição estatística (`Normal(β̂, SE(β)^2)`).  
-3. Cálculo da nova quantidade demandada:
-   \[
-   Q_{novo} = Q_0 (1 + \Delta P)^{\beta}
-   \]
-4. Geração da distribuição simulada de variações percentuais na demanda.  
-5. Visualização da incerteza (mediana, intervalos de 10%–90%).
+| Cenário Tarifário (EUA) | Preço Efetivo (*Landed*) | Δ Preço | Δ Volume (Mediana) | Faixa P10–P90 | Impacto FOB Estimado |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **C1: Tarifa Vigente (`10% + US$ 415/t`)** | `US$ 1,704/kg` | `+45,4%` | **`-16,6%`** | `[-23,6%, -8,9%]` | **`-US$ 247,9M/ano`** |
+| **C2: Estresse Moderado (`25% + US$ 415/t`)** | `US$ 1,880/kg` | `+60,4%` | **`-20,4%`** | `[-28,8%, -11,2%]` | **`-US$ 305,7M/ano`** |
+| **C3: Sobretaxa Extrema (`50% + US$ 415/t`)** | `US$ 2,173/kg` | `+85,4%` | **`-25,8%`** | `[-35,9%, -14,3%]` | **`-US$ 386,2M/ano`** |
 
 ---
 
-## Principais Conclusões
+## 🖼️ Galeria de Visualizações Geradas
 
-- O comércio exterior brasileiro continua **altamente concentrado** em poucos parceiros (China e EUA) e produtos primários (soja, minério, petróleo).  
-- As **exportações aos EUA** incluem produtos de maior valor agregado (aeronaves, químicos, sucos), mas são **fortemente sensíveis ao preço**.  
-- O caso do **suco de laranja** mostra que, mesmo sem a sobretaxa de 50%, as tarifas atuais **reduzem significativamente a competitividade** brasileira.  
-- O país precisa **diversificar mercados e produtos**, fortalecendo setores industriais e de maior valor agregado para reduzir vulnerabilidades externas.
+| Balança Comercial Histórica (`2010–Jun/2025`) | Concentração HHI, Parceiros & Municípios |
+| :---: | :---: |
+| ![Balanca](./outputs/figures/01_balanca_comercial_historica.png) | ![HHI](./outputs/figures/02_concentracao_hhi_parceiros.png) |
+
+| Exposição EUA vs. China & Importações da Rússia | Suco de Laranja: Mercados & 4 Elasticidades |
+| :---: | :---: |
+| ![Exposicao](./outputs/figures/03_exposicao_eua_china_russia.png) | ![Elasticidade](./outputs/figures/04_suco_laranja_mercados_elasticidade.png) |
+
+| Simulação Monte Carlo Tarifária (10.000 Sorteios) | Apache Spark 4.0: Broadcast & Auditoria Fan-Out |
+| :---: | :---: |
+| ![MonteCarlo](./outputs/figures/05_simulacao_monte_carlo_tarifas.png) | ![Spark](./outputs/figures/06_spark_catalyst_otimizacao.png) |
 
 ---
 
-## Execução Local
+## 🏗️ Estrutura do Projeto
 
-1. **Instale as dependências:**
-   ```bash
-   pip install pyspark statsmodels plotly seaborn matplotlib jupyterlab
+```text
+Comercio_exterior_spark_análise/
+├── comercio_exterior_pyspark_tarifas.ipynb  # Notebook PySpark 4.0 completo e executado
+├── comercio_exterior_pyspark_tarifas.html   # Relatório HTML standalone (figuras embutidas)
+├── src/
+│   ├── spark_comex_pipeline.py              # Motor PySpark 4.0 (AQE, Broadcast, HHI, Window)
+│   ├── econometrics_tariffs.py              # MQO, HAC, ARDL, 2SLS-IV, Monte Carlo e 6 figuras
+│   └── build_notebook.py                    # Construtor reprodutível do notebook analítico
+├── tests/
+│   └── test_comex_pipeline.py               # Suíte unitária (tarifa, HHI, 2SLS e Monte Carlo)
+├── outputs/
+│   ├── metrics_summary.json                 # Métricas completas auditadas
+│   ├── balanca_anual_2010_2025.csv          # Série anual agregada
+│   ├── hhi_concentracao_anual.csv           # Série anual HHI parceiros e produtos
+│   ├── suco_laranja_eua_mensal.csv          # Painel mensal SH4 2009 EUA vs Resto do Mundo
+│   └── figures/                             # 6 figuras executivas em alta resolução (PNG)
+├── requirements.txt
+└── README.md
+```
+
+*(Os arquivos brutos de 411 MB da SECEX/ComexStat em `data/` e `data.zip` são ignorados via `.gitignore` por limite de tamanho do GitHub; os artefatos agregados em `outputs/` permitem auditar e reproduzir toda a modelagem econométrica instantaneamente.)*
+
+---
+
+## 🚀 Como Reproduzir
+
+```bash
+cd Comercio_exterior_spark_análise
+pip install -r requirements.txt
+
+# 1. Rodar testes unitários (tarifas, HHI, 2SLS-IV e Monte Carlo)
+python -m unittest discover -s tests -v
+
+# 2. Executar pipeline completo Apache Spark 4.0 (36,5M linhas) + Econometria + Figuras
+# Requer Java JDK 17/21 e os Parquets SECEX em data/ (ou data.zip)
+python src/econometrics_tariffs.py
+
+# 3. Gerar, executar o notebook e exportar o HTML standalone
+python src/build_notebook.py
+python -m jupyter nbconvert --to notebook --execute --inplace comercio_exterior_pyspark_tarifas.ipynb
+python -m jupyter nbconvert --to html --embed-images comercio_exterior_pyspark_tarifas.ipynb --output comercio_exterior_pyspark_tarifas.html
+```
+
+---
+
+## 🛠️ Stack Tecnológico
+
+`Apache Spark 4.0 (PySpark)` • `Catalyst AQE & Broadcast Hash Join` • `Python` • `Statsmodels (HAC / ARDL / 2SLS)` • `Monte Carlo` • `Pandas` • `NumPy` • `SciPy` • `Matplotlib` • `Seaborn` • `Parquet`
