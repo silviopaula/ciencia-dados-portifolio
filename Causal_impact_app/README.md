@@ -1,69 +1,146 @@
-# Causal_impact_app
+# 📈 CausalImpact Studio — Inferência Causal Contrafactual em Séries Temporais (BSTS)
 
-**Descrição para o repositório no GitHub:**
+Aplicação web **full-stack** (*Python + FastAPI + Statsmodels* no backend e *React + TypeScript + Tailwind CSS + Recharts* no frontend) para estimação rigorosa de **impacto causal em séries temporais** sem experimento A/B randomizado, baseada na metodologia **Bayesian Structural Time Series (BSTS / CausalImpact)** de Brodersen et al. (2015).
 
-Análise Causal com CausalImpact
-Um aplicativo Shiny para análise de impacto causal em séries temporais utilizando a metodologia do pacote CausalImpact do Google.
-Sobre o projeto
-Este aplicativo facilita a implementação da metodologia de inferência causal em séries temporais desenvolvida pelo Google, proporcionando uma interface gráfica intuitiva que elimina a necessidade de codificação para realizar análises sofisticadas.
-O CausalImpact utiliza modelos bayesianos de séries temporais estruturais (BSTS) para estimar o impacto causal de uma intervenção, comparando a série observada após o evento com uma contrafactual projetada.
-Funcionalidades
-Entrada de dados
+Refatorado a partir de um aplicativo legado em R/Shiny para uma arquitetura Python/React limpa, rápida, sem *data leakage*, com **auditoria automática das hipóteses causais**, **Teste Placebo no Tempo (*In-Time Falsification*)** e exportação executiva em Excel multi-abas.
 
-Carregamento de arquivos CSV e XLSX
-Seleção flexível de colunas para análise
-Definição personalizada do período de análise e data de intervenção
+---
 
-**Tratamento de séries temporais**
+## 🎯 Principais Evoluções e Diferenciais Didáticos
 
-Opções de desazonalização via decomposição STL
-Extração de componentes de tendência
-Configuração da frequência sazonal (mensal, trimestral, semanal)
+1. **Motor Python Nativo em Espaço de Estados (Zero Deprecation Warnings):**
+   - Construído diretamente sobre `statsmodels.tsa.statespace.structural.UnobservedComponents` + Filtro/Suavizador de Kalman + **Simulação Preditiva Posterior Conjunta (Monte Carlo)**, propagando tanto a autocorrelação do estado latente quanto a incerteza dos coeficientes $\hat{\beta}$ para intervalos de credibilidade acumulados rigorosos.
+   - Padronização calculada **estritamente no período pré-intervenção** (zero *data leakage*).
+   - Suporta 3 especificações estruturais: **Local Level** (padrão Google CausalImpact), **Local Linear Trend** e **Local Level + Sazonalidade Estocástica nativa**, além de pré-desazonalização opcional via **STL** e modo **univariado** (com alerta didático).
+2. **Auditoria Econométrica Automática das Hipóteses Causais:**
+   - **Qualidade do Ajuste Pré-Intervenção:** $R^2_{\text{pré}}$, RMSE, MAPE, AIC/BIC e teste de autocorrelação residual **Ljung-Box**.
+   - **Auditoria *No-Spillover* nos Controles:** verifica se alguma covariável explicativa $X_j$ sofreu quebra estrutural anômala no pós-intervenção (alerta de contaminação do grupo de controle).
+   - **Teste Placebo no Tempo (*In-Time Falsification*):** divide automaticamente o período pré-intervenção simulando um evento fictício (efeito real = 0) e exibe gráfico + veredito de aprovação.
+   - **Decomposição Estrutural:** separa visualmente a contribuição do **Nível**, das **Covariáveis ($X\hat{\beta}$)** e da **Sazonalidade** na formação do contrafactual.
+3. **Seis Módulos Interativos na Interface React:**
+   - **Dados & Upload (Tela Inicial):** área *drag-and-drop* em destaque para enviar `.csv` (`, ` ou `;`, decimal BR) ou `.xlsx`, botão para **Baixar Planilha Modelo (`.xlsx`)**, prévia interativa para conferência de colunas/datas antes da estimação e acesso em 1 clique aos 3 cenários demo.
+   - **Impacto Causal (3 Painéis Clássicos):** KPIs executivos, narrativa automática em português e os 3 gráficos de Brodersen et al. (*Observado vs. Contrafactual + IC*, *Efeito Pontual + IC* e *Efeito Acumulado + IC*).
+   - **Auditoria & Placebo:** métricas pré-intervenção, gráfico do teste placebo, ranking de pesos padronizados das covariáveis, auditoria *No-Spillover* e decomposição estrutural.
+   - **Tabela & Exportação:** agregação dinâmica (*Original, Mensal, Trimestral, Semestral, Anual*) e download em 1 clique de **Excel multi-abas (`.xlsx` — 6 abas)**, **CSV** e **Relatório Markdown (`.md`)**.
+   - **Exploração & Descritivas:** gráfico comparativo com opção **Base 100**, estatísticas descritivas (Pré vs. Pós vs. Total) e prévia da base (aceita upload de `.csv` com padrão BR `;`/`,` ou `.xlsx`).
+   - **Guia Metodológico:** explicação visual do contrafactual BSTS, hipóteses de identificação e referências acadêmicas.
 
-**Modelagem avançada**
+---
 
-Configuração manual de parâmetros BSTS
-Controle do nível de significância (alpha)
-Ajuste do número de iterações MCMC
-Especificação de desvios-padrão para priors
+## 📊 Cenários Demo Pré-Carregados & Resultados Validados
 
-**Visualização de resultados**
+Três conjuntos de dados em [`data/`](./data/) permitem explorar em segundos um impacto positivo real, a replicação exata do benchmark clássico e um cenário placebo de efeito nulo:
 
-Gráficos interativos da série real vs. contrafactual
-Visualização de coeficientes do modelo
-Intervalo de confiança configurável
-Tabelas de impacto agregadas por diferentes períodos
+| Cenário Demo (`data/`) | Obs. (Pré / Pós) | Efeito Médio | Impacto Acumulado (IC 95%) | $p$-valor / Prob. Causal | $R^2_{\text{pré}}$ / MAPE | Teste Placebo |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Campanha de Marketing Digital** (`campanha_marketing_semanal.csv`) | 80 (56 / 24) | **`+24,78`** (`+10,22%`) | **`+594,68`** `[+479,75; +701,92]` | `0,0000` (**100,0%**) | `0,9289` / `0,83%` | **Aprovado** (`+0,35%`, `p=0,425`) |
+| **Clássico Brodersen / Google** (`exemplo_classico_brodersen.csv`, choque real `+10,0`) | 52 (40 / 12) | **`+9,95`** (`+7,69%`) | **`+119,37`** `[+106,61; +131,80]` | `0,0000` (**100,0%**) | `0,7890` / `0,63%` | **Aprovado** (`+0,01%`, `p=0,488`) |
+| **Cenário Placebo / Efeito Nulo** (`placebo_efeito_nulo_mensal.csv`, efeito real `0,0`) | 60 (45 / 15) | `-1,03` (`-0,54%`) | `-15,51` `[-36,36; +4,79]` *(cruza 0)* | `0,0671` (**Não sig.**) | `0,9180` / `0,75%` | **Aprovado** (`+0,18%`, `p=0,320`) |
 
-**Exportação e relatórios**
+---
 
-Download de relatórios completos em formato Excel
-Exportação de relatórios textuais detalhados
-Tabelas de impacto agrupadas por diferentes frequências temporais
-Métricas-chave como efeito absoluto, relativo e probabilidade causal
+## 🗂️ Estrutura do Projeto
 
-**Como usar**
+```text
+Causal_impact_app/
+├── data/
+│   ├── campanha_marketing_semanal.csv     # Demo 1: E-commerce (80 semanas, impacto positivo)
+│   ├── exemplo_classico_brodersen.csv     # Demo 2: Benchmark clássico (+10 nas 12 últimas semanas)
+│   └── placebo_efeito_nulo_mensal.csv     # Demo 3: Intervenção sem efeito (60 meses)
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py                        # API REST FastAPI (porta 8002)
+│   │   ├── causal_engine.py               # Motor BSTS / Kalman / Monte Carlo / Placebo / Excel
+│   │   └── schemas.py                     # Contratos Pydantic v2
+│   ├── tests/
+│   │   └── test_api.py                    # Suíte automatizada (7/7 testes end-to-end)
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── CausalChartsPanel.tsx      # KPIs + 3 painéis clássicos Brodersen et al.
+│   │   │   ├── AuditPlaceboPanel.tsx      # Ajuste pré, Teste Placebo, Coeficientes & No-Spillover
+│   │   │   ├── ImpactTableExportPanel.tsx # Tabela agregada + downloads Excel/CSV/Markdown
+│   │   │   ├── ExploratoryPanel.tsx       # Gráfico multi-séries Base 100 + Descritivas
+│   │   │   └── MethodologyGuide.tsx       # Guia didático BSTS e referências
+│   │   ├── api.ts
+│   │   ├── types.ts
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── package.json
+│   ├── vite.config.ts                     # Proxy /api -> http://127.0.0.1:8002 (porta 5175)
+│   └── tailwind.config.js
+└── README.md
+```
 
-Carregue um arquivo CSV ou XLSX contendo seus dados
-Selecione a coluna de data e as variáveis para análise
-Defina o período de análise e a data do evento
-Configure as opções avançadas, se necessário
-Clique em "Executar Análise" para gerar resultados
-Explore os resultados nas diferentes abas
-Exporte relatórios para documentação e apresentações
+---
 
-**Requisitos**
+## 🔌 Endpoints da API FastAPI
 
-R versão 3.6 ou superior
-Pacotes: shiny, tidyverse, lubridate, plotly, zoo, CausalImpact, DT, htmltools, readxl, shinythemes, shinyjs, shinydashboard, shinyWidgets, data.table, openxlsx
+Documentação interativa (Swagger UI) em `http://127.0.0.1:8002/docs`.
 
-**Limitações e considerações**
+| Método | Endpoint | Função |
+| :---: | :--- | :--- |
+| `GET` | `/api/health` | Status da API, dataset carregado e quantidade de demos |
+| `GET` | `/api/demos` | Catálogo dos 3 cenários de demonstração |
+| `POST` | `/api/dataset/demo/{demo_id}` | Carrega um cenário demo em memória |
+| `POST` | `/api/dataset/upload` | Upload de arquivo `.csv` (`, ` ou `;`, decimal BR) ou `.xlsx` |
+| `GET` | `/api/dataset/current` | Metadados, colunas e prévia da base ativa |
+| `POST` | `/api/analyze` | Estima o modelo BSTS, executa Placebo, *No-Spillover* e tabelas agregadas |
+| `GET` | `/api/export/excel` | Exporta relatório completo em Excel (`.xlsx`, 6 abas formatadas) |
+| `GET` | `/api/export/csv?freq=...` | Exporta tabela de impacto agregada (`original`, `month`, `quarter`, `semester`, `year`) |
+| `GET` | `/api/export/report` | Exporta relatório técnico executivo em Markdown (`.md`) |
+| `GET` | `/api/export/template` | Baixa planilha modelo em Excel (`.xlsx`) com dados de exemplo e instruções |
 
-A inferência causal depende da qualidade das covariáveis selecionadas
-Resultados robustos geralmente requerem períodos pré-intervenção suficientemente longos
-A análise pressupõe que o modelo contrafactual seja adequado
-Em séries muito curtas, a desazonalização pode ser menos confiável
+---
 
-**Referências**                                          
+## 🚀 Como Executar Localmente
 
-[Documentação oficial do CausalImpact](https://google.github.io/CausalImpact/CausalImpact.html)                                                                        
-[Brodersen et al. (2015)](https://projecteuclid.org/journals/annals-of-applied-statistics/volume-9/issue-1/Inferring-causal-impact-using-Bayesian-structural-time-series-models/10.1214/14-AOAS788.full)
+### 1. Backend (Python + FastAPI)
+
+```bash
+cd Causal_impact_app/backend
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8002 --reload
+```
+
+### 2. Frontend (React + Vite + TypeScript)
+
+Em outro terminal:
+
+```bash
+cd Causal_impact_app/frontend
+npm install
+npm run dev
+```
+
+Acesse **`http://localhost:5175`** no navegador.
+
+---
+
+## ✅ Validação e Testes Automatizados
+
+```bash
+cd Causal_impact_app/backend
+python -m unittest discover -s tests -v
+```
+
+```bash
+cd Causal_impact_app/frontend
+npm run build
+```
+
+---
+
+## 📚 Referências
+
+- Brodersen, K. H., Gallusser, F., Koehler, J., Remy, N., & Scott, S. L. (2015). *Inferring causal impact using Bayesian structural time-series models*. **The Annals of Applied Statistics**, 9(1), 247–274.
+- Durbin, J., & Koopman, S. J. (2012). *Time Series Analysis by State Space Methods* (2nd ed.). Oxford University Press.
+
+---
+
+## 👤 Autor
+
+**Silvio da Rosa Paula** — Doutor em Economia Aplicada | Cientista de Dados  
+[LinkedIn](https://www.linkedin.com/in/silvio-paula/) • [Portfólio Web](https://silviopaula.github.io/)
