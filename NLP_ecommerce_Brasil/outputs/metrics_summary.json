@@ -1,0 +1,699 @@
+{
+  "dataset": {
+    "total_unique_orders_reviewed": 98673,
+    "written_reviews_n": 42173,
+    "written_reviews_pct": 42.7,
+    "parquet_size_mb": 13.61,
+    "date_min": "2016-09-04",
+    "date_max": "2018-10-17",
+    "class_distribution": {
+      "Positivo": 27655,
+      "Negativo": 10921,
+      "Neutro": 3597
+    },
+    "delay_rate_by_sentiment_pct": {
+      "Negativo": 26.49,
+      "Neutro": 11.95,
+      "Positivo": 3.72
+    },
+    "not_delivered_rate_by_sentiment_pct": {
+      "Negativo": 14.79,
+      "Neutro": 3.0,
+      "Positivo": 0.61
+    }
+  },
+  "splits": {
+    "train_n": 29521,
+    "val_n": 6326,
+    "test_n": 6326,
+    "train_end": "2018-04-19",
+    "val_end": "2018-06-22",
+    "test_end": "2018-10-17"
+  },
+  "negation_ablation_val": {
+    "naive_stopwords_f1_macro": 0.6495,
+    "negation_preserved_char_tfidf_f1_macro": 0.6698,
+    "gain_pp": 2.03
+  },
+  "champion_model": "10. XGBoost (Multimodal Stacking)",
+  "models_benchmark": [
+    {
+      "model": "10. XGBoost (Multimodal Stacking)",
+      "modality": "Multimodal",
+      "accuracy": 0.853,
+      "f1_macro": 0.6873,
+      "f1_weighted": 0.8641,
+      "precision_macro": 0.6766,
+      "recall_macro": 0.7056,
+      "detrator_f1": 0.8327,
+      "detrator_recall": 0.8476,
+      "detrator_precision": 0.8184,
+      "detrator_roc_auc": 0.9718,
+      "detrator_pr_auc": 0.8838,
+      "roc_auc_ovr_macro": 0.9132,
+      "f1_macro_ci_low": 0.674,
+      "f1_macro_ci_high": 0.701,
+      "pr_auc_ci_low": 0.8646,
+      "pr_auc_ci_high": 0.9022,
+      "train_sec": 5.77,
+      "infer_ms_1k": 2.33,
+      "size_mb": 2.36
+    },
+    {
+      "model": "9. LightGBM (Multimodal Stacking)",
+      "modality": "Multimodal",
+      "accuracy": 0.8571,
+      "f1_macro": 0.6809,
+      "f1_weighted": 0.8642,
+      "precision_macro": 0.6705,
+      "recall_macro": 0.6945,
+      "detrator_f1": 0.8319,
+      "detrator_recall": 0.8579,
+      "detrator_precision": 0.8073,
+      "detrator_roc_auc": 0.9717,
+      "detrator_pr_auc": 0.8828,
+      "roc_auc_ovr_macro": 0.9116,
+      "f1_macro_ci_low": 0.6673,
+      "f1_macro_ci_high": 0.6954,
+      "pr_auc_ci_low": 0.8641,
+      "pr_auc_ci_high": 0.9014,
+      "train_sec": 3.39,
+      "infer_ms_1k": 8.32,
+      "size_mb": 3.38
+    },
+    {
+      "model": "7. Regressão Logística (Multimodal)",
+      "modality": "Multimodal",
+      "accuracy": 0.844,
+      "f1_macro": 0.6792,
+      "f1_weighted": 0.8572,
+      "precision_macro": 0.6715,
+      "recall_macro": 0.6972,
+      "detrator_f1": 0.8115,
+      "detrator_recall": 0.8095,
+      "detrator_precision": 0.8134,
+      "detrator_roc_auc": 0.9697,
+      "detrator_pr_auc": 0.8873,
+      "roc_auc_ovr_macro": 0.9072,
+      "f1_macro_ci_low": 0.6661,
+      "f1_macro_ci_high": 0.6929,
+      "pr_auc_ci_low": 0.8713,
+      "pr_auc_ci_high": 0.9028,
+      "train_sec": 3.76,
+      "infer_ms_1k": 1.1,
+      "size_mb": 0.78
+    },
+    {
+      "model": "5. Regressão Logística L2 (TF-IDF)",
+      "modality": "Texto Only",
+      "accuracy": 0.8332,
+      "f1_macro": 0.6733,
+      "f1_weighted": 0.8487,
+      "precision_macro": 0.6602,
+      "recall_macro": 0.6996,
+      "detrator_f1": 0.8086,
+      "detrator_recall": 0.8349,
+      "detrator_precision": 0.7839,
+      "detrator_roc_auc": 0.9662,
+      "detrator_pr_auc": 0.8696,
+      "roc_auc_ovr_macro": 0.8974,
+      "f1_macro_ci_low": 0.6599,
+      "f1_macro_ci_high": 0.6867,
+      "pr_auc_ci_low": 0.8508,
+      "pr_auc_ci_high": 0.8885,
+      "train_sec": 3.57,
+      "infer_ms_1k": 0.88,
+      "size_mb": 0.78
+    },
+    {
+      "model": "3. LightGBM (Logística + Metadados Only)",
+      "modality": "Tabular Only",
+      "accuracy": 0.8402,
+      "f1_macro": 0.6537,
+      "f1_weighted": 0.8474,
+      "precision_macro": 0.6484,
+      "recall_macro": 0.6616,
+      "detrator_f1": 0.783,
+      "detrator_recall": 0.7873,
+      "detrator_precision": 0.7786,
+      "detrator_roc_auc": 0.9611,
+      "detrator_pr_auc": 0.8424,
+      "roc_auc_ovr_macro": 0.887,
+      "f1_macro_ci_low": 0.6405,
+      "f1_macro_ci_high": 0.6665,
+      "pr_auc_ci_low": 0.8234,
+      "pr_auc_ci_high": 0.864,
+      "train_sec": 2.02,
+      "infer_ms_1k": 7.14,
+      "size_mb": 2.6
+    },
+    {
+      "model": "8. Calibrated LinearSVC (Multimodal)",
+      "modality": "Multimodal",
+      "accuracy": 0.8865,
+      "f1_macro": 0.6138,
+      "f1_weighted": 0.8577,
+      "precision_macro": 0.6704,
+      "recall_macro": 0.6352,
+      "detrator_f1": 0.8373,
+      "detrator_recall": 0.9024,
+      "detrator_precision": 0.7809,
+      "detrator_roc_auc": 0.9715,
+      "detrator_pr_auc": 0.8936,
+      "roc_auc_ovr_macro": 0.9056,
+      "f1_macro_ci_low": 0.6036,
+      "f1_macro_ci_high": 0.6257,
+      "pr_auc_ci_low": 0.8784,
+      "pr_auc_ci_high": 0.9107,
+      "train_sec": 45.48,
+      "infer_ms_1k": 4.45,
+      "size_mb": 2.35
+    },
+    {
+      "model": "2. Léxico PT-BR (Com Negações)",
+      "modality": "Léxico",
+      "accuracy": 0.7999,
+      "f1_macro": 0.6134,
+      "f1_weighted": 0.8187,
+      "precision_macro": 0.611,
+      "recall_macro": 0.6239,
+      "detrator_f1": 0.7789,
+      "detrator_recall": 0.7929,
+      "detrator_precision": 0.7655,
+      "detrator_roc_auc": 0.9493,
+      "detrator_pr_auc": 0.81,
+      "roc_auc_ovr_macro": 0.7269,
+      "f1_macro_ci_low": 0.6031,
+      "f1_macro_ci_high": 0.6259,
+      "pr_auc_ci_low": 0.7885,
+      "pr_auc_ci_high": 0.8336,
+      "train_sec": 0.0,
+      "infer_ms_1k": 0.18,
+      "size_mb": 0.02
+    },
+    {
+      "model": "6. Calibrated LinearSVC (TF-IDF)",
+      "modality": "Texto Only",
+      "accuracy": 0.8851,
+      "f1_macro": 0.6073,
+      "f1_weighted": 0.8558,
+      "precision_macro": 0.6398,
+      "recall_macro": 0.6351,
+      "detrator_f1": 0.8371,
+      "detrator_recall": 0.9175,
+      "detrator_precision": 0.7696,
+      "detrator_roc_auc": 0.9696,
+      "detrator_pr_auc": 0.8779,
+      "roc_auc_ovr_macro": 0.9016,
+      "f1_macro_ci_low": 0.5985,
+      "f1_macro_ci_high": 0.6188,
+      "pr_auc_ci_low": 0.8595,
+      "pr_auc_ci_high": 0.8974,
+      "train_sec": 3.75,
+      "infer_ms_1k": 3.91,
+      "size_mb": 2.35
+    },
+    {
+      "model": "4. Complement Naive Bayes (TF-IDF)",
+      "modality": "Texto Only",
+      "accuracy": 0.8568,
+      "f1_macro": 0.6068,
+      "f1_weighted": 0.8386,
+      "precision_macro": 0.6452,
+      "recall_macro": 0.6436,
+      "detrator_f1": 0.7783,
+      "detrator_recall": 0.95,
+      "detrator_precision": 0.6591,
+      "detrator_roc_auc": 0.9636,
+      "detrator_pr_auc": 0.8386,
+      "roc_auc_ovr_macro": 0.8972,
+      "f1_macro_ci_low": 0.5939,
+      "f1_macro_ci_high": 0.6231,
+      "pr_auc_ci_low": 0.8154,
+      "pr_auc_ci_high": 0.8631,
+      "train_sec": 0.04,
+      "infer_ms_1k": 1.08,
+      "size_mb": 1.83
+    },
+    {
+      "model": "1. Dummy (Classe Majoritária)",
+      "modality": "Baseline",
+      "accuracy": 0.7246,
+      "f1_macro": 0.2801,
+      "f1_weighted": 0.6089,
+      "precision_macro": 0.2415,
+      "recall_macro": 0.3333,
+      "detrator_f1": 0.0,
+      "detrator_recall": 0.0,
+      "detrator_precision": 0.0,
+      "detrator_roc_auc": 0.5,
+      "detrator_pr_auc": 0.1992,
+      "roc_auc_ovr_macro": 0.5,
+      "f1_macro_ci_low": 0.2771,
+      "f1_macro_ci_high": 0.2823,
+      "pr_auc_ci_low": 0.1906,
+      "pr_auc_ci_high": 0.2101,
+      "train_sec": 0.01,
+      "infer_ms_1k": 0.02,
+      "size_mb": 0.01
+    }
+  ],
+  "calibration_and_sac_threshold": {
+    "brier_score_detrator": 0.0501,
+    "opt_f1_threshold_val": 0.4,
+    "opt_f1_test_f1": 0.8365,
+    "opt_f1_test_precision": 0.7996,
+    "opt_f1_test_recall": 0.877,
+    "sac_p85_threshold_val": 0.6,
+    "sac_p85_test_precision": 0.8553,
+    "sac_p85_test_recall": 0.7508,
+    "sac_p85_queue_pct": 17.5
+  },
+  "top_negative_terms": [
+    [
+      "nao_recomendo",
+      2.351
+    ],
+    [
+      "comprei",
+      2.279
+    ],
+    [
+      "gostei recomendo",
+      2.052
+    ],
+    [
+      "prazo achei",
+      1.822
+    ],
+    [
+      "recebi apenas",
+      1.733
+    ],
+    [
+      "prazo porem",
+      1.709
+    ],
+    [
+      "produto ma",
+      1.658
+    ],
+    [
+      "produto melhor",
+      1.622
+    ],
+    [
+      "insatisfeito",
+      1.57
+    ],
+    [
+      "nao_gostei qualidade",
+      1.544
+    ],
+    [
+      "nada",
+      1.516
+    ],
+    [
+      "quero produto",
+      1.483
+    ],
+    [
+      "produto errado",
+      1.465
+    ],
+    [
+      "porem qualidade",
+      1.464
+    ]
+  ],
+  "top_positive_terms": [
+    [
+      "lindo",
+      1.956
+    ],
+    [
+      "amei",
+      1.893
+    ],
+    [
+      "bem",
+      1.768
+    ],
+    [
+      "tudo",
+      1.758
+    ],
+    [
+      "sem_problemas",
+      1.707
+    ],
+    [
+      "chegou muito",
+      1.669
+    ],
+    [
+      "muito bom",
+      1.548
+    ],
+    [
+      "muito boa",
+      1.467
+    ],
+    [
+      "otimo produto",
+      1.458
+    ],
+    [
+      "unica",
+      1.453
+    ],
+    [
+      "antes",
+      1.417
+    ],
+    [
+      "entrega correios",
+      1.402
+    ],
+    [
+      "muito satisfeita",
+      1.397
+    ],
+    [
+      "produto otimo",
+      1.394
+    ]
+  ],
+  "slice_error_analysis": [
+    {
+      "Dimensão": "Status Logístico",
+      "Fatia": "Entregue com Atraso",
+      "N": 488,
+      "% Detrator Real": 45.7,
+      "Accuracy": 0.8361,
+      "Macro-F1": 0.6928,
+      "Recall Detrator": 0.9596,
+      "PR-AUC Detrator": 0.933
+    },
+    {
+      "Dimensão": "Status Logístico",
+      "Fatia": "Entregue no Prazo",
+      "N": 5613,
+      "% Detrator Real": 15.1,
+      "Accuracy": 0.8528,
+      "Macro-F1": 0.6741,
+      "Recall Detrator": 0.7851,
+      "PR-AUC Detrator": 0.8329
+    },
+    {
+      "Dimensão": "Status Logístico",
+      "Fatia": "Não Entregue",
+      "N": 225,
+      "% Detrator Real": 84.4,
+      "Accuracy": 0.8933,
+      "Macro-F1": 0.5566,
+      "Recall Detrator": 0.9947,
+      "PR-AUC Detrator": 0.9606
+    },
+    {
+      "Dimensão": "Tamanho do Review",
+      "Fatia": "Curto (≤5 pal.)",
+      "N": 2111,
+      "% Detrator Real": 5.7,
+      "Accuracy": 0.8882,
+      "Macro-F1": 0.6491,
+      "Recall Detrator": 0.75,
+      "PR-AUC Detrator": 0.7771
+    },
+    {
+      "Dimensão": "Tamanho do Review",
+      "Fatia": "Longo (>18 pal.)",
+      "N": 1208,
+      "% Detrator Real": 45.6,
+      "Accuracy": 0.7392,
+      "Macro-F1": 0.6568,
+      "Recall Detrator": 0.8675,
+      "PR-AUC Detrator": 0.9107
+    },
+    {
+      "Dimensão": "Tamanho do Review",
+      "Fatia": "Médio (6–18 pal.)",
+      "N": 3007,
+      "% Detrator Real": 19.6,
+      "Accuracy": 0.874,
+      "Macro-F1": 0.6969,
+      "Recall Detrator": 0.8489,
+      "PR-AUC Detrator": 0.8806
+    },
+    {
+      "Dimensão": "Macro-Região",
+      "Fatia": "Centro-Oeste",
+      "N": 380,
+      "% Detrator Real": 20.5,
+      "Accuracy": 0.8632,
+      "Macro-F1": 0.7117,
+      "Recall Detrator": 0.8974,
+      "PR-AUC Detrator": 0.8456
+    },
+    {
+      "Dimensão": "Macro-Região",
+      "Fatia": "Nordeste",
+      "N": 659,
+      "% Detrator Real": 19.4,
+      "Accuracy": 0.8589,
+      "Macro-F1": 0.6781,
+      "Recall Detrator": 0.7969,
+      "PR-AUC Detrator": 0.8826
+    },
+    {
+      "Dimensão": "Macro-Região",
+      "Fatia": "Norte",
+      "N": 122,
+      "% Detrator Real": 13.1,
+      "Accuracy": 0.8525,
+      "Macro-F1": 0.66,
+      "Recall Detrator": 1.0,
+      "PR-AUC Detrator": 0.8723
+    },
+    {
+      "Dimensão": "Macro-Região",
+      "Fatia": "Sudeste",
+      "N": 4410,
+      "% Detrator Real": 20.4,
+      "Accuracy": 0.8492,
+      "Macro-F1": 0.6814,
+      "Recall Detrator": 0.8479,
+      "PR-AUC Detrator": 0.8838
+    },
+    {
+      "Dimensão": "Macro-Região",
+      "Fatia": "Sul",
+      "N": 755,
+      "% Detrator Real": 18.1,
+      "Accuracy": 0.8649,
+      "Macro-F1": 0.7212,
+      "Recall Detrator": 0.8467,
+      "PR-AUC Detrator": 0.9066
+    }
+  ],
+  "negative_aspects_counts": {
+    "Atraso / Entrega": 4940,
+    "Defeito / Avaria": 750,
+    "Produto Divergente / Errado": 1037,
+    "Pedido Incompleto / Faltando": 772,
+    "Baixa Qualidade / Frágil": 1078,
+    "Atendimento / Estorno / Troca": 2035,
+    "Outros / Geral": 2749
+  },
+  "nmf_negative_topics": [
+    {
+      "topic": 1,
+      "top_terms": [
+        "nao_recebi",
+        "nao_recebi produto",
+        "produto",
+        "ainda nao_recebi",
+        "momento",
+        "momento nao_recebi",
+        "agora"
+      ],
+      "share_pct": 8.8
+    },
+    {
+      "topic": 2,
+      "top_terms": [
+        "produto",
+        "veio",
+        "comprei",
+        "recebi",
+        "produto veio",
+        "mas",
+        "apenas"
+      ],
+      "share_pct": 53.8
+    },
+    {
+      "topic": 3,
+      "top_terms": [
+        "nao_entregue",
+        "produto nao_entregue",
+        "produto",
+        "ainda nao_entregue",
+        "nao_entregue produto",
+        "produto ainda",
+        "momento"
+      ],
+      "share_pct": 5.5
+    },
+    {
+      "topic": 4,
+      "top_terms": [
+        "ainda",
+        "ainda nao_recebi",
+        "produto ainda",
+        "nao_chegou",
+        "ainda nao_chegou",
+        "nao_recebi",
+        "ainda nao_entregue"
+      ],
+      "share_pct": 8.1
+    },
+    {
+      "topic": 5,
+      "top_terms": [
+        "entrega",
+        "prazo",
+        "prazo entrega",
+        "nao_chegou",
+        "demora",
+        "muito",
+        "dia"
+      ],
+      "share_pct": 23.8
+    }
+  ],
+  "rag_demos": [
+    {
+      "real_score": 1,
+      "real_label": "Negativo",
+      "texto_cliente": "estou tendo problemas com a entrega do produto é lamentável.",
+      "categoria": "automotivo",
+      "atraso_dias": 27.7,
+      "pred_label": "Negativo",
+      "prob_detrator": 0.6772,
+      "prioridade_sac": "ALTA (SLA 2h — Retenção Crítica)",
+      "aspectos_detectados": [
+        "Atraso / Entrega"
+      ],
+      "acao_recomendada": "Acionar rastreamento prioritário junto à transportadora, abrir protocolo de atraso e oferecer cupom de compensação ou reenvio expresso.",
+      "resposta_sugerida": "Olá! Agradecemos por nos reportar sua experiência. Identificamos que houve um atraso de 28 dias na entrega do seu pedido de automotivo. Nossa equipe já abriu prioridade para tratar a ocorrência (Atraso / Entrega) — próximo passo imediato: Acionar rastreamento prioritário junto à transportadora, abrir protocolo de atraso e oferecer cupom de compensação ou reenvio expresso.",
+      "casos_similares": [
+        {
+          "similarity": 0.433,
+          "review_score": 3,
+          "categoria": "beleza_saude",
+          "atraso_dias": 30.8,
+          "texto": "Ja comprei outras vezes mas estou tendo problemas nessa compra"
+        },
+        {
+          "similarity": 0.363,
+          "review_score": 1,
+          "categoria": "moveis_decoracao",
+          "atraso_dias": 1.9,
+          "texto": "Não recebi o produto e nem tive resposta da loja para saber o que aconteceu. Até agora só estou tendo problemas com a compra."
+        },
+        {
+          "similarity": 0.345,
+          "review_score": 2,
+          "categoria": "beleza_saude",
+          "atraso_dias": null,
+          "texto": "Tive problemas com a entrega, não recebi o produto ainda."
+        }
+      ],
+      "valor_pedido": 673.23,
+      "latency_ms": 24.46
+    },
+    {
+      "real_score": 1,
+      "real_label": "Negativo",
+      "texto_cliente": "PRODUTO COM DEFEITO. Preciso alizar a troca do produto que está com defeito e não consigo registrar a solicitação no SITE. No item \"TROCAS E DEVOLUÇÕES\" sempre informa que está com problema de comunicação.\r\nAguardo retor",
+      "categoria": "informatica_acessorios",
+      "atraso_dias": -18.3,
+      "pred_label": "Negativo",
+      "prob_detrator": 0.9376,
+      "prioridade_sac": "ALTA (SLA 2h — Retenção Crítica)",
+      "aspectos_detectados": [
+        "Defeito / Avaria",
+        "Atendimento / Estorno / Troca"
+      ],
+      "acao_recomendada": "Liberar código de logística reversa imediata sem custo, priorizar troca expressa ou reembolso integral em até 48h e notificar controle de qualidade do seller.",
+      "resposta_sugerida": "Olá! Agradecemos por nos reportar sua experiência. Lamentamos sinceramente o transtorno relatado com seu pedido de informatica acessorios. Nossa equipe já abriu prioridade para tratar a ocorrência (Defeito / Avaria) — próximo passo imediato: Liberar código de logística reversa imediata sem custo, priorizar troca expressa ou reembolso integral em até 48h e notificar controle de qualidade do seller.",
+      "casos_similares": [
+        {
+          "similarity": 0.467,
+          "review_score": 1,
+          "categoria": "moveis_decoracao",
+          "atraso_dias": -68.4,
+          "texto": "Produto com defeito \r\nPreciso trocar"
+        },
+        {
+          "similarity": 0.441,
+          "review_score": 2,
+          "categoria": "informatica_acessorios",
+          "atraso_dias": -13.2,
+          "texto": "Produto com defeito..."
+        },
+        {
+          "similarity": 0.441,
+          "review_score": 1,
+          "categoria": "informatica_acessorios",
+          "atraso_dias": -16.4,
+          "texto": "Produto com defeito"
+        }
+      ],
+      "valor_pedido": 307.64,
+      "latency_ms": 20.6
+    },
+    {
+      "real_score": 5,
+      "real_label": "Positivo",
+      "texto_cliente": "Super rercomendo. As Lojas lannister sempre entregam o produto corretamente e antes do prazo.",
+      "categoria": "cama_mesa_banho",
+      "atraso_dias": -8.2,
+      "pred_label": "Positivo",
+      "prob_detrator": 0.0105,
+      "prioridade_sac": "BAIXA (Encantamento / Pós-Venda)",
+      "aspectos_detectados": [
+        "Experiência Positiva / Entrega OK"
+      ],
+      "acao_recomendada": "Registrar elogio no índice NPS do vendedor parceiro e acionar fluxo automático de fidelização.",
+      "resposta_sugerida": "Olá! Ficamos muito felizes em saber da sua ótima experiência com seu pedido de cama mesa banho. Seu feedback positivo foi compartilhado com o vendedor parceiro. Conte sempre conosco!",
+      "casos_similares": [
+        {
+          "similarity": 0.574,
+          "review_score": 5,
+          "categoria": "alimentos",
+          "atraso_dias": -17.0,
+          "texto": "Produto entregue corretamente, antes do prazo lojas lannister estão de parabéns."
+        },
+        {
+          "similarity": 0.458,
+          "review_score": 4,
+          "categoria": "relogios_presentes",
+          "atraso_dias": -6.3,
+          "texto": "Sempre recomendo as Lojas lannister!"
+        },
+        {
+          "similarity": 0.457,
+          "review_score": 5,
+          "categoria": "cool_stuff",
+          "atraso_dias": 0.9,
+          "texto": "eu super recomendo a lojas lannister"
+        }
+      ],
+      "valor_pedido": 112.09,
+      "latency_ms": 21.48
+    }
+  ]
+}
