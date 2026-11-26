@@ -1,126 +1,138 @@
-# RAG para Livros de Macroeconomia
+# 🏛️ MacroRAG Tutor Studio — Assistente RAG por Capítulos para Macroeconomia
 
-Aplicação de **Retrieval-Augmented Generation (RAG)** para consultar livros e notas em PDF, com um exemplo voltado para **livros de macroeconomia** usando IA generativa.
+Aplicação web **full-stack** (*Python + FastAPI* no backend e *React + TypeScript + Tailwind CSS + Recharts* no frontend) especializada em **estudo, pesquisa e revisão de livros-texto extensos e notas de aula de Macroeconomia** (`.pdf`, `.md` e `.txt`).
 
----
-
-## Interface
-
-![Interface da Aplicação](https://github.com/silviopaula/ciencia-dados-portifolio/blob/main/app_macro-rag-assistant/img/img.png)
+Refatorado a partir do protótipo legado em Streamlit + Chroma temporário para uma arquitetura rápida, persistente, transparente em privacidade e pronta para escalar sobre obras de **800+ páginas** — pré-carregado com ***Foundations of Modern Macroeconomics*** (Ben J. Heijdra, Oxford University Press — **816 páginas**).
 
 ---
 
-## Descrição
+## 🎯 Principais Diferenciais Arquiteturais e Didáticos
 
-Sistema que permite fazer **upload de PDFs**, processar o conteúdo, indexar em um **banco vetorial** e realizar **perguntas contextualizadas** usando o modelo **Gemini** do Google.  
-As respostas são geradas com base no conteúdo dos documentos carregados, com **citação das fontes**.
-
----
-
-## Tecnologias
-
-### Framework e Interface
-- **Streamlit**: Interface web interativa e responsiva  
-- **Python 3.10+**: Linguagem base  
-
-### Processamento de Documentos
-- **LangChain**: Framework para aplicações com LLMs  
-- **PyPDFLoader**: Extração de texto de PDFs com metadados  
-- **RecursiveCharacterTextSplitter**: Divisão em *chunks* de texto  
-
-### Embeddings e Armazenamento Vetorial
-- **HuggingFace Embeddings**: Modelo `all-MiniLM-L6-v2` (384 dimensões)  
-- **ChromaDB**: Banco vetorial local e leve  
-
-### LLM
-- **Google Gemini (`gemini-2.5-flash`)**: geração de respostas rápidas e custo-efetivas  
+1. **Indexação Hierárquica por Capítulos + Cache Local Comprimido (`.json.gz`):**
+   - Extrai automaticamente a árvore de **Partes e Capítulos** do sumário PDF (*bookmarks*) — ou cabeçalhos `#`/`##` de notas em Markdown — rotulando cada chunk com **`Capítulo`, `Parte` e `Página`**.
+   - Persiste a extração limpa (`NFKC`, sem ligaduras LaTeX/OUP e ignorando sumário/índice remissivo) em cache local comprimido (`backend/.cache/`), reduzindo o carregamento das 816 páginas de `~17 s` para **`< 0,05 s`** nas execuções seguintes.
+2. **Busca Híbrida de Baixa Latência (~30 ms em 2.468 Chunks):**
+   - **Canal Lexical:** Okapi BM25 com **índice invertido** (`9.855` termos únicos) + **Ponte Bilíngue Macroeconômica PT ↔ EN** (*Equivalência Ricardiana, Inconsistência Temporal, Curva de Phillips, Overshooting de Dornbusch, Novo Keynesiano, RBC, Solow/Ramsey, OLG*).
+   - **Canal Semântico:** vetores densos **LSA (`TruncatedSVD` 64D)** + *character subword n-grams* (3–4).
+   - **Fusão RRF + Diversidade MMR + Filtro por Capítulo/Documento** + **Guardrail Anti-Alucinação**.
+3. **Quatro Modos Didáticos & Estudo Ativo:**
+   - **Tutor Didático:** explica intuição, mecanismos e implicações de política econômica com citações clicáveis `[Capítulo, pág.]`.
+   - **Comparador de Escolas & Modelos:** contrasta tradições (ex.: *Novo Keynesiano vs. RBC*, *Solow vs. Crescimento Endógeno*) diversificando passagens entre capítulos via MMR.
+   - **Verificador Técnico:** reforça precisão lexical para localizar definições e páginas exatas.
+   - **Gerador de Simulado & Flashcards por Capítulo:** cria cartões de estudo e questões discursivas de pós-graduação a partir de qualquer capítulo do livro ou nota enviada, com gabarito ancorado na página original e controle de progresso (*Dominado*).
+4. **Auditoria Explícita de Privacidade (Local vs. Nuvem):**
+   - Funciona **100% offline** no modo **Extrativo Grounded** (ou com **Ollama Local**) enviando **`0 bytes`** à nuvem.
+   - Ao conectar **Google Gemini (`gemini-2.5-flash`)** ou **OpenAI (`gpt-4o-mini`)** com chave de sessão, a aba **Privacidade & Raio-X** exibe exatamente quantos caracteres do corpus permaneceram locais (`1.873.607 chars`) vs. quantos foram enviados na janela *top-k* (`~0,3%` do livro).
+5. **Upload Multi-Formato (`.pdf`, `.md`, `.txt`):**
+   - Permite enviar seus próprios PDFs, resumos de aula em Markdown ou textos (ex.: notas do COPOM, capítulos extras), consultá-los em conjunto ou isoladamente e exportar todo o histórico como **Caderno de Estudos (`.md`)**.
 
 ---
 
-## Arquitetura do Sistema
+## 📊 Corpus Demo Pré-Carregado & Benchmark Validado
 
-PDF Upload → PyPDFLoader → Text Splitter → HF Embeddings → Chroma                               
-↓                          
-Gemini LLM (consulta)                         
-↓                         
-Resposta + Fontes Citadas                         
+Livro pré-carregado em [`data/books/`](./data/books/): ***Foundations of Modern Macroeconomics*** — Ben J. Heijdra (Oxford University Press):
+- **815 páginas úteis** (`1.873.607` caracteres) • **19 capítulos indexados** (Parte I: *Intermediate Macroeconomics* Caps. 1–10; Parte II: *Towards Advanced Macroeconomics* Caps. 11–17; Epílogo & Apêndice Matemático) • **2.468 chunks** • **9.855 termos BM25** • **LSA 64D** • **Boot com cache: `6,42 s`**.
 
-
----
-
-## Fluxo de Dados
-
-1. **Ingestão:** upload e extração de texto via PyPDFLoader  
-2. **Indexação:** conversão em embeddings e armazenamento no Chroma  
-3. **Consulta:** busca semântica e resposta gerada pelo Gemini  
+| Consulta em Português (sobre livro em Inglês) | Modo | Grounding | Guardrail | Latência Retrieval | Capítulo & Página Top-1 |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| Equivalência Ricardiana e déficit público | `tutor` | **96,9%** (`alta`) | Aprovado | `30,3 ms` | **Cap. 5** (*The government budget deficit*) — pág. 162 |
+| Inconsistência temporal e viés inflacionário | `tutor` | **95,7%** (`alta`) | Aprovado | `30,0 ms` | **Cap. 9** (*Macroeconomic policy, credibility*) — pág. 263 |
+| Novo Keynesiano (Calvo) vs. Ciclos Reais (RBC) | `compare` | **98,5%** (`alta`) | Aprovado | `32,2 ms` | **Cap. 12** (*New Keynesian economics*) — pág. 418 |
+| *Overshooting* cambial de Dornbusch | `tutor` | **98,5%** (`alta`) | Aprovado | `34,0 ms` | **Cap. 10** (*The open economy*) — pág. 338 |
+| Crescimento exógeno (Solow/Ramsey) vs. endógeno | `compare` | **98,5%** (`alta`) | Aprovado | `32,5 ms` | **Cap. 13** (*Exogenous economic growth*) — pág. 432 |
+| **Teste Anti-Alucinação** (Copa do Mundo 2026) | `verify` | **30,0%** (`baixa`) | **Bloqueado** | `24,4 ms` | *Recusa especular fora do escopo* |
 
 ---
 
-## Decisões Técnicas
+## 🗂️ Estrutura do Projeto
 
-| Parâmetro | Valor | Justificativa |
-|------------|--------|----------------|
-| `chunk_size` | 500 | Equilíbrio entre contexto e precisão |
-| `chunk_overlap` | 50 | Evita perda de informação |
-| `k` | 4 | Retorna os 4 trechos mais relevantes |
-| Embedding | `all-MiniLM-L6-v2` | Rápido e eficiente |
-| Modelo LLM | `gemini-2.5-flash` | Baixa latência |
-| Temperature | 0.2 | Respostas mais factuais |
-
----
-
-## Privacidade e Segurança
-
-Durante a consulta:
-- Apenas **trechos relevantes (chunks)** são enviados ao LLM  
-- **Documentos completos e embeddings** permanecem locais  
-
-| Item | Vai para o LLM externo? |
-|------|--------------------------|
-| Documentos inteiros | ❌ Não |
-| Trechos recuperados (chunks) | ✅ Sim |
-| Embeddings vetoriais | ❌ Não |
-| Logs temporários | ⚠️ Possível (depende do provedor) |
-
-### Boas Práticas
-- Usar **LLM local (Ollama, LM Studio, Llama.cpp, Gemma)** para dados sensíveis  
-- **RAG híbrido:** busca local + API externa apenas para perguntas genéricas  
-- **Filtrar contexto** para evitar envio de informações confidenciais  
-- **On-premise:** hospedar modelo e banco vetorial internamente  
-
----
-
-## Desempenho e Custos
-- **Indexação:** 2–5 s por PDF de 100 páginas  
-- **Busca:** 100–200 ms  
-- **Geração:** 2–5 s  
-- **Custo:** embeddings e Chroma gratuitos; API do Gemini com camada gratuita  
+```text
+app_macro-rag-assistant/
+├── data/
+│   └── books/
+│       └── Foundations of Modern Macroecon - Ben J. Heijdra.pdf   # 816 páginas (Oxford)
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py                        # API REST FastAPI (porta 8003)
+│   │   ├── macro_engine.py                # Motor Macro-RAG por capítulos, cache .json.gz, Flashcards e Privacidade
+│   │   └── schemas.py                     # Contratos tipados Pydantic v2
+│   ├── tests/
+│   │   └── test_api.py                    # Suíte automatizada (7/7 testes end-to-end)
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── TutorChatPanel.tsx         # Modos Tutor/Comparador/Verificador + Inspetor de Capítulo/Página
+│   │   │   ├── ChapterMapLibraryPanel.tsx # Upload PDF/MD/TXT + Mapa de Capítulos com keywords TF-IDF
+│   │   │   ├── FlashcardsPanel.tsx        # Simulado & Flashcards interativos por capítulo
+│   │   │   └── PrivacyXRayPanel.tsx       # Auditoria de Privacidade + Ponte PT↔EN + Recharts + Prompt
+│   │   ├── api.ts
+│   │   ├── types.ts
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── package.json
+│   ├── vite.config.ts                     # Proxy /api -> http://127.0.0.1:8003 (porta 5176)
+│   └── tailwind.config.js
+└── README.md
+```
 
 ---
 
-## Limitações
-- Banco vetorial temporário (volátil)  
-- Não processa imagens nem tabelas complexas  
-- Limitado à janela de contexto do LLM (~32 k tokens)  
-- Qualidade depende do texto dos PDFs  
+## 🔌 Endpoints da API FastAPI
+
+Swagger UI interativo em `http://127.0.0.1:8003/docs`.
+
+| Método | Endpoint | Função |
+| :---: | :--- | :--- |
+| `GET` | `/api/health` | Status da API, páginas/capítulos/chunks indexados e detecção Ollama |
+| `GET` | `/api/providers` | Lista provedores (`extractive`, `gemini`, `ollama`, `openai`) e residência de dados |
+| `GET` | `/api/library` | Livros carregados, árvore completa de capítulos com keywords e perguntas sugeridas |
+| `POST` | `/api/library/load-demo` | Recarrega a obra de demonstração em `data/books/` |
+| `POST` | `/api/documents/upload` | Upload multipart de arquivos `.pdf`, `.md` ou `.txt` |
+| `DELETE` | `/api/documents/{doc_id}` | Remove um livro/nota e reconstrói o índice |
+| `POST` | `/api/query` | Executa RAG híbrido com resposta, citações, auditoria de privacidade e prompt |
+| `POST` | `/api/flashcards` | Gera flashcards/questões fundamentadas por capítulo ou tópico |
 
 ---
 
-## Melhorias Futuras
-- Persistência permanente do banco vetorial  
-- Cache de embeddings  
-- Suporte a DOCX e TXT  
-- Interface para gerenciar PDFs indexados  
-- Histórico de conversas  
+## 🚀 Como Executar Localmente
+
+### 1. Backend (Python + FastAPI)
+
+```bash
+cd app_macro-rag-assistant/backend
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8003 --reload
+```
+
+### 2. Frontend (React + Vite + TypeScript)
+
+```bash
+cd app_macro-rag-assistant/frontend
+npm install
+npm run dev
+```
+
+Acesse **`http://localhost:5176`** no navegador.
 
 ---
 
-## Exemplos de Perguntas
-- “Explique o modelo IS-LM”  
-- “Qual a diferença entre inflação de demanda e de custos?”  
-- “Como funciona a política monetária expansionista?”  
-- “Diferencie as versões da Curva de Phillips”
+## ✅ Validação e Testes Automatizados
+
+```bash
+cd app_macro-rag-assistant/backend
+python -m unittest discover -s tests -v
+```
+
+```bash
+cd app_macro-rag-assistant/frontend
+npm run build
+```
 
 ---
 
-**Benefício:** ler centenas de páginas em segundos, com respostas baseadas nas fontes reais.
+## 👤 Autor
+
+**Silvio da Rosa Paula** — Doutor em Economia Aplicada | Cientista de Dados  
+[LinkedIn](https://www.linkedin.com/in/silvio-paula/) • [Portfólio Web](https://silviopaula.github.io/)
