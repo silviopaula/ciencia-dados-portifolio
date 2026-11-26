@@ -1,0 +1,13 @@
+# Python & Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Databricks CLI & Asset Bundles local state
+.databricks/
+.env
+
+# Logs & OS
+*.log
+.DS_Store
+Thumbs.db

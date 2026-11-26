@@ -1,0 +1,63 @@
+# Databricks Asset Bundle (DAB) — Pipeline Medallion (Bronze -> Silver -> Gold)
+# Projeto: Avaliação de Impacto Causal da Lei nº 12.034/2009 (Cotas de Gênero — TSE)
+
+bundle:
+  name: databricks-lei-12034-causal-impact
+
+variables:
+  catalog:
+    description: "Catálogo Unity Catalog no workspace Databricks"
+    default: workspace
+  schema:
+    description: "Schema Unity Catalog das tabelas TSE (Bronze/Silver/Gold)"
+    default: avaliacao_lei_tse
+  ano_inicio:
+    description: "Ano inicial do painel balanceado"
+    default: "1998"
+  ano_fim:
+    description: "Ano final do painel balanceado"
+    default: "2022"
+
+resources:
+  jobs:
+    tse_lei_12034_panel_pipeline:
+      name: "[TSE] Lei 12.034/2009 — ETL Medallion & Painel CausalImpact"
+      tags:
+        domain: causal-inference
+        legislation: lei-12034-2009
+        architecture: medallion-delta
+
+      tasks:
+        - task_key: build_silver_and_gold_panel
+          description: >
+            Constrói as tabelas Silver (`candidatos_genero_ok`) e Gold
+            (`panel_data` e `painel_causal_impact`) em PySpark com validação de
+            unicidade, imputação probabilística de gênero (1996) e balanceamento LOCF.
+          spark_python_task:
+            python_file: ../src/databricks_etl_pipeline.py
+            parameters:
+              - "--catalog"
+              - "${var.catalog}"
+              - "--schema"
+              - "${var.schema}"
+              - "--ano-inicio"
+              - "${var.ano_inicio}"
+              - "--ano-fim"
+              - "${var.ano_fim}"
+          environment_key: serverless_python_env
+
+      environments:
+        - environment_key: serverless_python_env
+          spec:
+            client: "2"
+            dependencies:
+              - "pandas>=2.2.0"
+              - "numpy>=1.26.0"
+              - "openpyxl>=3.1.5"
+
+targets:
+  dev:
+    mode: development
+    default: true
+  prod:
+    mode: production
