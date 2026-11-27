@@ -1,0 +1,52 @@
+Crie um projeto completo, didático e reproduzível para o GitHub sobre **Inferência Causal e Otimização de Cupom Promocional na Black Friday**, usando **dados sintéticos com Processo Gerador de Dados (DGP) explícito e verdade causal conhecida**.
+
+O objetivo do projeto é demonstrar duas etapas críticas de Ciência de Dados aplicada à decisão:
+1. **Diagnóstico Causal (Evitar o Viés de Confusão):** Mostrar por que um modelo ingênuo confunde o pico sazonal da Black Friday com o efeito do cupom — estimando **+41%** de ganho ao subir o desconto de 20% para 30% (acima do *breakeven* de **+28%**), quando o efeito causal real do salto de 20% para 30% está entre **4% e 13%**, destruindo margem.
+2. **Otimização Prescritiva de Margem:** Usar as estimativas causais de *lift* (e sua heterogeneidade entre segmentos) acopladas à função de margem unitária da loja para encontrar o **cupom ótimo $d^*$** que maximiza o lucro líquido (tanto o cupom único ideal quanto uma política segmentada por categoria/canal).
+
+---
+
+### 1. Estrutura Econômica e Gerador de Dados Sintéticos (`src/dgp.py`)
+Construa um gerador de dados em painel diário (ex.: 2 anos de histórico, múltiplas categorias de decoração ou regiões/canais, com *seed* fixa) onde a verdade causal seja salva para auditoria:
+- **Parâmetros Financeiros Calibrados:**
+  - Ticket médio cheio ($P$), margem bruta base antes do desconto ($m_0$), e custos variáveis por pedido calibrados de forma que o salto do cupom de **20% para 30%** exija exatamente **+28% de pedidos incrementais** para empatar a margem líquida (*breakeven*).
+- **Componentes da Demanda (DGP):**
+  - Tendência e sazonalidade semanal/anual.
+  - **Efeito Calendário Black Friday:** Pico orgânico intenso de tráfego e conversão na janela promocional, independente do cupom.
+  - **Curva Real de Resposta ao Desconto $L(d)$ (Côncava / Retornos Decrescentes):** Gere histórico com diferentes faixas de cupom aplicadas ao longo do tempo/grupos (ex.: 0%, 10%, 15%, 20%, 25%, 30%), garantindo que o ganho marginal de **20% para 30%** fique calibrado na faixa de **4% a 13%** na média, enquanto descontos intermediários (ex.: 15% ou 20%) entregam melhor relação entre *lift* e preservação de margem.
+  - **Viés de Confusão (*Confounding*):** Maior probabilidade e intensidade de uso do cupom de 30% exatamente nos dias de pico da Black Friday.
+  - **Heterogeneidade do Tratamento:** Categorias/segmentos distintos (ex.: *Móveis & Iluminação* com margem maior vs. *Têxtil & Objetos* mais elásticos ao preço), permitindo avaliar políticas personalizadas vs. cupom único.
+
+---
+
+### 2. Etapas Analíticas e Modelos (Notebooks ou Scripts Modulares)
+
+#### Módulo 1: O Modelo Ingênuo e a Ilusão do +41% (`01_vies_ingenuo_e_margem.ipynb`)
+- Ajuste um modelo correlacional ingênuo (regressão sem controle adequado do pico da Black Friday) mostrando a estimativa enviesada (~**+41%**), erro padrão baixo e *p-valor* significativo.
+- Calcule o lucro projetado pelo modelo ingênuo vs. o **prejuízo real** causado pela erosão de margem ao cruzar abaixo do *breakeven* de +28%.
+
+#### Módulo 2: Inferência Causal — Isolando o Calendário do Cupom
+Implemente três abordagens didáticas comparando suas estimativas contra a verdade sintética ($Y(1) - Y(0)$):
+- **BSTS (`02_bsts.ipynb`):** Bayesian Structural Time Series modelando tendência, sazonalidade e covariáveis de controle para projetar o contrafactual da Black Friday e extrair a distribuição posterior do *lift* causal.
+- **Controle Sintético (`03_controle_sintetico.ipynb`):** Construção de contrafactual ponderado a partir de unidades/mercados que mantiveram cupom de 20% na Black Friday vs. unidades que subiram para 30%, validando ajuste pré-tratamento e testes placebo.
+- **Difference-in-Differences com Heterogeneidade (`04_did_heterogeneo.ipynb`):**
+  - Compare o DiD tradicional (TWFE) com especificações que capturam **heterogeneidade do tratamento** (interações por categoria/segmento, CATE e estimadores robustos a efeitos heterogêneos), mostrando como o *lift* do cupom varia entre perfis de produto e faixas de desconto.
+
+#### Módulo 3: Otimização do Cupom Ideal (`05_otimizacao_cupom_ideal.ipynb`)
+- **Curva de Resposta Causal & Fronteira de Lucro:**
+  - Combine o *lift* causal estimado para múltiplos níveis de cupom $d \in [0\%, 35\%]$ com a função de margem líquida $\Pi(d) = Y_0 \cdot (1 + \hat{L}(d)) \cdot P \cdot (m_0 - d) - \text{Custos}$.
+  - Plote a **curva em U invertido do lucro líquido vs. percentual de desconto**, destacando claramente:
+    1. O **cupom ótimo global $d^*$** (onde o lucro marginal iguala a perda de margem unitária — ex.: na faixa de 15% a 20%).
+    2. A **zona de empate (*breakeven*)** onde o *lift* necessário cruza a curva de *lift* real.
+    3. A **zona de destruição de margem** (30%+), mostrando quanto dinheiro foi deixado na mesa.
+- **Otimização sob Incerteza (Aversão ao Risco):**
+  - Use os intervalos de credibilidade do BSTS / erros padrão do DiD para simular cenários (pessimista, base e otimista) e mostrar qual cupom maximiza o lucro esperado com baixo risco de perda de margem.
+- **Política Segmentada (Heterogeneidade na Prática):**
+  - Calcule o cupom ótimo por categoria/segmento ($d^*_k$) usando os CATEs do DiD heterogêneo e compare o ganho financeiro de uma **política de cupons diferenciados** contra o **cupom único ideal** e contra o **cupom de 30%**.
+
+---
+
+### 3. Entregáveis e Padrão Visual
+- `README.md` executivo e didático contando a história completa: do erro de +41% à descoberta do cupom ótimo $d^*$, com tabela comparativa dos modelos causais e resumo do impacto financeiro em R$/US$.
+- Gráficos claros e comentados (contrafactual vs. observado, distribuição posterior do *lift*, curva de lucro vs. desconto com ponto ótimo $d^*$ e limiar de *breakeven* destacados).
+- Código limpo, modular, comentado em português e 100% reproduzível.
