@@ -1,16 +1,15 @@
 """
 ARIMA / SARIMAX Time-Series Forecasting Engine.
-Ported from R/functions_page_forecast_arima.R and R/modulo_forecast_arima.R.
 
 Supports:
 - Date standardization to 1st of month
 - Collinearity check (`check_collinearity`) for exogenous predictors
-- Automatic order discovery (`auto.arima` via AIC search) + generation of `num_models` variations
+- Automatic order discovery via AIC search + generation of `num_models` variations
 - Manual ARIMA/SARIMA `(p, d, q)(P, D, Q)_m` configuration
 - Both Univariate (`arima_uni_i`) and Multivariate with Exogenous regressors (`arima_multi_i`)
 - 95% confidence intervals (`Lo95`, `Hi95`), error metrics (`MAPE`, `RMSE`, `MAE`),
   deviation statistics (`min`, `max`, `mean`, `cum` in value and %), and
-  weighted Recommendation Dashboard (`gerar_dashboard_recomendacao_TS`).
+  weighted Recommendation Dashboard (`gerar_dashboard_recomendacao_arima`).
 """
 from __future__ import annotations
 import math
@@ -22,8 +21,6 @@ import numpy as np
 import pandas as pd
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.stattools import adfuller
-
-warnings.filterwarnings("ignore")
 
 
 def check_collinearity(df: pd.DataFrame, variables: List[str], threshold: float = 0.99) -> bool:
@@ -47,14 +44,16 @@ def _standardize_to_month_start(dt_series: pd.Series) -> pd.Series:
 
 def _estimate_d(y: np.ndarray) -> int:
     try:
-        res = adfuller(y, autolag="AIC")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            res = adfuller(y, autolag="AIC")
         return 0 if res[1] < 0.05 else 1
     except Exception:
         return 1
 
 
 def _find_best_auto_arima_order(y: np.ndarray, seasonal: bool = True, period: int = 12) -> Tuple[int, int, int, int, int, int]:
-    """Fast AIC-based grid search for base ARIMA / SARIMA order (like forecast::auto.arima)."""
+    """Fast AIC-based grid search for base ARIMA / SARIMA order."""
     d = _estimate_d(y)
     D = 1 if (seasonal and len(y) >= period * 2) else 0
 
@@ -73,14 +72,16 @@ def _find_best_auto_arima_order(y: np.ndarray, seasonal: bool = True, period: in
         p, d_o, q, P, D_o, Q = order6
         try:
             s_order = (P, D_o, Q, period) if seasonal else (0, 0, 0, 0)
-            mod = SARIMAX(
-                y,
-                order=(p, d_o, q),
-                seasonal_order=s_order,
-                enforce_stationarity=False,
-                enforce_invertibility=False,
-            )
-            res = mod.fit(disp=False, maxiter=40)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                mod = SARIMAX(
+                    y,
+                    order=(p, d_o, q),
+                    seasonal_order=s_order,
+                    enforce_stationarity=False,
+                    enforce_invertibility=False,
+                )
+                res = mod.fit(disp=False, maxiter=40)
             if math.isfinite(res.aic) and res.aic < best_aic:
                 best_aic = float(res.aic)
                 best_order = order6
@@ -236,7 +237,8 @@ def run_arima_models_extended(
     seed: int = 123,
 ) -> Dict[str, Any]:
     """
-    Port of `run_arima_models_extended` from R/functions_page_forecast_arima.R.
+    Fits univariate and multivariate (ARIMAX/SARIMAX) models with train/test validation,
+    future exogenous lookup preservation, collinearity diagnostics, and deviation ranking.
     """
     start_time = time.time()
     if date_col not in df.columns:
@@ -244,15 +246,25 @@ def run_arima_models_extended(
     if target_var not in df.columns:
         raise ValueError(f"Variável alvo '{target_var}' não encontrada.")
 
-    work = df.copy()
-    work["Data"] = _standardize_to_month_start(work[date_col])
-    work = work.dropna(subset=["Data", target_var]).sort_values("Data").drop_duplicates(subset=["Data"], keep="first").reset_index(drop=True)
+    # Preserve full timeline (including future rows where target_var is NaN) for future exogenous regressors
+    work_all = df.copy()
+    work_all["Data"] = _standardize_to_month_start(work_all[date_col])
+    work_all[target_var] = pd.to_numeric(work_all[target_var], errors="coerce")
+    work_all = work_all.dropna(subset=["Data"]).sort_values("Data").drop_duplicates(subset=["Data"], keep="first").reset_index(drop=True)
 
+    work = work_all.dropna(subset=[target_var]).reset_index(drop=True)
     if len(work) == 0:
         raise ValueError("Não restaram dados válidos após limpeza da coluna de data e variável alvo.")
 
-    dt_ini = _standardize_to_month_start(pd.Series([data_inicial or work["Data"].min()])).iloc[0]
-    dt_atual = _standardize_to_month_start(pd.Series([data_atual or work["Data"].max()])).iloc[0]
+    min_valid_dt = work["Data"].min()
+    max_valid_dt = work["Data"].max()
+
+    dt_ini = _standardize_to_month_start(pd.Series([data_inicial or min_valid_dt])).iloc[0]
+    dt_atual = _standardize_to_month_start(pd.Series([data_atual or max_valid_dt])).iloc[0]
+    if pd.isna(dt_ini) or dt_ini < min_valid_dt:
+        dt_ini = min_valid_dt
+    if pd.isna(dt_atual) or dt_atual > max_valid_dt:
+        dt_atual = max_valid_dt
 
     if end_predict:
         dt_end_pred = _standardize_to_month_start(pd.Series([end_predict])).iloc[0]
@@ -282,9 +294,10 @@ def run_arima_models_extended(
 
     train_y = train_df[target_var].values.astype(float)
 
-    clean_exog = [v for v in (exog_vars or []) if v in work.columns and v not in (date_col, "Data", target_var) and pd.api.types.is_numeric_dtype(work[v])]
+    clean_exog = [v for v in (exog_vars or []) if v in work_all.columns and v not in (date_col, "Data", target_var) and pd.api.types.is_numeric_dtype(work_all[v])]
     has_exog = len(clean_exog) > 0
     collinear_warning = check_collinearity(train_df, clean_exog) if has_exog else False
+    use_multivariate = has_exog and not collinear_warning
 
     h_test = len(test_y)
     # Months from dt_atual to dt_end_pred
@@ -295,19 +308,21 @@ def run_arima_models_extended(
     all_forecast_dates = test_dates + future_dates
     all_forecast_dates_str = [d.strftime("%Y-%m-%d") for d in all_forecast_dates]
 
-    # Prepare Exogenous Matrices (train + total forecast horizon)
+    # Prepare Exogenous Matrices (train + total forecast horizon from full work_all timeline!)
     train_exog_mat: Optional[np.ndarray] = None
     total_exog_mat: Optional[np.ndarray] = None
-    if has_exog:
-        train_exog_df = train_df[clean_exog].copy()
-        exog_means = train_exog_df.mean()
+    if use_multivariate:
+        train_exog_df = train_df[clean_exog].apply(pd.to_numeric, errors="coerce")
+        exog_means = train_exog_df.mean().fillna(0.0)
         train_exog_df = train_exog_df.fillna(exog_means)
         train_exog_mat = train_exog_df.values.astype(float)
 
-        future_lookup = work[work["Data"] > cutoff_date][["Data"] + clean_exog].copy()
+        future_lookup = work_all[work_all["Data"] > cutoff_date][["Data"] + clean_exog].copy()
+        for v in clean_exog:
+            future_lookup[v] = pd.to_numeric(future_lookup[v], errors="coerce")
         f_exog_df = pd.DataFrame({"Data": all_forecast_dates}).merge(future_lookup, on="Data", how="left")
         for v in clean_exog:
-            f_exog_df[v] = f_exog_df[v].fillna(exog_means[v])
+            f_exog_df[v] = f_exog_df[v].ffill().bfill().fillna(exog_means[v])
         total_exog_mat = f_exog_df[clean_exog].values.astype(float)
 
     # Determine ARIMA order variations
@@ -337,17 +352,19 @@ def run_arima_models_extended(
         # 1. Univariate ARIMA
         m_name_uni = f"arima_uni_{idx}"
         try:
-            mod_uni = SARIMAX(
-                train_y,
-                order=(p, d_o, q),
-                seasonal_order=s_order,
-                enforce_stationarity=False,
-                enforce_invertibility=False,
-            )
-            fit_uni = mod_uni.fit(disp=False, maxiter=60)
-            fcast_res = fit_uni.get_forecast(steps=h_total)
-            mean_pred = np.asarray(fcast_res.predicted_mean, dtype=float)
-            conf_int = np.asarray(fcast_res.conf_int(alpha=0.05), dtype=float)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                mod_uni = SARIMAX(
+                    train_y,
+                    order=(p, d_o, q),
+                    seasonal_order=s_order,
+                    enforce_stationarity=False,
+                    enforce_invertibility=False,
+                )
+                fit_uni = mod_uni.fit(disp=False, maxiter=60)
+                fcast_res = fit_uni.get_forecast(steps=h_total)
+                mean_pred = np.asarray(fcast_res.predicted_mean, dtype=float)
+                conf_int = np.asarray(fcast_res.conf_int(alpha=0.05), dtype=float)
             lo95 = conf_int[:, 0]
             hi95 = conf_int[:, 1]
 
@@ -394,25 +411,27 @@ def run_arima_models_extended(
                 "RMSE": errs["RMSE"],
                 "MAE": errs["MAE"],
             })
-        except Exception as e:
-            print(f"Erro no modelo {m_name_uni}: {e}")
+        except Exception:
+            pass
 
-        # 2. Multivariate ARIMAX / SARIMAX (when exogenous variables are selected)
-        if has_exog and train_exog_mat is not None and total_exog_mat is not None:
+        # 2. Multivariate ARIMAX / SARIMAX (when exogenous variables are selected and non-collinear)
+        if use_multivariate and train_exog_mat is not None and total_exog_mat is not None:
             m_name_multi = f"arima_multi_{idx}"
             try:
-                mod_multi = SARIMAX(
-                    train_y,
-                    exog=train_exog_mat,
-                    order=(p, d_o, q),
-                    seasonal_order=s_order,
-                    enforce_stationarity=False,
-                    enforce_invertibility=False,
-                )
-                fit_multi = mod_multi.fit(disp=False, maxiter=60)
-                fcast_res_m = fit_multi.get_forecast(steps=h_total, exog=total_exog_mat)
-                mean_pred_m = np.asarray(fcast_res_m.predicted_mean, dtype=float)
-                conf_int_m = np.asarray(fcast_res_m.conf_int(alpha=0.05), dtype=float)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    mod_multi = SARIMAX(
+                        train_y,
+                        exog=train_exog_mat,
+                        order=(p, d_o, q),
+                        seasonal_order=s_order,
+                        enforce_stationarity=False,
+                        enforce_invertibility=False,
+                    )
+                    fit_multi = mod_multi.fit(disp=False, maxiter=60)
+                    fcast_res_m = fit_multi.get_forecast(steps=h_total, exog=total_exog_mat)
+                    mean_pred_m = np.asarray(fcast_res_m.predicted_mean, dtype=float)
+                    conf_int_m = np.asarray(fcast_res_m.conf_int(alpha=0.05), dtype=float)
                 lo95_m = conf_int_m[:, 0]
                 hi95_m = conf_int_m[:, 1]
 
@@ -458,8 +477,8 @@ def run_arima_models_extended(
                     "RMSE": errs_m["RMSE"],
                     "MAE": errs_m["MAE"],
                 })
-            except Exception as e:
-                print(f"Erro no modelo {m_name_multi}: {e}")
+            except Exception:
+                pass
 
     if not forecast_results:
         raise ValueError("Nenhum modelo ARIMA pôde ser ajustado com sucesso. Tente ajustar os parâmetros.")

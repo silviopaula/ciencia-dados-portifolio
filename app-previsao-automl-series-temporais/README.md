@@ -23,10 +23,13 @@ app-previsao-automl-series-temporais/
 │   ├── styles.css                  # Design system moderno com suporte a Tema Claro e Escuro
 │   └── app.js                      # Cliente REST ES6 + gráficos interativos Plotly.js
 ├── data/                           # Conjuntos de dados de exemplo (CSV, Excel, RDS, Stata, SQLite)
+├── tests/                          # Suíte automatizada de testes unitários e de integração da API
+│   ├── __init__.py
+│   └── test_app.py                 # Testes end-to-end dos 5 módulos, 6 formatos e exportações
 ├── www/                            # Recursos visuais estáticos (logo e imagens de exemplo)
-├── iniciar_app.bat                 # Inicializador Windows (libera porta 8060, inicia servidor e abre navegador)
+├── iniciar_app.bat                 # Inicializador Windows (porta dedicada 8060 + healthcheck /api/health)
 ├── run_app.py                      # Script Python de inicialização do Uvicorn (porta 8060)
-├── requirements.txt                # Dependências Python do ambiente virtual (.venv)
+├── requirements.txt                # Dependências Python enxutas e pinadas do projeto
 ├── DOCUMENTACAO_APP.md             # Documentação técnica detalhada de todos os módulos e endpoints
 ├── README.md                       # Guia rápido do projeto
 └── .gitignore                      # Configuração de arquivos ignorados pelo Git
@@ -34,19 +37,33 @@ app-previsao-automl-series-temporais/
 
 ---
 
-## Como Executar
+## Como Instalar e Executar
 
-### Opção 1: Duplo clique no `.bat` (Windows)
-Dê duplo clique em `iniciar_app.bat`. O script irá:
-1. Verificar e encerrar automaticamente processos antigos na porta `8060`.
-2. Iniciar o servidor FastAPI com o ambiente `.venv`.
-3. Abrir automaticamente **http://127.0.0.1:8060** no seu navegador.
+### 1. Pré-requisitos
+Instale as dependências em Python **3.10+**:
 
-### Opção 2: Via Terminal
-```powershell
-.\.venv\Scripts\python.exe run_app.py
+```bash
+pip install -r requirements.txt
 ```
-Acesse no navegador: **http://127.0.0.1:8060**
+
+### 2. Opção 1: Duplo clique no `.bat` (Windows)
+Dê duplo clique em `iniciar_app.bat`. O script irá:
+1. Liberar exclusivamente a porta dedicada `8060` (caso esteja ocupada por uma sessão anterior).
+2. Iniciar o servidor FastAPI (`.venv\Scripts\python.exe` ou `python` do PATH).
+3. Aguardar `GET /api/health` responder `HTTP 200` antes de abrir **http://127.0.0.1:8060** no navegador.
+
+### 3. Opção 2: Via Terminal
+```bash
+python run_app.py
+```
+Acesse no navegador: **http://127.0.0.1:8060** (documentação OpenAPI interativa em `/docs`).
+
+### 4. Testes Automatizados
+Execute a suíte de testes unitários e de integração (`FastAPI TestClient`, cobrindo importação multi-formato, preparação em 8 etapas, ML Recipes/Backtest/Cascata/Elasticidades, ARIMA/SARIMAX com exógenas futuras, AutoTS 7 modelos e visões de crescimento):
+
+```bash
+python -m unittest discover -s tests -v
+```
 
 ---
 

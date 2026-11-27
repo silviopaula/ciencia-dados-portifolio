@@ -1,14 +1,13 @@
 """
 Data Import, Date Conversion, Dummy Generation, Variable Transformations,
 Seasonality/Trend Decomposition, and Export functions.
-Ported from R/functions_page_data_import.R and R/modulo_data_import.R.
 """
 from __future__ import annotations
-import io
 import math
 import os
 import re
 import sqlite3
+import warnings
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -42,19 +41,22 @@ def inspect_file_metadata(file_path: str, filename: str, force_type: str = "auto
 
     if detected == "xlsx":
         try:
-            xl = pd.ExcelFile(file_path)
-            sheets = list(xl.sheet_names)
+            with pd.ExcelFile(file_path) as xl:
+                sheets = list(xl.sheet_names)
         except Exception:
             sheets = []
     elif detected == "sqlite":
+        conn = None
         try:
             conn = sqlite3.connect(file_path)
             cur = conn.cursor()
             cur.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")
             tables = [r[0] for r in cur.fetchall()]
-            conn.close()
         except Exception:
             tables = []
+        finally:
+            if conn is not None:
+                conn.close()
 
     return {
         "filename": filename,
@@ -75,33 +77,64 @@ def importar_dados(
         tipo_arquivo = detectar_tipo_arquivo(filename)
 
     if tipo_arquivo == "csv":
-        with open(file_path, "r", encoding="utf-8", errors="replace") as f:
-            sample_lines = [f.readline() for _ in range(5)]
-        sample_text = "".join(sample_lines)
-        sep_char = ";" if ";" in sample_text else ","
+        with open(file_path, "rb") as raw_f:
+            raw_bytes = raw_f.read()
+        decoded_sample = None
+        detected_encoding = "utf-8-sig"
+        for enc in ("utf-8-sig", "utf-8", "latin-1"):
+            try:
+                decoded_sample = raw_bytes[:8192].decode(enc)
+                detected_encoding = enc
+                break
+            except UnicodeDecodeError:
+                continue
+        if decoded_sample is None:
+            decoded_sample = raw_bytes[:8192].decode("utf-8", errors="replace")
+            detected_encoding = "utf-8"
+
+        sample_lines = decoded_sample.splitlines()[:10]
+        sample_text = "\n".join(sample_lines)
+        sep_char = ";" if sample_text.count(";") > sample_text.count(",") else ","
+
         df = pd.read_csv(
             file_path,
             sep=sep_char,
+            encoding=detected_encoding,
             na_values=["", "NA", "NULL", "NaN", "null"],
             keep_default_na=True,
         )
-        # If decimal comma was used in semicolon CSV, try converting numeric-looking object columns
+        # Convert numeric-looking object columns when decimal comma / dot thousands were used
         for col in df.columns:
             if df[col].dtype == object:
-                sample_non_na = df[col].dropna().astype(str).head(20)
+                sample_non_na = df[col].dropna().astype(str).head(25)
                 if len(sample_non_na) > 0 and all(
-                    re.match(r"^-?\d+(,\d+)?$", s.strip()) for s in sample_non_na
+                    re.match(r"^-?\d+(?:\.\d{3})*(?:,\d+)?$", s.strip()) for s in sample_non_na
                 ):
-                    df[col] = df[col].astype(str).str.replace(",", ".", regex=False)
-                    df[col] = pd.to_numeric(df[col], errors="ignore")
+                    cleaned = (
+                        df[col]
+                        .astype(str)
+                        .str.strip()
+                        .str.replace(".", "", regex=False)
+                        .str.replace(",", ".", regex=False)
+                    )
+                    converted = pd.to_numeric(cleaned, errors="coerce")
+                    if converted.notna().sum() >= df[col].notna().sum():
+                        df[col] = converted
 
     elif tipo_arquivo == "xlsx":
-        xl = pd.ExcelFile(file_path)
-        if not planilha or planilha not in xl.sheet_names:
-            if len(xl.sheet_names) == 0:
-                raise ValueError("Nenhuma planilha encontrada no arquivo Excel.")
-            planilha = xl.sheet_names[0]
-        df = pd.read_excel(file_path, sheet_name=planilha, na_values=["", "NA", "NULL"])
+        try:
+            with pd.ExcelFile(file_path) as xl:
+                if not planilha or planilha not in xl.sheet_names:
+                    if len(xl.sheet_names) == 0:
+                        raise ValueError("Nenhuma planilha encontrada no arquivo Excel.")
+                    planilha = xl.sheet_names[0]
+                df = xl.parse(sheet_name=planilha, na_values=["", "NA", "NULL"])
+        except ImportError as exc:
+            if "xlrd" in str(exc).lower():
+                raise ValueError(
+                    "Para arquivos Excel legados (.xls), instale 'xlrd>=2.0.1' ou converta o arquivo para .xlsx."
+                ) from exc
+            raise
 
     elif tipo_arquivo == "rds":
         import pyreadr
@@ -143,7 +176,9 @@ def importar_dados(
         if pd.api.types.is_datetime64_any_dtype(df[col]):
             df[col] = pd.to_datetime(df[col]).dt.date
         elif pd.api.types.is_numeric_dtype(df[col]) and not pd.api.types.is_bool_dtype(df[col]):
-            df[col] = df[col].round(4)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
+                df[col] = pd.to_numeric(df[col], errors="coerce").round(4)
 
     return df
 
@@ -460,8 +495,10 @@ def gerar_dummies(
         col_nome_pers = _make_safe_name(f"dummy_{nome_raw}")
         if col_nome_pers in out.columns or nome_raw in out.columns:
             raise ValueError(f"Dummy personalizada: Nome '{col_nome_pers}' já existe nos dados.")
-        dt_ini = pd.Timestamp(periodo_personalizado["inicio"])
-        dt_fim = pd.Timestamp(periodo_personalizado["fim"])
+        dt_ini = pd.to_datetime(periodo_personalizado.get("inicio"), errors="coerce")
+        dt_fim = pd.to_datetime(periodo_personalizado.get("fim"), errors="coerce")
+        if pd.isna(dt_ini) or pd.isna(dt_fim):
+            raise ValueError("Dummy personalizada: Datas de início e fim inválidas.")
         if dt_ini > dt_fim:
             raise ValueError("Dummy personalizada: A data inicial não pode ser maior que a data final.")
         out[col_nome_pers] = np.where(
@@ -716,7 +753,7 @@ def serialize_dataframe_rows(df: pd.DataFrame, columns: Optional[List[str]] = No
                 lambda v: v.strftime("%Y-%m-%d") if isinstance(v, (date, datetime)) else (None if pd.isna(v) else v)
             )
 
-    rows = sliced.replace({np.nan: None}).to_dict(orient="records")
+    rows = sliced.replace([np.inf, -np.inf], np.nan).replace({np.nan: None}).to_dict(orient="records")
     return {
         "columns": list(view_df.columns),
         "all_columns": list(df.columns),

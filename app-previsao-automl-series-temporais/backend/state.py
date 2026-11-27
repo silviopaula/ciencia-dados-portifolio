@@ -34,6 +34,10 @@ class AppState:
         self.date_processing_complete = False
         self.operation_logs = []
         self.seasonality_report = ""
+        self.caret_results = None
+        self.arima_results = None
+        self.autots_results = None
+        self.autots_growth_results = None
 
     def log(self, message: str) -> None:
         ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

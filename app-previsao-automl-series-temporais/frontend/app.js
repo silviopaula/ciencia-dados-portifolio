@@ -40,6 +40,10 @@ function toggleTheme() {
   document.body.classList.toggle('dark-theme');
   updateThemeIcon();
   // Re-render active Plotly charts for dark/light theme colors
+  const exploreEl = document.getElementById('explore-plotly-chart');
+  if (exploreEl && exploreEl.data && exploreEl.data.length > 0) {
+    generateExploratoryPlot();
+  }
   if (APP.caretResults) {
     renderCaretMainPlot();
     renderCaretImportanceAndElasticity();
@@ -189,6 +193,7 @@ async function quickLoadDefaultSample(goToCaret = false) {
     const res = await fetch('/api/import/sample', { method: 'POST', body: fd });
     if (!res.ok) throw new Error((await res.json()).detail || 'Falha ao carregar exemplo');
     const payload = await res.json();
+    clearCachedModelResults();
     applyStateAndPreview(payload.state, payload.preview);
     showToast('Dados de exemplo carregados e coluna "date_ok" validada!', 'success');
     if (goToCaret) {
@@ -428,6 +433,7 @@ async function executeDataImport() {
     const res = await fetch(endpoint, { method: 'POST', body: fd });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || 'Erro na importação');
+    clearCachedModelResults();
     applyStateAndPreview(data.state, data.preview);
     showToast('Dados importados com sucesso!', 'success');
   } catch (e) {
@@ -591,13 +597,34 @@ function exportProcessedData() {
   window.open(`/api/data/export?fmt=${encodeURIComponent(fmt)}`, '_blank');
 }
 
+function clearCachedModelResults(purgePlots = false) {
+  APP.caretResults = null;
+  APP.arimaResults = null;
+  APP.autotsResults = null;
+  APP.growthResults = null;
+  if (purgePlots) {
+    [
+      'explore-plotly-chart',
+      'caret-main-plot',
+      'caret-waterfall-plot',
+      'caret-elasticity-plot',
+      'arima-main-plot',
+      'autots-forecast-plot',
+      'autots-growth-plot',
+    ].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) Plotly.purge(el);
+    });
+  }
+}
+
 async function resetImportPage() {
   try {
     const res = await fetch('/api/reset', { method: 'POST' });
     const st = await res.json();
     APP.tableData = { columns: [], rows: [], total_rows: 0 };
+    clearCachedModelResults(true);
     applyStateAndPreview(st, APP.tableData);
-    Plotly.purge('explore-plotly-chart');
     showToast('Página e dados da sessão resetados.', 'info');
   } catch (e) {
     showToast(e.message, 'error');
@@ -740,23 +767,42 @@ function syncForecastingModulesSelectors(st) {
   populateCaretExplanatoryVars();
   populateArimaExogVars();
 
-  // Default Dates
-  if (st.date_min && st.date_max) {
-    document.getElementById('caret-train-start').value = st.date_min;
-    document.getElementById('caret-train-end').value = st.date_max;
-    document.getElementById('arima-start-date').value = st.date_min;
-    document.getElementById('arima-end-date').value = st.date_max;
-    document.getElementById('autots-start-date').value = st.date_min;
-    document.getElementById('autots-end-date').value = st.date_max;
+  // Default Dates using valid realized bounds of each selected target variable
+  const caretTarget = document.getElementById('caret-target-y')?.value;
+  const arimaTarget = document.getElementById('arima-target-y')?.value;
+  const autotsTarget = document.getElementById('autots-target-y')?.value;
+  syncDatesForTarget('caret', caretTarget);
+  syncDatesForTarget('arima', arimaTarget);
+  syncDatesForTarget('autots', autotsTarget);
+}
 
-    // Forecast end = max_date + 24 months
-    const maxDt = new Date(st.date_max + 'T00:00:00');
-    if (!isNaN(maxDt.getTime())) {
-      maxDt.setMonth(maxDt.getMonth() + 24);
-      const futureStr = maxDt.toISOString().slice(0, 10);
-      document.getElementById('arima-forecast-end').value = futureStr;
-      document.getElementById('autots-forecast-end').value = futureStr;
-    }
+function syncDatesForTarget(prefix, varName) {
+  const st = APP.state;
+  if (!st || !st.has_data) return;
+  const bounds = (st.column_date_bounds || {})[varName] || {};
+  const minDtStr = bounds.min || st.date_min;
+  const maxDtStr = bounds.max || st.date_max;
+  if (!minDtStr || !maxDtStr) return;
+
+  // UTC-noon prevents local timezone day-shift when adding 24 months
+  const maxDt = new Date(maxDtStr + 'T12:00:00Z');
+  let futureStr = maxDtStr;
+  if (!isNaN(maxDt.getTime())) {
+    maxDt.setUTCMonth(maxDt.getUTCMonth() + 24);
+    futureStr = maxDt.toISOString().slice(0, 10);
+  }
+
+  if (prefix === 'caret') {
+    document.getElementById('caret-train-start').value = minDtStr;
+    document.getElementById('caret-train-end').value = maxDtStr;
+  } else if (prefix === 'arima') {
+    document.getElementById('arima-start-date').value = minDtStr;
+    document.getElementById('arima-end-date').value = maxDtStr;
+    document.getElementById('arima-forecast-end').value = futureStr;
+  } else if (prefix === 'autots') {
+    document.getElementById('autots-start-date').value = minDtStr;
+    document.getElementById('autots-end-date').value = maxDtStr;
+    document.getElementById('autots-forecast-end').value = futureStr;
   }
 }
 
@@ -768,6 +814,7 @@ function populateCaretExplanatoryVars() {
   // Pre-select up to 6 explanatory columns excluding target_teste duplicates
   const defaults = candidates.filter((c) => !c.includes('_teste')).slice(0, 6);
   populateCheckboxList('caret-explicativas-list', candidates, defaults);
+  syncDatesForTarget('caret', targetY);
 }
 
 function populateArimaExogVars() {
@@ -777,10 +824,11 @@ function populateArimaExogVars() {
   const candidates = APP.state.numeric_columns.filter((c) => c !== targetY && c !== dateCol);
   populateCheckboxList('arima-exog-list', candidates, []);
   const box = document.getElementById('arima-exog-list');
-  box.addEventListener('change', () => {
+  box.onchange = () => {
     const selected = getCheckedValues('arima-exog-list');
     document.getElementById('arima-collinear-note').style.display = selected.length > 0 ? 'block' : 'none';
-  });
+  };
+  syncDatesForTarget('arima', targetY);
 }
 
 // ============================================================================
@@ -854,11 +902,16 @@ async function uploadCustomCaretModelsTxt() {
 }
 
 async function resetCustomCaretModels() {
-  const res = await fetch('/api/caret/reset-models', { method: 'POST' });
-  const data = await res.json();
-  APP.caretCatalog = data.models || [];
-  renderCaretModelCheckboxes(['lm', 'ridge_scale', 'rf', 'gbm', 'xgboost']);
-  showToast('Catálogo padrão de modelos restaurado.', 'info');
+  try {
+    const res = await fetch('/api/caret/reset-models', { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Erro ao restaurar catálogo');
+    APP.caretCatalog = data.models || [];
+    renderCaretModelCheckboxes(['lm', 'ridge_scale', 'rf', 'gbm', 'xgboost']);
+    showToast('Catálogo padrão de modelos restaurado.', 'info');
+  } catch (e) {
+    showToast(e.message, 'error');
+  }
 }
 
 async function runCaretForecast() {
@@ -1176,7 +1229,27 @@ function renderCaretImportanceAndElasticity() {
   }
 }
 
+function exportCaretProjections() {
+  if (!APP.caretResults) {
+    showToast('Treine ao menos um modelo ML antes de exportar.', 'warning');
+    return;
+  }
+  window.open('/api/caret/export-projections', '_blank');
+}
+
+function exportCaretModels() {
+  if (!APP.caretResults) {
+    showToast('Treine ao menos um modelo ML antes de baixar o arquivo .joblib.', 'warning');
+    return;
+  }
+  window.open('/api/caret/export-models', '_blank');
+}
+
 function exportCaretImportanceCsv() {
+  if (!APP.caretResults) {
+    showToast('Treine ao menos um modelo ML antes de exportar a importância.', 'warning');
+    return;
+  }
   const m = document.getElementById('caret-imp-model-select').value;
   if (!m) return;
   window.open(`/api/caret/export-importance?modelo=${encodeURIComponent(m)}`, '_blank');
@@ -1249,6 +1322,9 @@ async function runArimaForecast() {
       '<option value="Todos">Exportar: Todos os Modelos</option>' +
       (data.errors || []).map((e) => `<option value="${e.model}">${e.model} ${e.order}</option>`).join('');
 
+    if (data.collinear_warning) {
+      showToast('Colinearidade severa (|r| > 0.99) detectada entre exógenas: apenas modelos univariados foram estimados.', 'warning', 6000);
+    }
     showToast(`Análise ARIMA concluída em ${data.execution_time_sec}s!`, 'success');
   } catch (e) {
     showToast(e.message, 'error');
@@ -1461,6 +1537,10 @@ async function updateArimaDashboard() {
 }
 
 function exportArimaExcel() {
+  if (!APP.arimaResults) {
+    showToast('Execute os modelos ARIMA antes de exportar.', 'warning');
+    return;
+  }
   const m = document.getElementById('arima-export-model-select').value || 'Todos';
   window.open(`/api/arima/export?model=${encodeURIComponent(m)}`, '_blank');
 }
@@ -1677,13 +1757,24 @@ async function updateAutoTSDesvios() {
 }
 
 function exportAutoTSExcel(onlySelected) {
-  if (!APP.autotsResults) return;
+  if (!APP.autotsResults) {
+    showToast('Execute a análise AutoTS antes de exportar.', 'warning');
+    return;
+  }
   if (onlySelected) {
     const m = document.getElementById('autots-selected-model').value || APP.autotsResults.best_model;
     window.open(`/api/autots/export?model=${encodeURIComponent(m)}`, '_blank');
   } else {
     window.open('/api/autots/export', '_blank');
   }
+}
+
+function exportAutoTSGrowthExcel() {
+  if (!APP.growthResults) {
+    showToast('Execute a análise AutoTS antes de exportar as visões de crescimento.', 'warning');
+    return;
+  }
+  window.open('/api/autots/export-growth', '_blank');
 }
 
 async function fetchAutoTSGrowthViews() {

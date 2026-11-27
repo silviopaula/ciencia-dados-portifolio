@@ -1,9 +1,8 @@
 """
 AutoTS Univariate Forecasting Suite & Multi-Granularity Growth Analysis Engine.
-Ported from R/functions_page_forecast_autots.R and R/modulo_forecast_autots.R.
 
 Supports:
-1. 7 Univariate Time-Series Models matching R AutoTS:
+1. 7 Univariate Time-Series Models:
    - `prophet`: Additive Fourier Seasonality + Piecewise/Linear Trend with 95% CI
    - `ets`: Holt-Winters Exponential Smoothing (statsmodels ExponentialSmoothing)
    - `sarima`: Seasonal Auto-ARIMA (statsmodels SARIMAX)
@@ -18,7 +17,6 @@ Supports:
    - Both Wide (pivot by Ano) and Long time-series formats for interactive charts and Excel export.
 """
 from __future__ import annotations
-import math
 import warnings
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -29,8 +27,6 @@ from sklearn.linear_model import Ridge
 from statsmodels.tsa.forecasting.stl import STLForecast
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-
-warnings.filterwarnings("ignore")
 
 AUTOTS_MODELS_LIST = ["prophet", "ets", "sarima", "tbats", "bats", "stlm", "bagged"]
 
@@ -87,17 +83,19 @@ def _fit_predict_ets(
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     n = len(y)
     use_seasonal = "add" if n >= period * 2 else None
-    mod = ExponentialSmoothing(
-        y,
-        trend="add",
-        damped_trend=False,
-        seasonal=use_seasonal,
-        seasonal_periods=period if use_seasonal else None,
-        initialization_method="estimated",
-    )
-    fit = mod.fit(optimized=True)
-    fitted = np.asarray(fit.fittedvalues, dtype=float)
-    mean_fc = np.asarray(fit.forecast(h), dtype=float)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        mod = ExponentialSmoothing(
+            y,
+            trend="add",
+            damped_trend=False,
+            seasonal=use_seasonal,
+            seasonal_periods=period if use_seasonal else None,
+            initialization_method="estimated",
+        )
+        fit = mod.fit(optimized=True)
+        fitted = np.asarray(fit.fittedvalues, dtype=float)
+        mean_fc = np.asarray(fit.forecast(h), dtype=float)
     resid_std = float(np.std(y - fitted, ddof=1)) if n > 2 else 1.0
     spread = 1.96 * resid_std * np.sqrt(1.0 + np.arange(1, h + 1) * 0.06)
     return fitted, mean_fc, mean_fc - spread, mean_fc + spread
@@ -110,20 +108,22 @@ def _fit_predict_sarima(
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     n = len(y)
     s_order = (1, 1, 1, period) if n >= period * 2 else (0, 0, 0, 0)
-    mod = SARIMAX(
-        y,
-        order=(1, 1, 1),
-        seasonal_order=s_order,
-        enforce_stationarity=False,
-        enforce_invertibility=False,
-    )
-    fit = mod.fit(disp=False, maxiter=60)
-    fitted = np.asarray(fit.fittedvalues, dtype=float)
-    if len(fitted) > 0:
-        fitted[0] = y[0]
-    fc_res = fit.get_forecast(steps=h)
-    mean_fc = np.asarray(fc_res.predicted_mean, dtype=float)
-    ci = np.asarray(fc_res.conf_int(alpha=0.05), dtype=float)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        mod = SARIMAX(
+            y,
+            order=(1, 1, 1),
+            seasonal_order=s_order,
+            enforce_stationarity=False,
+            enforce_invertibility=False,
+        )
+        fit = mod.fit(disp=False, maxiter=60)
+        fitted = np.asarray(fit.fittedvalues, dtype=float)
+        if len(fitted) > 0:
+            fitted[0] = y[0]
+        fc_res = fit.get_forecast(steps=h)
+        mean_fc = np.asarray(fc_res.predicted_mean, dtype=float)
+        ci = np.asarray(fc_res.conf_int(alpha=0.05), dtype=float)
     return fitted, mean_fc, ci[:, 0], ci[:, 1]
 
 
@@ -138,30 +138,32 @@ def _fit_predict_tbats_equiv(
     n = len(y)
     shift = abs(float(np.min(y))) + 1.0 if np.min(y) <= 0 else 0.0
     y_pos = y + shift
-    y_bc, lmbda = stats.boxcox(y_pos)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        y_bc, lmbda = stats.boxcox(y_pos)
 
-    t_all = np.arange(n + h, dtype=float)
-    harmonics = []
-    for k in range(1, 4):
-        angle = 2.0 * np.pi * k * t_all / float(period)
-        harmonics.append(np.sin(angle))
-        harmonics.append(np.cos(angle))
-    exog_all = np.column_stack(harmonics)
+        t_all = np.arange(n + h, dtype=float)
+        harmonics = []
+        for k in range(1, 4):
+            angle = 2.0 * np.pi * k * t_all / float(period)
+            harmonics.append(np.sin(angle))
+            harmonics.append(np.cos(angle))
+        exog_all = np.column_stack(harmonics)
 
-    mod = SARIMAX(
-        y_bc,
-        exog=exog_all[:n],
-        order=(1, 1, 1),
-        enforce_stationarity=False,
-        enforce_invertibility=False,
-    )
-    fit = mod.fit(disp=False, maxiter=50)
-    fitted_bc = np.asarray(fit.fittedvalues, dtype=float)
-    if len(fitted_bc) > 0:
-        fitted_bc[0] = y_bc[0]
-    fc_res = fit.get_forecast(steps=h, exog=exog_all[n:])
-    mean_bc = np.asarray(fc_res.predicted_mean, dtype=float)
-    ci_bc = np.asarray(fc_res.conf_int(alpha=0.05), dtype=float)
+        mod = SARIMAX(
+            y_bc,
+            exog=exog_all[:n],
+            order=(1, 1, 1),
+            enforce_stationarity=False,
+            enforce_invertibility=False,
+        )
+        fit = mod.fit(disp=False, maxiter=50)
+        fitted_bc = np.asarray(fit.fittedvalues, dtype=float)
+        if len(fitted_bc) > 0:
+            fitted_bc[0] = y_bc[0]
+        fc_res = fit.get_forecast(steps=h, exog=exog_all[n:])
+        mean_bc = np.asarray(fc_res.predicted_mean, dtype=float)
+        ci_bc = np.asarray(fc_res.conf_int(alpha=0.05), dtype=float)
 
     def inv_bc(arr: np.ndarray) -> np.ndarray:
         if abs(lmbda) < 1e-9:
@@ -184,18 +186,20 @@ def _fit_predict_bats_equiv(
     """
     n = len(y)
     use_seasonal = "add" if n >= period * 2 else None
-    mod = ExponentialSmoothing(
-        y,
-        trend="add",
-        damped_trend=True,
-        seasonal=use_seasonal,
-        seasonal_periods=period if use_seasonal else None,
-        use_boxcox=True if np.all(y > 0) else False,
-        initialization_method="estimated",
-    )
-    fit = mod.fit(optimized=True)
-    fitted = np.asarray(fit.fittedvalues, dtype=float)
-    mean_fc = np.asarray(fit.forecast(h), dtype=float)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        mod = ExponentialSmoothing(
+            y,
+            trend="add",
+            damped_trend=True,
+            seasonal=use_seasonal,
+            seasonal_periods=period if use_seasonal else None,
+            use_boxcox=True if np.all(y > 0) else False,
+            initialization_method="estimated",
+        )
+        fit = mod.fit(optimized=True)
+        fitted = np.asarray(fit.fittedvalues, dtype=float)
+        mean_fc = np.asarray(fit.forecast(h), dtype=float)
     resid_std = float(np.std(y - fitted, ddof=1)) if n > 2 else 1.0
     spread = 1.96 * resid_std * np.sqrt(1.0 + np.arange(1, h + 1) * 0.05)
     return fitted, mean_fc, mean_fc - spread, mean_fc + spread
@@ -210,16 +214,17 @@ def _fit_predict_stlm(
     STLM: Seasonal and Trend decomposition using Loess (STL) + ExponentialSmoothing on seasonally adjusted series.
     """
     n = len(y)
-    stlf = STLForecast(
-        y,
-        ExponentialSmoothing,
-        model_kwargs={"trend": "add", "damped_trend": True},
-        period=period if n >= period * 2 else max(2, n // 2),
-    )
-    fit = stlf.fit()
-    # Fitted values = y - residuals
-    fitted = y - np.asarray(fit.result.resid, dtype=float)
-    mean_fc = np.asarray(fit.forecast(h), dtype=float)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        stlf = STLForecast(
+            y,
+            ExponentialSmoothing,
+            model_kwargs={"trend": "add", "damped_trend": True},
+            period=period if n >= period * 2 else max(2, n // 2),
+        )
+        fit = stlf.fit()
+        fitted = np.asarray(fit.result.seasonal + fit.model_result.fittedvalues, dtype=float)
+        mean_fc = np.asarray(fit.forecast(h), dtype=float)
     resid_std = float(np.std(y - fitted, ddof=1)) if n > 2 else 1.0
     spread = 1.96 * resid_std * np.sqrt(1.0 + np.arange(1, h + 1) * 0.05)
     return fitted, mean_fc, mean_fc - spread, mean_fc + spread
@@ -329,7 +334,7 @@ def run_autots_pipeline(
     peso_desvio_max: float = 0.4,
 ) -> Dict[str, Any]:
     """
-    Port of `get_predictions_autoTS_univ_modified` from R/functions_page_forecast_autots.R.
+    Runs the multi-model univariate AutoTS benchmark and weighted deviation dashboard.
     """
     if date_col not in df.columns:
         raise ValueError(f"Coluna de data '{date_col}' não encontrada.")
@@ -338,6 +343,7 @@ def run_autots_pipeline(
 
     work = df[[date_col, variable]].copy()
     work["Data"] = pd.to_datetime(work[date_col], errors="coerce")
+    work[variable] = pd.to_numeric(work[variable], errors="coerce")
     work = work.dropna(subset=["Data", variable]).sort_values("Data").drop_duplicates(subset=["Data"], keep="first").reset_index(drop=True)
 
     dt_start = pd.Timestamp(start_date)
@@ -349,7 +355,9 @@ def run_autots_pipeline(
         raise ValueError(f"Período de treino possui apenas {len(train_sub)} observações (mínimo recomendado: 12).")
 
     last_hist_date = train_sub["Data"].max()
-    n_pred = max(1, math.ceil((dt_end_pred - last_hist_date).days / 30.44))
+    if dt_end_pred <= last_hist_date:
+        dt_end_pred = last_hist_date + pd.DateOffset(months=12)
+    n_pred = max(1, (dt_end_pred.year - last_hist_date.year) * 12 + (dt_end_pred.month - last_hist_date.month))
     future_dates = pd.date_range(start=last_hist_date + pd.DateOffset(months=1), periods=n_pred, freq="MS")
 
     modelos = list(selected_models) if selected_models else list(AUTOTS_MODELS_LIST)
@@ -386,8 +394,8 @@ def run_autots_pipeline(
             lower_fc_dict[m] = low_v
             upper_fc_dict[m] = up_v
             errors_list.append(_calc_errors(y_train, fit_v, m, variable))
-        except Exception as e:
-            print(f"Aviso: falha ao ajustar modelo AutoTS '{m}': {e}")
+        except Exception:
+            continue
 
     if not mean_fc_dict:
         raise ValueError("Nenhum modelo AutoTS pôde ser ajustado.")
@@ -510,14 +518,17 @@ def generate_df_visoes_ATS(
         grouped = work.groupby(["Ano", period_col], as_index=False)["Valor"].sum()
         anos = sorted(work["Ano"].unique().tolist())
 
-        # Pivot table of values (rows = Ano, cols = period labels)
+        # Pivot table of values (rows = Ano, cols = period labels; keep NaN for missing periods in partial years)
         val_rows: List[Dict[str, Any]] = []
         for ano in anos:
             row: Dict[str, Any] = {"Ano": int(ano)}
             sub_a = grouped[grouped["Ano"] == ano]
             val_map = dict(zip(sub_a[period_col], sub_a["Valor"]))
             for p_key, p_label in period_labels:
-                row[p_label] = round(float(val_map.get(p_key, 0.0)), 2)
+                if p_key in val_map and pd.notna(val_map[p_key]):
+                    row[p_label] = round(float(val_map[p_key]), 2)
+                else:
+                    row[p_label] = np.nan
             val_rows.append(row)
         df_vals = pd.DataFrame(val_rows)
 
@@ -528,38 +539,38 @@ def generate_df_visoes_ATS(
         for _, p_label in period_labels:
             s = df_vals[p_label].astype(float)
             s_prev = s.shift(1).replace(0, np.nan)
-            df_taxas[p_label] = ((s / s_prev - 1.0) * 100.0).round(2)
+            df_taxas[p_label] = ((s / s_prev - 1.0) * 100.0).replace([np.inf, -np.inf], np.nan).round(2)
             df_vars[p_label] = (s - s.shift(1)).round(2)
 
-        # Long format time series
+        # Long format time series (include only periods that have observed/projected values)
         long_rows: List[Dict[str, Any]] = []
         for idx_a, ano in enumerate(anos):
             for p_key, p_label in period_labels:
                 val = df_vals.loc[idx_a, p_label]
+                if pd.isna(val):
+                    continue
                 tx = df_taxas.loc[idx_a, p_label]
                 va = df_vars.loc[idx_a, p_label]
                 dt_str = date_builder(int(ano), p_key)
-                # Only include periods that actually exist in the timeline range
                 long_rows.append({
                     "Ano": int(ano),
                     "Periodo": p_label,
                     "Data": dt_str,
-                    "Valor": None if pd.isna(val) else float(val),
+                    "Valor": float(val),
                     "Taxa_Crescimento": None if pd.isna(tx) else float(tx),
                     "Variacao_Valor": None if pd.isna(va) else float(va),
                 })
 
         df_long = pd.DataFrame(long_rows)
-        min_dt = work["Data"].min().strftime("%Y-%m-%d")
-        max_dt = work["Data"].max().strftime("%Y-%m-%d")
-        df_long = df_long[(df_long["Data"] >= min_dt[:7] + "-01") & (df_long["Data"] <= max_dt)].reset_index(drop=True)
+        if len(df_long) > 0:
+            df_long = df_long.sort_values("Data").reset_index(drop=True)
 
         return {
-            "valores": df_vals.replace({np.nan: None}).to_dict(orient="records"),
-            "taxas": df_taxas.replace({np.nan: None}).to_dict(orient="records"),
-            "variacoes": df_vars.replace({np.nan: None}).to_dict(orient="records"),
+            "valores": df_vals.replace([np.inf, -np.inf], np.nan).replace({np.nan: None}).to_dict(orient="records"),
+            "taxas": df_taxas.replace([np.inf, -np.inf], np.nan).replace({np.nan: None}).to_dict(orient="records"),
+            "variacoes": df_vars.replace([np.inf, -np.inf], np.nan).replace({np.nan: None}).to_dict(orient="records"),
             "columns": ["Ano"] + [lbl for _, lbl in period_labels],
-            "long": df_long.replace({np.nan: None}).to_dict(orient="records"),
+            "long": df_long.replace([np.inf, -np.inf], np.nan).replace({np.nan: None}).to_dict(orient="records"),
         }
 
     visao_mensal = build_granularity_views(

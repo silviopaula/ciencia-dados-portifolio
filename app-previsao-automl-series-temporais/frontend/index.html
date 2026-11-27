@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
-  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="stylesheet" href="/assets/styles.css?v=2.1" />
 </head>
 <body>
 
@@ -567,7 +567,7 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title-wrap">
-              <div class="card-icon" style="background: #ccfbf1; color: #0d9488;"><i class="fa-solid fa-chart-Simple"></i></div>
+              <div class="card-icon" style="background: #ccfbf1; color: #0d9488;"><i class="fa-solid fa-chart-simple"></i></div>
               <h3 class="card-title">8. Análise Gráfica Exploratória</h3>
             </div>
           </div>
@@ -845,7 +845,7 @@
               <div id="caret-res-proj" class="subtab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
                   <h3 style="margin: 0; font-size: 1.05rem;">Projeções Gráficas vs. Realizado</h3>
-                  <button class="btn btn-warning" onclick="window.open('/api/caret/export-projections', '_blank')">
+                  <button class="btn btn-warning" onclick="exportCaretProjections()">
                     <i class="fa-solid fa-file-excel"></i> Exportar Projeções (.xlsx)
                   </button>
                 </div>
@@ -916,7 +916,7 @@
                     <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0 0 18px;">
                       Inclui as abas: <code>Projecoes</code>, <code>Backtest_Aderencia</code>, <code>Metricas_Internas</code>, <code>Configuracoes</code> e <code>Dados_Treino_Usados</code>.
                     </p>
-                    <button class="btn btn-success" onclick="window.open('/api/caret/export-projections', '_blank')">
+                    <button class="btn btn-success" onclick="exportCaretProjections()">
                       <i class="fa-solid fa-download"></i> Baixar Planilha Completa (.xlsx)
                     </button>
                   </div>
@@ -927,7 +927,7 @@
                     <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0 0 18px;">
                       Exporte os pipelines completos treinados nesta sessão (equivalente ao <code>.rds</code> em Python) para reutilizar em produção.
                     </p>
-                    <button class="btn btn-primary" onclick="window.open('/api/caret/export-models', '_blank')">
+                    <button class="btn btn-primary" onclick="exportCaretModels()">
                       <i class="fa-solid fa-download"></i> Baixar Modelos Treinados (.joblib)
                     </button>
                   </div>
@@ -1108,7 +1108,7 @@
             </div>
             <div>
               <label class="form-label">Variável Alvo:</label>
-              <select id="autots-target-y" class="form-select"></select>
+              <select id="autots-target-y" class="form-select" onchange="syncDatesForTarget('autots', this.value)"></select>
             </div>
             <div>
               <label class="form-label">Período de Treino (Início – Fim):</label>
@@ -1232,7 +1232,7 @@
                 </div>
               </div>
 
-              <button class="btn btn-success" onclick="window.open('/api/autots/export-growth', '_blank')">
+              <button class="btn btn-success" onclick="exportAutoTSGrowthExcel()">
                 <i class="fa-solid fa-file-excel"></i> Exportar Todas Visões de Crescimento (.xlsx)
               </button>
             </div>
@@ -1258,6 +1258,6 @@
   <!-- Toast Notification Container -->
   <div id="toast-container"></div>
 
-  <script src="/assets/app.js"></script>
+  <script src="/assets/app.js?v=2.1"></script>
 </body>
 </html>

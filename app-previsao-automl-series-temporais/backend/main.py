@@ -33,12 +33,10 @@ from backend.data_import import (
     transformar_dados,
 )
 from backend.forecast_arima import (
-    check_collinearity,
     gerar_dashboard_recomendacao_arima,
     run_arima_models_extended,
 )
 from backend.forecast_autots import (
-    AUTOTS_MODELS_LIST,
     generate_df_visoes_ATS,
     gerar_dashboard_autots,
     run_autots_pipeline,
@@ -60,7 +58,7 @@ FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 app = FastAPI(
     title="App Forecasts API",
     description="Time-Series Analysis, Data Engineering, PyCaret/Caret ML, ARIMA, and AutoTS Forecasting Engine",
-    version="2.0.0",
+    version="2.1.0",
 )
 
 app.add_middleware(
@@ -203,6 +201,7 @@ def _build_state_summary() -> Dict[str, Any]:
             "date_columns": [],
             "date_min": None,
             "date_max": None,
+            "column_date_bounds": {},
             "is_monthly": False,
             "logs": list(reversed(STATE.operation_logs)),
             "seasonality_report": STATE.seasonality_report,
@@ -217,9 +216,11 @@ def _build_state_summary() -> Dict[str, Any]:
     date_min = None
     date_max = None
     is_monthly = False
+    column_date_bounds: Dict[str, Dict[str, Optional[str]]] = {}
     ref_col = "date_ok" if "date_ok" in df.columns else (date_cols[0] if date_cols else None)
     if ref_col and ref_col in df.columns:
-        dt_s = pd.to_datetime(df[ref_col], errors="coerce").dropna().sort_values()
+        dt_full = pd.to_datetime(df[ref_col], errors="coerce")
+        dt_s = dt_full.dropna().sort_values()
         if len(dt_s) > 0:
             date_min = dt_s.min().strftime("%Y-%m-%d")
             date_max = dt_s.max().strftime("%Y-%m-%d")
@@ -227,6 +228,14 @@ def _build_state_summary() -> Dict[str, Any]:
                 diffs = dt_s.diff().dropna().dt.days
                 med_diff = float(diffs.median()) if len(diffs) > 0 else 0
                 is_monthly = (27 <= med_diff <= 32) or bool((dt_s.dt.day == 1).all())
+
+            for c in numeric_cols:
+                valid_dt = dt_full[df[c].notna() & dt_full.notna()]
+                if len(valid_dt) > 0:
+                    column_date_bounds[c] = {
+                        "min": valid_dt.min().strftime("%Y-%m-%d"),
+                        "max": valid_dt.max().strftime("%Y-%m-%d"),
+                    }
 
     return {
         "has_data": True,
@@ -241,6 +250,7 @@ def _build_state_summary() -> Dict[str, Any]:
         "date_columns": date_cols,
         "date_min": date_min,
         "date_max": date_max,
+        "column_date_bounds": column_date_bounds,
         "is_monthly": is_monthly,
         "logs": list(reversed(STATE.operation_logs)),
         "seasonality_report": STATE.seasonality_report,
@@ -248,8 +258,20 @@ def _build_state_summary() -> Dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
-# General & Data Import Endpoints
+# Health, General & Data Import Endpoints
 # ---------------------------------------------------------------------------
+
+@app.get("/api/health")
+def health_check() -> Dict[str, Any]:
+    df = STATE.get_active_df()
+    return {
+        "status": "ok",
+        "version": app.version,
+        "has_data": df is not None,
+        "filename": STATE.source_filename,
+        "rows": int(len(df)) if df is not None else 0,
+    }
+
 
 @app.get("/api/state")
 def get_state() -> Dict[str, Any]:
@@ -319,10 +341,13 @@ def _finalize_imported_dataframe(df: pd.DataFrame, filename: str, detected_type:
     if candidates:
         best_col = candidates[0]
         STATE.official_date_col = best_col
-        # Check if already date or immediately convertible
+        # Check if already date or cleanly 100% convertible
         insp = inspecionar_coluna_data(df, best_col)
-        if insp.get("e_data"):
-            df_conv, info = converter_coluna_para_date_ok(df, best_col)
+        non_na_count = insp.get("total_registros", 0) - insp.get("registros_na", 0)
+        if insp.get("e_data") or (
+            insp.get("pode_converter") and non_na_count > 0 and insp.get("n_convertido", 0) == non_na_count
+        ):
+            df_conv, _info = converter_coluna_para_date_ok(df, best_col)
             STATE.processed_df = df_conv
             STATE.date_processing_complete = True
             STATE.log(f"Coluna de data '{best_col}' reconhecida automaticamente. 'date_ok' criada.")
@@ -570,7 +595,7 @@ def api_export_processed_data(fmt: str = Query("xlsx")) -> StreamingResponse:
 
     elif fmt_clean == "csv":
         buf = io.BytesIO()
-        csv_text = df.to_csv(index=False, encoding="utf-8-sig")
+        csv_text = df.to_csv(index=False)
         buf.write(csv_text.encode("utf-8-sig"))
         buf.seek(0)
         STATE.log("Dados exportados: CSV")
@@ -682,7 +707,7 @@ def api_train_caret_models(req: CaretTrainRequest) -> Dict[str, Any]:
             "importancia_variaveis": res["importancia_variaveis"],
             "elasticidades": res["elasticidades"],
             "config": res["config"],
-            "projecoes_rows": res["df_projecoes"].replace({np.nan: None}).to_dict(orient="records"),
+            "projecoes_rows": res["df_projecoes"].replace([np.inf, -np.inf], np.nan).replace({np.nan: None}).to_dict(orient="records"),
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -736,7 +761,7 @@ def api_export_caret_importance(modelo: str = Query(...)) -> StreamingResponse:
         raise HTTPException(status_code=404, detail=f"Importância não disponível para o modelo '{modelo}'.")
     df_imp = pd.DataFrame(imp_map[modelo]["dados"])
     buf = io.BytesIO()
-    buf.write(df_imp.to_csv(index=False, encoding="utf-8-sig").encode("utf-8-sig"))
+    buf.write(df_imp.to_csv(index=False).encode("utf-8-sig"))
     buf.seek(0)
     ts = datetime.now().strftime("%Y%m%d")
     return StreamingResponse(
@@ -1010,4 +1035,11 @@ def serve_frontend_index() -> FileResponse:
     index_path = os.path.join(FRONTEND_DIR, "index.html")
     if not os.path.isfile(index_path):
         raise HTTPException(status_code=404, detail="Frontend index.html não encontrado.")
-    return FileResponse(index_path)
+    return FileResponse(
+        index_path,
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )

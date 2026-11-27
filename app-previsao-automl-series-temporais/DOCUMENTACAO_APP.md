@@ -5,8 +5,8 @@
 O **App Forecasts** foi integralmente reescrito em **Python** no backend utilizando **FastAPI** e um **Frontend Web Moderno (SPA)** em **HTML5, CSS3 e JavaScript ES6 puro com Plotly.js**, sem qualquer dependência de frameworks de UI em Python.
 
 ### Fluxo de Comunicação
-- O frontend ([`frontend/index.html`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/frontend/index.html), [`frontend/styles.css`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/frontend/styles.css), [`frontend/app.js`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/frontend/app.js)) consome a API REST JSON exposta pelo FastAPI ([`backend/main.py`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/backend/main.py)) na porta `8060`.
-- O estado da sessão ([`backend/state.py`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/backend/state.py)) mantém o `DataFrame` bruto (`raw_df`), o `DataFrame` processado (`processed_df`), o status de validação da coluna temporal (`date_ok`), o histórico cronológico de operações (`operation_logs`) e os objetos/resultados dos modelos treinados.
+- O frontend ([`frontend/index.html`](./frontend/index.html), [`frontend/styles.css`](./frontend/styles.css), [`frontend/app.js`](./frontend/app.js)) consome a API REST JSON exposta pelo FastAPI ([`backend/main.py`](./backend/main.py)) na porta `8060`.
+- O estado da sessão ([`backend/state.py`](./backend/state.py)) mantém o `DataFrame` bruto (`raw_df`), o `DataFrame` processado (`processed_df`), o status de validação da coluna temporal (`date_ok`), o histórico cronológico de operações (`operation_logs`) e os objetos/resultados dos modelos treinados.
 
 ---
 
@@ -20,7 +20,7 @@ O **App Forecasts** foi integralmente reescrito em **Python** no backend utiliza
 ---
 
 ### ABA 2: IMPORTAÇÃO E PREPARAÇÃO DE DADOS
-Implementada no backend em [`backend/data_import.py`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/backend/data_import.py), estruturada em **8 etapas**:
+Implementada no backend em [`backend/data_import.py`](./backend/data_import.py), estruturada em **8 etapas**:
 
 1. **Importar Dados (`importar_dados`)**:
    - **CSV / TXT**: Detecta automaticamente o separador (`;` ou `,`) e converte decimais com vírgula quando aplicável.
@@ -61,7 +61,7 @@ Implementada no backend em [`backend/data_import.py`](file:///d:/OneDrive/Docume
 ---
 
 ### ABA 3: PROJEÇÕES ML (PYCARET / CARET RECIPES)
-Implementada em [`backend/forecast_caret.py`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/backend/forecast_caret.py):
+Implementada em [`backend/forecast_caret.py`](./backend/forecast_caret.py):
 
 - **Catálogo de Modelos (`LISTA_MODELOS_PADRAO`)**:
   - 45 algoritmos base + variantes `_scale`, `_boxcox` e `_tune` (totalizando **165 configurações**), além de suporte a upload de arquivo `.txt` customizado (`/api/caret/custom-models`).
@@ -92,18 +92,18 @@ Implementada em [`backend/forecast_caret.py`](file:///d:/OneDrive/Documentos/Git
 ---
 
 ### ABA 4: PROJEÇÕES ARIMA / SARIMAX
-Implementada em [`backend/forecast_arima.py`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/backend/forecast_arima.py):
+Implementada em [`backend/forecast_arima.py`](./backend/forecast_arima.py):
 
-- Padroniza datas para o primeiro dia do mês e separa o conjunto de treino e os `n_teste` meses finais para validação.
+- Padroniza datas para o primeiro dia do mês, limita automaticamente o corte ao último ponto realizado da série alvo e separa os `n_teste` meses finais para validação.
 - **Modo Automático**: Realiza teste ADF (`adfuller`) para estimar a ordem de integração $d$, seleciona a ordem base $(p,d,q)(P,D,Q)_m$ via critério de informação de Akaike (AIC) e gera `num_models` variações adjacentes.
 - **Modo Manual**: Ajusta a ordem exata informada pelo usuário.
-- **Univariado + Multivariado (ARIMAX)**: Quando variáveis exógenas são selecionadas, verifica colinearidade (`check_collinearity`), imputa eventuais NAs futuros das exógenas pela média de treino e ajusta tanto os modelos `arima_uni_i` quanto `arima_multi_i`.
+- **Univariado + Multivariado (ARIMAX)**: Preserva a linha temporal completa das variáveis exógenas futuras (mesmo onde o alvo é `NaN`), verifica colinearidade severa ($|r| > 0.99$ via `check_collinearity`) e ajusta tanto os modelos `arima_uni_i` quanto `arima_multi_i`.
 - Gera previsões com intervalos de confiança de 95% (`Lo95`, `Hi95`), tabela de erros (`RMSE`, `MAE`, `MAPE`), estatísticas de desvios no teste e Dashboard de Recomendação ponderado por `peso_recente` e `peso_desvio_max`.
 
 ---
 
 ### ABA 5: PROJEÇÕES AUTOTS & ANÁLISE DE CRESCIMENTO
-Implementada em [`backend/forecast_autots.py`](file:///d:/OneDrive/Documentos/GitHub/app_forecasts_R/backend/forecast_autots.py):
+Implementada em [`backend/forecast_autots.py`](./backend/forecast_autots.py):
 
 1. **Sub-aba Modelos Univariados AutoTS**:
    - Ajusta até 7 algoritmos univariados com intervalos de previsão de 95%:
@@ -133,7 +133,8 @@ Implementada em [`backend/forecast_autots.py`](file:///d:/OneDrive/Documentos/Gi
 
 | Método | Rota | Descrição |
 | :--- | :--- | :--- |
-| `GET` | `/api/state` | Retorna o estado global da sessão, colunas, datas e logs |
+| `GET` | `/api/health` | Verificação de saúde da API e status do dataset ativo |
+| `GET` | `/api/state` | Retorna o estado global da sessão, colunas, limites temporais por variável e logs |
 | `POST` | `/api/reset` | Limpa os dados e reinicia o estado da sessão |
 | `GET` | `/api/samples` | Lista os arquivos de exemplo disponíveis na pasta `data/` |
 | `POST` | `/api/import/inspect` | Inspeciona tipo, planilhas Excel ou tabelas SQLite de um arquivo |

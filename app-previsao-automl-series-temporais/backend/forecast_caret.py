@@ -1,14 +1,12 @@
 """
 Machine Learning Time-Series Forecasting Engine (PyCaret + Caret Recipes Architecture).
-Ported from R/functions_page_forecast_caret.R, R/modulo_caret_forecasts.R, and R/packages.R.
 
 Supports:
 1. Native PyCaret (pycaret.regression.RegressionExperiment) when installed, plus a unified
    PyCaret-compatible AutoML & Caret Recipes Pipeline engine powered by Scikit-Learn & XGBoost
-   that runs on any Python version (including Python 3.12-3.14).
-2. Full catalog of models from R's `lista_modelos_padrao` (base, `_scale`, `_boxcox`, `_tune`)
-   plus PyCaret regression models (`lr`, `ridge`, `lasso`, `en`, `lar`, `llar`, `omp`, `br`,
-   `ard`, `huber`, `svm`, `knn`, `dt`, `rf`, `et`, `ada`, `gbr`, `mlp`, `xgboost`).
+   that runs cleanly across Python 3.10+.
+2. Full catalog of 165 model configurations (base, `_scale`, `_boxcox`, `_tune`) covering
+   linear, robust, penalized, spline/GAM, SVM, Gaussian Process, tree/ensemble, XGBoost, KNN, and MLP.
 3. Strict featurization ordering (chronological split BEFORE fitting preprocessing/recipes).
 4. Advanced recipes: Imputation (KNN, Bagged/Iterative, Median, Mean, Mode, Linear),
    Numeric Transformations (Normalize, Center, Scale, BoxCox, YeoJohnson, Log, Sqrt, NZV, Corr, Splines),
@@ -17,20 +15,20 @@ Supports:
 5. Validation strategies: TimeSlices (`TimeSeriesSplit`) and Traditional CV (`KFold` / `RepeatedKFold`)
    plus Auto-Tune (`RandomizedSearchCV` / `GridSearchCV`).
 6. External Backtest Recommendation Dashboard (`gerar_dashboard_recomendacao_adaptado`).
-7. Variable Importance Waterfall/Cascade (`criar_grafico_cascata`) and Numerical Elasticities (`calcular_elasticidades`).
+7. Variable Importance Waterfall/Cascade and Numerical Elasticities (`calcular_elasticidades_modelo`).
 """
 from __future__ import annotations
 import importlib.util
 import math
 import re
+import sys
 import warnings
-from datetime import date, datetime
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from scipy import stats
-from sklearn.base import BaseEstimator, TransformerMixin, clone
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import FastICA, PCA
 from sklearn.ensemble import (
@@ -40,7 +38,7 @@ from sklearn.ensemble import (
     GradientBoostingRegressor,
     RandomForestRegressor,
 )
-from sklearn.feature_selection import RFE, SequentialFeatureSelector, VarianceThreshold
+from sklearn.feature_selection import RFE, VarianceThreshold
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import ConstantKernel, DotProduct, RBF
 from sklearn.experimental import enable_iterative_imputer  # noqa: F401
@@ -71,15 +69,12 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import (
     MinMaxScaler,
-    PolynomialFeatures,
     PowerTransformer,
     SplineTransformer,
     StandardScaler,
 )
-from sklearn.svm import LinearSVR, SVR
+from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
-
-warnings.filterwarnings("ignore")
 
 HAS_PYCARET = importlib.util.find_spec("pycaret") is not None
 HAS_XGBOOST = importlib.util.find_spec("xgboost") is not None
@@ -305,12 +300,12 @@ def build_lista_modelos_padrao() -> Dict[str, Dict[str, Any]]:
             "group": f"3. Com Transformação Box-Cox ({group})",
         }
 
-    # 4. Pre-configured Tuned variants from R's lista_modelos_padrao
+    # 4. Pre-configured Tuned variants
     tuned_variants = {
-        "gaussprPoly_2": ("gaussprPoly", [], {"degree": [2], "scale": [0.1]}),
-        "gaussprPoly_3": ("gaussprPoly", [], {"degree": [3], "scale": [0.1]}),
-        "gaussprPoly_4": ("gaussprPoly", [], {"degree": [4], "scale": [0.1]}),
-        "gaussprPoly_5": ("gaussprPoly", [], {"degree": [5], "scale": [0.1]}),
+        "gaussprPoly_2": ("gaussprPoly", ["scale"], {"kernel": [ConstantKernel(1.0) * (DotProduct(sigma_0=1.0) ** 2)], "alpha": [1e-2, 1e-1]}),
+        "gaussprPoly_3": ("gaussprPoly", ["scale"], {"kernel": [ConstantKernel(1.0) * (DotProduct(sigma_0=1.0) ** 3)], "alpha": [1e-2, 1e-1]}),
+        "gaussprPoly_4": ("gaussprPoly", ["scale"], {"kernel": [ConstantKernel(1.0) * (DotProduct(sigma_0=1.0) ** 4)], "alpha": [1e-2, 1e-1]}),
+        "gaussprPoly_5": ("gaussprPoly", ["scale"], {"kernel": [ConstantKernel(1.0) * (DotProduct(sigma_0=1.0) ** 5)], "alpha": [1e-2, 1e-1]}),
         "svmPoly_2": ("svmPoly", [], {"degree": [2], "C": [0.05, 0.5, 1.0]}),
         "svmPoly_3": ("svmPoly", [], {"degree": [3], "C": [0.05, 0.5, 1.0]}),
         "svmPoly_4": ("svmPoly", [], {"degree": [4], "C": [0.05, 0.5, 1.0]}),
@@ -671,17 +666,17 @@ def _build_preprocessing_pipeline(
     # 2. Zero variance removal
     steps.append(("zv", VarianceThreshold(threshold=0.0)))
 
-    # Combine model-level preProcess and user-selected recipe transformations
+    # Combine model-level preProcess and user-selected recipe transformations (case-insensitive dedup)
     all_transforms: List[str] = []
-    if model_preproc:
-        all_transforms.extend(model_preproc)
-    if transformacoes_numericas:
-        for t in transformacoes_numericas:
-            if t not in all_transforms:
-                all_transforms.append(t)
+    seen_transforms = {"zv"}
+    for source_list in (model_preproc or [], transformacoes_numericas or []):
+        for t in source_list:
+            t_norm = t.strip().lower()
+            if t_norm and t_norm not in seen_transforms:
+                seen_transforms.add(t_norm)
+                all_transforms.append(t_norm)
 
-    for transf in all_transforms:
-        t_low = transf.strip().lower()
+    for t_low in all_transforms:
         if t_low == "nzv":
             steps.append(("nzv", VarianceThreshold(threshold=1e-5)))
         elif t_low == "normalize":
@@ -1120,57 +1115,60 @@ def treinar_avaliar_modelos_caret_recipes(
 
             # Hyperparameter Tuning if auto_tune is enabled or variant has tuneGrid
             active_grid = custom_grid if custom_grid else (default_grid if auto_tune else None)
-            if active_grid:
-                prefixed_grid = {
-                    (k if k.startswith("model__") else f"model__{k}"): v
-                    for k, v in active_grid.items()
-                }
-                total_combos = 1
-                for v in prefixed_grid.values():
-                    total_combos *= max(1, len(v))
-                n_iter = max(1, min(int(tune_length or 3) * 2, total_combos))
-                if total_combos <= n_iter:
-                    search: Any = GridSearchCV(
-                        pipe,
-                        param_grid=prefixed_grid,
-                        cv=cv_splitter,
-                        scoring="neg_root_mean_squared_error",
-                        n_jobs=1,
-                    )
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                if active_grid:
+                    prefixed_grid = {
+                        (k if k.startswith("model__") else f"model__{k}"): v
+                        for k, v in active_grid.items()
+                    }
+                    total_combos = 1
+                    for v in prefixed_grid.values():
+                        total_combos *= max(1, len(v))
+                    n_iter = max(1, min(int(tune_length or 3) * 2, total_combos))
+                    if total_combos <= n_iter:
+                        search: Any = GridSearchCV(
+                            pipe,
+                            param_grid=prefixed_grid,
+                            cv=cv_splitter,
+                            scoring="neg_root_mean_squared_error",
+                            n_jobs=1,
+                        )
+                    else:
+                        search = RandomizedSearchCV(
+                            pipe,
+                            param_distributions=prefixed_grid,
+                            n_iter=n_iter,
+                            cv=cv_splitter,
+                            scoring="neg_root_mean_squared_error",
+                            random_state=2024,
+                            n_jobs=1,
+                        )
+                    search.fit(X_train_df.values, y_train)
+                    fitted_model = search.best_estimator_
+                    cv_rmse = float(-search.best_score_)
                 else:
-                    search = RandomizedSearchCV(
+                    scores = cross_val_score(
                         pipe,
-                        param_distributions=prefixed_grid,
-                        n_iter=n_iter,
+                        X_train_df.values,
+                        y_train,
                         cv=cv_splitter,
                         scoring="neg_root_mean_squared_error",
-                        random_state=2024,
                         n_jobs=1,
                     )
-                search.fit(X_train_df.values, y_train)
-                fitted_model = search.best_estimator_
-                cv_rmse = float(-search.best_score_)
-            else:
-                scores = cross_val_score(
-                    pipe,
-                    X_train_df.values,
-                    y_train,
-                    cv=cv_splitter,
-                    scoring="neg_root_mean_squared_error",
-                    n_jobs=1,
-                )
-                cv_rmse = float(-np.nanmean(scores))
-                pipe.fit(X_train_df.values, y_train)
-                fitted_model = pipe
+                    cv_rmse = float(-np.nanmean(scores))
+                    pipe.fit(X_train_df.values, y_train)
+                    fitted_model = pipe
 
-            # Predict across entire timeline
-            preds = np.asarray(fitted_model.predict(X_full_df.values), dtype=float).flatten()
+                # Predict across entire timeline
+                preds = np.asarray(fitted_model.predict(X_full_df.values), dtype=float).flatten()
+                train_preds = np.asarray(fitted_model.predict(X_train_df.values), dtype=float).flatten()
+
             col_pred = f"{var_Y}_{nome_modelo}"
             df_projecoes[col_pred] = np.round(preds, 4)
             modelos_treinados[nome_modelo] = fitted_model
 
             # In-sample metrics
-            train_preds = np.asarray(fitted_model.predict(X_train_df.values), dtype=float).flatten()
             train_err = y_train - train_preds
             train_rmse = float(np.sqrt(np.mean(train_err ** 2)))
             train_mae = float(np.mean(np.abs(train_err)))
@@ -1189,28 +1187,28 @@ def treinar_avaliar_modelos_caret_recipes(
                 "Treino_R²": round(max(0.0, train_r2), 4),
             })
 
-            # Extract Variable Importance (Waterfall/Cascade)
-            imp_info = extrair_importancia_modelo(
-                fitted_model,
-                feature_names=final_explicativas,
-                X_train=X_train_df.values,
-                y_train=y_train,
-                nome_modelo=nome_modelo,
-            )
-            if imp_info:
-                importancia_variaveis[nome_modelo] = imp_info
+            # Extract Variable Importance (Waterfall/Cascade) & Elasticities
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                imp_info = extrair_importancia_modelo(
+                    fitted_model,
+                    feature_names=final_explicativas,
+                    X_train=X_train_df.values,
+                    y_train=y_train,
+                    nome_modelo=nome_modelo,
+                )
+                if imp_info:
+                    importancia_variaveis[nome_modelo] = imp_info
 
-            # Compute Elasticities
-            elast_info = calcular_elasticidades_modelo(
-                fitted_model,
-                X_train_df=X_train_df,
-                nome_modelo=nome_modelo,
-            )
-            if elast_info:
-                elasticidades_modelos[nome_modelo] = elast_info
+                elast_info = calcular_elasticidades_modelo(
+                    fitted_model,
+                    X_train_df=X_train_df,
+                    nome_modelo=nome_modelo,
+                )
+                if elast_info:
+                    elasticidades_modelos[nome_modelo] = elast_info
 
-        except Exception as e:
-            print(f"Erro ao treinar modelo '{nome_modelo}': {e}")
+        except Exception:
             continue
 
     if len(modelos_treinados) == 0:
@@ -1254,8 +1252,9 @@ def treinar_avaliar_modelos_caret_recipes(
             "y": vals,
         })
 
+    py_ver = f"Python {sys.version_info.major}.{sys.version_info.minor}"
     config_info = {
-        "Engine": "PyCaret + Scikit-Learn Recipes Engine" + (" (PyCaret instalado)" if HAS_PYCARET else " (Python 3.14 Native AutoML)"),
+        "Engine": "PyCaret + Scikit-Learn Recipes Engine" + (" (PyCaret instalado)" if HAS_PYCARET else f" ({py_ver} Native AutoML)"),
         "Coluna_Data": date_col,
         "Variavel_Dependente_Y": var_Y,
         "Variaveis_Explicativas_X": ", ".join(final_explicativas),
