@@ -11,11 +11,10 @@ Implements:
    - Models: SARIMA, ETS (Holt-Winters), STLM (STL + ARIMA), TBATS (Harmonic State Space),
      BATS (Box-Cox + ARMA + Trend + Seasonal), Prophet-style Fourier Trend (GAM), Bagged Ensemble
    - 95% confidence intervals (mean, lower, upper)
-3. Model Evaluation & Recommendation Dashboard (`gerar_dashboard_recomendacao_TS` & `gerar_dashboard_autots`)
+3. Model Evaluation & Recommendation Dashboard
    - Weighted recent-months score (`peso_recente`, `peso_desvio_max`, `periodo_maximo`)
    - Status badges: Ótimo, Recomendado/Regular, Aceitável, Avaliar Desvios/Ruim, Reprojetar
 """
-import math
 import time
 import warnings
 from typing import Any, Dict, List, Optional, Tuple
@@ -26,18 +25,14 @@ from scipy import stats
 from statsmodels.tsa.exponential_smoothing.ets import ETSModel
 from statsmodels.tsa.forecasting.stl import STLForecast
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
-from statsmodels.tsa.seasonal import STL
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.stattools import adfuller
 
-from backend.analytics import generate_multi_resolution_views, safe_float
-
-warnings.filterwarnings("ignore")
+from backend.analytics import safe_float
 
 
 def check_collinearity(df: pd.DataFrame, variables: List[str], threshold: float = 0.99) -> Tuple[bool, List[Tuple[str, str, float]]]:
     """
-    Replicates `check_collinearity` from the R ARIMA app:
     Checks whether any pair of exogenous variables has |corr| > threshold.
     """
     if not variables or len(variables) <= 1:
@@ -82,14 +77,16 @@ def _estimate_d(y: np.ndarray, max_d: int = 1) -> int:
     if len(y) < 12:
         return 0
     try:
-        pval = adfuller(y, autolag="AIC")[1]
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            pval = adfuller(y, autolag="AIC")[1]
         return 0 if pval < 0.05 else min(1, max_d)
     except Exception:
         return 1
 
 
 def _find_best_arima_order(y: np.ndarray, seasonal: bool = True, period: int = 12) -> Tuple[int, int, int, int, int, int]:
-    """Fast AIC-based grid search replicating auto.arima(stepwise=True) base order discovery."""
+    """Fast AIC-based grid search for base ARIMA/SARIMA order discovery."""
     d = _estimate_d(y, max_d=1)
     D = 1 if (seasonal and len(y) >= period * 2) else 0
 
@@ -106,14 +103,16 @@ def _find_best_arima_order(y: np.ndarray, seasonal: bool = True, period: int = 1
 
     for cand in candidates:
         try:
-            mod = SARIMAX(
-                y,
-                order=cand[:3],
-                seasonal_order=(cand[3], cand[4], cand[5], period) if seasonal else (0, 0, 0, 0),
-                enforce_stationarity=False,
-                enforce_invertibility=False,
-            )
-            res = mod.fit(disp=False, maxiter=40)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                mod = SARIMAX(
+                    y,
+                    order=cand[:3],
+                    seasonal_order=(cand[3], cand[4], cand[5], period) if seasonal else (0, 0, 0, 0),
+                    enforce_stationarity=False,
+                    enforce_invertibility=False,
+                )
+                res = mod.fit(disp=False, maxiter=40)
             if np.isfinite(res.aic) and res.aic < best_aic:
                 best_aic = res.aic
                 best_order = cand
@@ -176,7 +175,7 @@ def evaluate_model_recommendations(
     peso_desvio_max: float = 0.4,
 ) -> Dict[str, Any]:
     """
-    Replicates `gerar_dashboard_recomendacao_TS` and `gerar_dashboard_autots` from the R apps.
+    Evaluates model forecast deviations and produces a weighted recommendation ranking.
     `df_desvios_dict` maps model_name -> {date_str: pct_deviation}.
     """
     all_dates = sorted({
@@ -289,8 +288,8 @@ def run_arima_forecast(
     peso_desvio_max: float = 0.4,
 ) -> Dict[str, Any]:
     """
-    Full Python implementation of `run_arima_models_extended` from `app_arima_uni e multivariado - ver4.r`
-    and `app_arima_multivariado - ver3.r`.
+    Fits univariate and multivariate (ARIMAX/SARIMAX) models with train/test validation,
+    collinearity diagnostics, deviation ranking, and 95% confidence intervals.
     """
     t0 = time.time()
     work = df.copy()
@@ -407,20 +406,22 @@ def run_arima_forecast(
         ) + (" + Exog" if use_exog else "")
 
         try:
-            mod = SARIMAX(
-                train_y,
-                exog=train_exog_mat if use_exog else None,
-                order=ord_ns,
-                seasonal_order=ord_s,
-                enforce_stationarity=False,
-                enforce_invertibility=False,
-            )
-            res = mod.fit(disp=False, maxiter=50)
-            fcast_obj = res.get_forecast(steps=h_total, exog=total_exog_mat if use_exog else None)
-            mean_pred = np.asarray(fcast_obj.predicted_mean, dtype=float)
-            conf_int = np.asarray(fcast_obj.conf_int(alpha=0.05), dtype=float)
-            lo95 = conf_int[:, 0]
-            hi95 = conf_int[:, 1]
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                mod = SARIMAX(
+                    train_y,
+                    exog=train_exog_mat if use_exog else None,
+                    order=ord_ns,
+                    seasonal_order=ord_s,
+                    enforce_stationarity=False,
+                    enforce_invertibility=False,
+                )
+                res = mod.fit(disp=False, maxiter=50)
+                fcast_obj = res.get_forecast(steps=h_total, exog=total_exog_mat if use_exog else None)
+                mean_pred = np.asarray(fcast_obj.predicted_mean, dtype=float)
+                conf_int = np.asarray(fcast_obj.conf_int(alpha=0.05), dtype=float)
+                lo95 = conf_int[:, 0]
+                hi95 = conf_int[:, 1]
         except Exception:
             return
 
@@ -495,7 +496,7 @@ def run_arima_forecast(
 
     errors_list.sort(key=lambda r: r["RMSE"] if r["RMSE"] is not None else float("inf"))
 
-    # Build combined timeline dataframe (`df_arima` in the R app)
+    # Build combined timeline dataframe
     realized_df = valid_target[(valid_target["Data"] >= dt_ini) & (valid_target["Data"] <= dt_atu)][["Data", target_var]].copy()
     realized_map = {r["Data"].strftime("%Y-%m-%d"): safe_float(r[target_var]) for _, r in realized_df.iterrows()}
 
@@ -610,18 +611,20 @@ def _fit_predict_prophet_like(
 
 def _fit_predict_ets(train_y: np.ndarray, h: int, period: int = 12) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     try:
-        mod = ETSModel(
-            train_y,
-            error="add",
-            trend="add",
-            seasonal="add" if len(train_y) >= period * 2 else None,
-            damped_trend=True,
-            seasonal_periods=period if len(train_y) >= period * 2 else None,
-        )
-        res = mod.fit(disp=False)
-        fitted = np.asarray(res.fittedvalues, dtype=float)
-        fcast = res.get_prediction(start=len(train_y), end=len(train_y) + h - 1)
-        sf = fcast.summary_frame(alpha=0.05)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            mod = ETSModel(
+                train_y,
+                error="add",
+                trend="add",
+                seasonal="add" if len(train_y) >= period * 2 else None,
+                damped_trend=True,
+                seasonal_periods=period if len(train_y) >= period * 2 else None,
+            )
+            res = mod.fit(disp=False)
+            fitted = np.asarray(res.fittedvalues, dtype=float)
+            fcast = res.get_prediction(start=len(train_y), end=len(train_y) + h - 1)
+            sf = fcast.summary_frame(alpha=0.05)
         mean_p = sf["mean"].to_numpy(dtype=float)
         lo_col = "pi_lower" if "pi_lower" in sf.columns else sf.columns[1]
         hi_col = "pi_upper" if "pi_upper" in sf.columns else sf.columns[-1]
@@ -629,15 +632,17 @@ def _fit_predict_ets(train_y: np.ndarray, h: int, period: int = 12) -> Tuple[np.
         hi_p = sf[hi_col].to_numpy(dtype=float)
         return fitted, mean_p, lo_p, hi_p
     except Exception:
-        hw = ExponentialSmoothing(
-            train_y,
-            trend="add",
-            damped_trend=True,
-            seasonal="add" if len(train_y) >= period * 2 else None,
-            seasonal_periods=period if len(train_y) >= period * 2 else None,
-        ).fit(optimized=True)
-        fitted = np.asarray(hw.fittedvalues, dtype=float)
-        mean_p = np.asarray(hw.forecast(h), dtype=float)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            hw = ExponentialSmoothing(
+                train_y,
+                trend="add",
+                damped_trend=True,
+                seasonal="add" if len(train_y) >= period * 2 else None,
+                seasonal_periods=period if len(train_y) >= period * 2 else None,
+            ).fit(optimized=True)
+            fitted = np.asarray(hw.fittedvalues, dtype=float)
+            mean_p = np.asarray(hw.forecast(h), dtype=float)
         resid_sd = float(np.std(train_y - fitted, ddof=1))
         steps = np.sqrt(np.arange(1, h + 1, dtype=float))
         return fitted, mean_p, mean_p - 1.96 * resid_sd * steps, mean_p + 1.96 * resid_sd * steps
@@ -646,33 +651,37 @@ def _fit_predict_ets(train_y: np.ndarray, h: int, period: int = 12) -> Tuple[np.
 def _fit_predict_sarima(train_y: np.ndarray, h: int, period: int = 12) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     seasonal = len(train_y) >= period * 2
     best_ord = _find_best_arima_order(train_y, seasonal=seasonal, period=period)
-    mod = SARIMAX(
-        train_y,
-        order=best_ord[:3],
-        seasonal_order=(best_ord[3], best_ord[4], best_ord[5], period) if seasonal else (0, 0, 0, 0),
-        enforce_stationarity=False,
-        enforce_invertibility=False,
-    )
-    res = mod.fit(disp=False, maxiter=50)
-    fitted = np.asarray(res.fittedvalues, dtype=float)
-    fcast = res.get_forecast(steps=h)
-    mean_p = np.asarray(fcast.predicted_mean, dtype=float)
-    ci = np.asarray(fcast.conf_int(alpha=0.05), dtype=float)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        mod = SARIMAX(
+            train_y,
+            order=best_ord[:3],
+            seasonal_order=(best_ord[3], best_ord[4], best_ord[5], period) if seasonal else (0, 0, 0, 0),
+            enforce_stationarity=False,
+            enforce_invertibility=False,
+        )
+        res = mod.fit(disp=False, maxiter=50)
+        fitted = np.asarray(res.fittedvalues, dtype=float)
+        fcast = res.get_forecast(steps=h)
+        mean_p = np.asarray(fcast.predicted_mean, dtype=float)
+        ci = np.asarray(fcast.conf_int(alpha=0.05), dtype=float)
     return fitted, mean_p, ci[:, 0], ci[:, 1]
 
 
 def _fit_predict_stlm(train_y: np.ndarray, h: int, period: int = 12) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    stlf = STLForecast(
-        train_y,
-        SARIMAX,
-        model_kwargs={"order": (1, 1, 1), "enforce_stationarity": False, "enforce_invertibility": False},
-        period=period if len(train_y) >= period * 2 else 4,
-        robust=True,
-    )
-    res = stlf.fit()
-    fitted = np.asarray(res.result. seasonal + res.model_result.fittedvalues, dtype=float)
-    fcast = res.get_prediction(start=len(train_y), end=len(train_y) + h - 1)
-    sf = fcast.summary_frame(alpha=0.05)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        stlf = STLForecast(
+            train_y,
+            SARIMAX,
+            model_kwargs={"order": (1, 1, 1), "enforce_stationarity": False, "enforce_invertibility": False},
+            period=period if len(train_y) >= period * 2 else 4,
+            robust=True,
+        )
+        res = stlf.fit()
+        fitted = np.asarray(res.result.seasonal + res.model_result.fittedvalues, dtype=float)
+        fcast = res.get_prediction(start=len(train_y), end=len(train_y) + h - 1)
+        sf = fcast.summary_frame(alpha=0.05)
     return fitted, sf["mean"].to_numpy(dtype=float), sf["mean_ci_lower"].to_numpy(dtype=float), sf["mean_ci_upper"].to_numpy(dtype=float)
 
 
@@ -681,18 +690,18 @@ def _fit_predict_bats(train_y: np.ndarray, h: int, period: int = 12) -> Tuple[np
     min_v = float(np.min(train_y))
     shift = abs(min_v) + 10.0 if min_v <= 0 else 0.0
     y_pos = train_y + shift
-    y_bc, lmbda = stats.boxcox(y_pos)
-
-    hw = ExponentialSmoothing(
-        y_bc,
-        trend="add",
-        damped_trend=False,
-        seasonal="add" if len(train_y) >= period * 2 else None,
-        seasonal_periods=period if len(train_y) >= period * 2 else None,
-    ).fit(optimized=True)
-
-    fitted_bc = np.asarray(hw.fittedvalues, dtype=float)
-    fcast_bc = np.asarray(hw.forecast(h), dtype=float)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        y_bc, lmbda = stats.boxcox(y_pos)
+        hw = ExponentialSmoothing(
+            y_bc,
+            trend="add",
+            damped_trend=False,
+            seasonal="add" if len(train_y) >= period * 2 else None,
+            seasonal_periods=period if len(train_y) >= period * 2 else None,
+        ).fit(optimized=True)
+        fitted_bc = np.asarray(hw.fittedvalues, dtype=float)
+        fcast_bc = np.asarray(hw.forecast(h), dtype=float)
     resid_sd = float(np.std(y_bc - fitted_bc, ddof=1))
     steps = np.sqrt(np.arange(1, h + 1, dtype=float))
     lo_bc = fcast_bc - 1.96 * resid_sd * steps
@@ -714,28 +723,30 @@ def _fit_predict_tbats(train_y: np.ndarray, h: int, period: int = 12) -> Tuple[n
     min_v = float(np.min(train_y))
     shift = abs(min_v) + 10.0 if min_v <= 0 else 0.0
     y_pos = train_y + shift
-    y_bc, lmbda = stats.boxcox(y_pos)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        y_bc, lmbda = stats.boxcox(y_pos)
 
-    n = len(train_y)
-    t_all = np.arange(n + h, dtype=float)
-    fourier = []
-    for k in range(1, 3):
-        fourier.append(np.sin(2.0 * np.pi * k * t_all / float(period)))
-        fourier.append(np.cos(2.0 * np.pi * k * t_all / float(period)))
-    exog_all = np.column_stack(fourier)
+        n = len(train_y)
+        t_all = np.arange(n + h, dtype=float)
+        fourier = []
+        for k in range(1, 3):
+            fourier.append(np.sin(2.0 * np.pi * k * t_all / float(period)))
+            fourier.append(np.cos(2.0 * np.pi * k * t_all / float(period)))
+        exog_all = np.column_stack(fourier)
 
-    mod = SARIMAX(
-        y_bc,
-        exog=exog_all[:n],
-        order=(1, 1, 1),
-        enforce_stationarity=False,
-        enforce_invertibility=False,
-    )
-    res = mod.fit(disp=False, maxiter=50)
-    fitted_bc = np.asarray(res.fittedvalues, dtype=float)
-    fcast = res.get_forecast(steps=h, exog=exog_all[n:])
-    mean_bc = np.asarray(fcast.predicted_mean, dtype=float)
-    ci_bc = np.asarray(fcast.conf_int(alpha=0.05), dtype=float)
+        mod = SARIMAX(
+            y_bc,
+            exog=exog_all[:n],
+            order=(1, 1, 1),
+            enforce_stationarity=False,
+            enforce_invertibility=False,
+        )
+        res = mod.fit(disp=False, maxiter=50)
+        fitted_bc = np.asarray(res.fittedvalues, dtype=float)
+        fcast = res.get_forecast(steps=h, exog=exog_all[n:])
+        mean_bc = np.asarray(fcast.predicted_mean, dtype=float)
+        ci_bc = np.asarray(fcast.conf_int(alpha=0.05), dtype=float)
 
     def _inv_bc(arr: np.ndarray) -> np.ndarray:
         if abs(lmbda) < 1e-6:
@@ -762,8 +773,8 @@ def run_autots_forecast(
     period: int = 12,
 ) -> Dict[str, Any]:
     """
-    Full Python implementation of `get_predictions_autoTS_univ_modified` from `app_autots_univariado - Ver2.r`.
-    Supports: prophet, ets, sarima, tbats, bats, stlm, and bagged (ensemble).
+    Runs a multi-model univariate forecasting benchmark across up to 7 models:
+    prophet, ets, sarima, tbats, bats, stlm, and bagged (ensemble).
     """
     t0 = time.time()
     work = df[[date_col, variable]].copy()

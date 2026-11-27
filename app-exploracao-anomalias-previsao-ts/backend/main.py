@@ -2,11 +2,12 @@
 Unified Time Series Analytics & Forecasting Platform — FastAPI Backend
 Serves both the REST API (/api/*) and the pure HTML5/CSS3/JS SPA frontend (/).
 """
+from contextlib import asynccontextmanager
 import io
-import os
+import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -32,12 +33,18 @@ from backend.forecasting import (
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SAMPLE_EXCEL_PATH = BASE_DIR / "data" / "ei_total_(PA).xlsx"
-if not SAMPLE_EXCEL_PATH.exists():
-    SAMPLE_EXCEL_PATH = BASE_DIR / "arquivos_para_excluir" / "page_4_forecast_TS" / "www" / "ei_total_(PA).xlsx"
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    _ensure_dataset_loaded()
+    yield
+
 
 app = FastAPI(
     title="TimeSeries Studio Pro — Unified Analytics & Forecasting API",
-    version="2.0.0",
+    version="2.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -99,6 +106,36 @@ def _detect_date_candidates(df: pd.DataFrame) -> List[str]:
     return ordered
 
 
+def _read_csv_bytes(content: bytes, csv_sep: Optional[str] = None) -> pd.DataFrame:
+    """Reads CSV bytes supporting UTF-8/BOM/Latin-1 encodings and Brazilian decimal/separator conventions."""
+    decoded = None
+    for enc in ("utf-8-sig", "utf-8", "latin-1"):
+        try:
+            decoded = content.decode(enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    if decoded is None:
+        decoded = content.decode("utf-8", errors="ignore")
+
+    sample = decoded[:4096]
+    sep = csv_sep if csv_sep else (";" if sample.count(";") > sample.count(",") else ",")
+
+    # Detect Brazilian comma-decimal convention when delimiter is semicolon
+    decimal = "."
+    thousands = None
+    if sep == ";":
+        data_lines = [ln for ln in sample.splitlines()[1:20] if ln.strip()]
+        cells = [cell.strip() for ln in data_lines for cell in ln.split(";")]
+        has_comma_decimal = any(re.fullmatch(r"-?\d+(?:\.\d{3})*,\d+", c) for c in cells)
+        if has_comma_decimal:
+            decimal = ","
+            if any(re.fullmatch(r"-?\d{1,3}(?:\.\d{3})+,\d+", c) for c in cells):
+                thousands = "."
+
+    return pd.read_csv(io.StringIO(decoded), sep=sep, decimal=decimal, thousands=thousands)
+
+
 def _load_excel_or_csv(content: bytes, filename: str, sheet_name: Optional[str] = None, csv_sep: Optional[str] = None):
     ext = filename.lower().split(".")[-1]
     STATE.raw_bytes = content
@@ -114,9 +151,7 @@ def _load_excel_or_csv(content: bytes, filename: str, sheet_name: Optional[str] 
     elif ext == "csv":
         STATE.sheets = ["CSV_Data"]
         STATE.selected_sheet = "CSV_Data"
-        text_sample = content[:4096].decode("utf-8", errors="ignore")
-        sep = csv_sep if csv_sep else (";" if text_sample.count(";") > text_sample.count(",") else ",")
-        df = pd.read_csv(io.BytesIO(content), sep=sep)
+        df = _read_csv_bytes(content, csv_sep=csv_sep)
     else:
         raise ValueError("Formato de arquivo não suportado. Envie um arquivo .xlsx, .xls ou .csv.")
 
@@ -151,6 +186,8 @@ def _process_active_dataframe(date_column: str, date_format: str = "auto"):
     STATE.date_col = "Data"
 
     # Reset dependent states when dataset changes
+    STATE.outlier_col = None
+    STATE.outlier_ident_method = None
     STATE.outlier_mask = None
     STATE.outlier_history = []
     STATE.editor_col = None
@@ -158,6 +195,8 @@ def _process_active_dataframe(date_column: str, date_format: str = "auto"):
     STATE.editor_current_series = None
     STATE.editor_undo_stack = []
     STATE.editor_log = []
+    STATE.last_arima_result = None
+    STATE.last_autots_result = None
 
 
 def _get_dataset_metadata() -> Dict[str, Any]:
@@ -242,18 +281,24 @@ def _ensure_dataset_loaded():
             print("Warning: failed to load sample dataset:", e)
 
 
-# Auto-load the included sample dataset on module import & startup so the user can explore immediately
+# Auto-load the included sample dataset on module import so the user can explore immediately
 _ensure_dataset_loaded()
 
 
-@app.on_event("startup")
-def startup_load_sample():
-    _ensure_dataset_loaded()
-
-
 # ==============================================================================
-# DATA & WORKSPACE ENDPOINTS
+# HEALTH & DATA WORKSPACE ENDPOINTS
 # ==============================================================================
+
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "ok",
+        "version": app.version,
+        "dataset_loaded": STATE.df is not None,
+        "filename": STATE.filename or None,
+        "rows": int(len(STATE.df)) if STATE.df is not None else 0,
+    }
+
 
 class ConfigureDatasetRequest(BaseModel):
     sheet_name: Optional[str] = None
@@ -298,7 +343,7 @@ def configure_dataset(req: ConfigureDatasetRequest):
             STATE.selected_sheet = req.sheet_name
             STATE.raw_df = xl.parse(req.sheet_name)
         elif req.csv_separator and STATE.file_type == "csv":
-            STATE.raw_df = pd.read_csv(io.BytesIO(STATE.raw_bytes), sep=req.csv_separator)
+            STATE.raw_df = _read_csv_bytes(STATE.raw_bytes, csv_sep=req.csv_separator)
 
         date_col = req.date_column if req.date_column in STATE.raw_df.columns else _detect_date_candidates(STATE.raw_df)[0]
         _process_active_dataframe(date_col, req.date_format)
@@ -323,7 +368,7 @@ def export_dataset_sample():
 
 
 # ==============================================================================
-# MODULE 1 ENDPOINTS: OUTLIERS (app_10_correcao_outliers)
+# MODULE 1 ENDPOINTS: OUTLIERS
 # ==============================================================================
 
 class OutlierIdentifyRequest(BaseModel):
@@ -359,8 +404,8 @@ def _build_outlier_response(column: str) -> Dict[str, Any]:
     last_corr_method = STATE.outlier_history[-1]["method"] if has_correction else None
 
     n_outliers = int(mask.sum())
-    valid_count = max(1, n_total - na_count)
-    pct_outliers = round(100.0 * n_outliers / len(mask), 1) if len(mask) > 0 else 0.0
+    valid_count = int(n_total - na_count)
+    pct_outliers = round(100.0 * n_outliers / valid_count, 1) if valid_count > 0 else 0.0
 
     orig_stats = compute_descriptive_stats(original_arr)
     treat_stats = compute_descriptive_stats(treated_arr)
@@ -531,7 +576,7 @@ def api_export_outliers(column: str = Query(...)):
 
 
 # ==============================================================================
-# MODULE 2 ENDPOINTS: SEASONALITY, PARTICIPATION, XmR & STL ANOMALIES (app_5)
+# MODULE 2 ENDPOINTS: SEASONALITY, PARTICIPATION, XmR & STL ANOMALIES
 # ==============================================================================
 
 class SeasonalityRequest(BaseModel):
@@ -562,11 +607,19 @@ def api_analyze_seasonality(req: SeasonalityRequest):
 def api_export_seasonality(
     column: str = Query(...),
     start_year: Optional[int] = Query(None),
-    end_year: Optional[int] = Query(None)
+    end_year: Optional[int] = Query(None),
+    stl_threshold_sigma: float = Query(2.0),
 ):
     if STATE.df is None or column not in STATE.df.columns:
         raise HTTPException(status_code=400, detail="Coluna não encontrada.")
-    res = run_seasonality_and_spc_analysis(STATE.df, "Data", column, start_year, end_year)
+    res = run_seasonality_and_spc_analysis(
+        STATE.df,
+        "Data",
+        column,
+        start_year,
+        end_year,
+        stl_threshold_sigma=stl_threshold_sigma,
+    )
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         pd.DataFrame(res["limits_table"]).to_excel(writer, index=False, sheet_name="Participacao_Limites")
@@ -582,7 +635,7 @@ def api_export_seasonality(
 
 
 # ==============================================================================
-# MODULE 3 ENDPOINTS: ADVANCED INTERACTIVE SERIES EDITOR (page 6)
+# MODULE 3 ENDPOINTS: ADVANCED INTERACTIVE SERIES EDITOR
 # ==============================================================================
 
 class EditorInitRequest(BaseModel):
@@ -616,21 +669,21 @@ def _build_editor_payload(column: str) -> Dict[str, Any]:
     orig = STATE.editor_original_series
     curr = STATE.editor_current_series
 
-    # Preparing `preparar_dataframe_final` from R app (Original vs Ajustada + MoM and YoY rates)
+    # Build comparative DataFrame (Original vs Ajustada + MoM and YoY rates)
     comp = pd.DataFrame({
         "Data": orig["Data"],
         "Valor_Original": orig["value"].to_numpy(dtype=float),
         "Serie_Ajustada": curr["value"].to_numpy(dtype=float),
     })
 
-    comp["Taxa_Crescimento_Original"] = comp["Valor_Original"].pct_change(1).replace([np.inf, -np.inf], np.nan) * 100.0
+    comp["Taxa_Crescimento_Original"] = comp["Valor_Original"].pct_change(1, fill_method=None).replace([np.inf, -np.inf], np.nan) * 100.0
     comp["Taxa_Acrescimo_Original"] = comp["Valor_Original"].diff(1)
-    comp["Taxa_Crescimento_Mes_Ano_Original"] = comp["Valor_Original"].pct_change(12).replace([np.inf, -np.inf], np.nan) * 100.0
+    comp["Taxa_Crescimento_Mes_Ano_Original"] = comp["Valor_Original"].pct_change(12, fill_method=None).replace([np.inf, -np.inf], np.nan) * 100.0
     comp["Taxa_Acrescimo_Mes_Ano_Original"] = comp["Valor_Original"].diff(12)
 
-    comp["Taxa_Crescimento_Ajustado"] = comp["Serie_Ajustada"].pct_change(1).replace([np.inf, -np.inf], np.nan) * 100.0
+    comp["Taxa_Crescimento_Ajustado"] = comp["Serie_Ajustada"].pct_change(1, fill_method=None).replace([np.inf, -np.inf], np.nan) * 100.0
     comp["Taxa_Acrescimo_Ajustado"] = comp["Serie_Ajustada"].diff(1)
-    comp["Taxa_Crescimento_Mes_Ano_Ajustado"] = comp["Serie_Ajustada"].pct_change(12).replace([np.inf, -np.inf], np.nan) * 100.0
+    comp["Taxa_Crescimento_Mes_Ano_Ajustado"] = comp["Serie_Ajustada"].pct_change(12, fill_method=None).replace([np.inf, -np.inf], np.nan) * 100.0
     comp["Taxa_Acrescimo_Mes_Ano_Ajustado"] = comp["Serie_Ajustada"].diff(12)
 
     vals = comp["Serie_Ajustada"].dropna().to_numpy(dtype=float)
@@ -931,7 +984,6 @@ def api_export_autots(model: str = Query("Todos")):
     var_name = res["variable"]
 
     if model != "Todos" and model in tl_df.columns:
-        # Match `select_predict_autoTS_univ` from the R app
         export_df = pd.DataFrame({
             "Data": tl_df["Data"],
             "Period": tl_df["Period"],

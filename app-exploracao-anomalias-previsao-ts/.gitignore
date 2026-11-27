@@ -2,10 +2,6 @@
 # .gitignore — TimeSeries Studio Pro
 # =====================================================================
 
-# Pasta temporária de arquivos legados (R / Shiny antigos) para exclusão
-arquivos_para_excluir/
-arquivos para excluir/
-
 # Byte-compiled / cache Python
 __pycache__/
 *.py[cod]

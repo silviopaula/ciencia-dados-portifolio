@@ -148,7 +148,7 @@ function getStatusBadgeHTML(statusText) {
 // NAVIGATION & THEME SWITCHING
 // ============================================================================
 
-function switchView(viewId) {
+function switchView(viewId, opts = {}) {
   document.querySelectorAll(".view-panel").forEach((p) => p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach((b) => b.classList.remove("active"));
 
@@ -167,15 +167,17 @@ function switchView(viewId) {
   document.getElementById("sidebar").classList.remove("open");
 
   // Trigger module auto-initialization when visiting a tab for the first time
-  if (viewId === "view-outliers" && !APP.outlierResult && APP.dataset?.numeric_columns?.length) {
-    runOutlierIdentification();
-  } else if (viewId === "view-seasonality" && !APP.seasonalityResult && APP.dataset?.numeric_columns?.length) {
-    runSeasonalityAnalysis();
-  } else if (viewId === "view-editor" && !APP.editorResult && APP.dataset?.numeric_columns?.length) {
-    initEditorSeries();
-  } else if (viewId === "view-growth" && !APP.growthResult && APP.dataset?.numeric_columns?.length) {
-    populateGrowthTargets();
-    runGrowthAnalysis();
+  if (!opts.skipAutoInit && APP.dataset?.numeric_columns?.length) {
+    if (viewId === "view-outliers" && !APP.outlierResult) {
+      runOutlierIdentification();
+    } else if (viewId === "view-seasonality" && !APP.seasonalityResult) {
+      runSeasonalityAnalysis();
+    } else if (viewId === "view-editor" && !APP.editorResult) {
+      initEditorSeries();
+    } else if (viewId === "view-growth" && !APP.growthResult) {
+      populateGrowthTargets();
+      runGrowthAnalysis();
+    }
   }
 
   // Resize Plotly charts inside newly visible tab
@@ -201,8 +203,17 @@ async function loadDatasetInfo() {
   }
 }
 
-function applyDatasetMetadata(info) {
+function applyDatasetMetadata(info, resetModules = false) {
   APP.dataset = info;
+  if (resetModules) {
+    APP.outlierResult = null;
+    APP.seasonalityResult = null;
+    APP.editorResult = null;
+    APP.editorSelectedIndices = [];
+    APP.arimaResult = null;
+    APP.autotsResult = null;
+    APP.growthResult = null;
+  }
 
   // Sidebar & Header
   document.getElementById("sidebarDatasetName").textContent = info.filename || "Dataset";
@@ -281,7 +292,6 @@ function applyDatasetMetadata(info) {
   const pCols = info.preview_columns || [];
   prevHead.innerHTML = `<tr>${pCols.map((c) => `<th>${c}</th>`).join("")}</tr>`;
   prevBody.innerHTML = (info.preview_rows || [])
-    .slice(0, 60)
     .map(
       (row) =>
         `<tr>${pCols
@@ -302,9 +312,9 @@ function syncForecastDatesForVariable(varName) {
   const startDt = summary?.start_date || APP.dataset.min_date || "2010-01-01";
   const endDt = summary?.end_date || APP.dataset.max_date || "2024-12-01";
 
-  // Default forecast horizon: +24 months after endDt
-  const endObj = new Date(endDt + "T00:00:00");
-  endObj.setFullYear(endObj.getFullYear() + 2);
+  // Default forecast horizon: +24 months after endDt (UTC-noon prevents timezone day-shift)
+  const endObj = new Date(endDt + "T12:00:00Z");
+  endObj.setUTCFullYear(endObj.getUTCFullYear() + 2);
   const predDt = endObj.toISOString().slice(0, 10);
 
   document.getElementById("arimaStartDate").value = startDt;
@@ -843,7 +853,7 @@ function renderSeasonalityModule(res, column) {
 }
 
 // ============================================================================
-// MODULE 3: ADVANCED INTERACTIVE SERIES EDITOR (page 6)
+// MODULE 3: ADVANCED INTERACTIVE SERIES EDITOR
 // ============================================================================
 
 async function initEditorSeries() {
@@ -991,6 +1001,10 @@ function renderEditorModule(res) {
   );
 
   const plotDiv = document.getElementById("plotEditorMain");
+  if (typeof plotDiv.removeAllListeners === "function") {
+    plotDiv.removeAllListeners("plotly_click");
+    plotDiv.removeAllListeners("plotly_selected");
+  }
   plotDiv.on("plotly_click", (ev) => {
     if (ev && ev.points && ev.points.length > 0) {
       const pt = ev.points[0];
@@ -1298,6 +1312,8 @@ function renderArimaModule(res) {
   // Plot Realized + ARIMA Models
   const comb = res.combined_series || [];
   const realizedPts = comb.filter((r) => r.Target !== null && r.Target !== undefined);
+  const isLight = document.documentElement.getAttribute("data-theme") === "light";
+  const realizedColor = isLight ? "#0f172a" : "#f8fafc";
 
   const traces = [
     {
@@ -1306,7 +1322,7 @@ function renderArimaModule(res) {
       type: "scatter",
       mode: "lines",
       name: "Realizado",
-      line: { color: "#f8fafc", width: 3 },
+      line: { color: realizedColor, width: 3 },
     },
   ];
 
@@ -1486,6 +1502,8 @@ function renderAutoTSPlot() {
   const tl = res.timeline || [];
   const histRows = tl.filter((r) => r.Period === "Realizado");
   const projRows = tl.filter((r) => r.Period === "Projeção");
+  const isLight = document.documentElement.getAttribute("data-theme") === "light";
+  const realizedColor = isLight ? "#0f172a" : "#f8fafc";
 
   const traces = [
     {
@@ -1494,7 +1512,7 @@ function renderAutoTSPlot() {
       type: "scatter",
       mode: "lines",
       name: "Realizado",
-      line: { color: "#f8fafc", width: 2.8 },
+      line: { color: realizedColor, width: 2.8 },
     },
   ];
 
@@ -1767,7 +1785,7 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         body: formData,
       });
-      applyDatasetMetadata(info);
+      applyDatasetMetadata(info, true);
       showToast(`Arquivo '${file.name}' carregado com sucesso!`, "success");
     } catch (err) {
       showToast(err.message, "error");
@@ -1777,7 +1795,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnLoadSample").addEventListener("click", async () => {
     try {
       const info = await apiFetch("/api/dataset/load-sample", { method: "POST" });
-      applyDatasetMetadata(info);
+      applyDatasetMetadata(info, true);
       showToast("Base de demonstração ei_total_(PA).xlsx recarregada!", "success");
     } catch (err) {
       showToast(err.message, "error");
@@ -1795,7 +1813,7 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sheet_name, date_column, date_format, csv_separator }),
       });
-      applyDatasetMetadata(info);
+      applyDatasetMetadata(info, true);
       showToast("Configuração de dados processada com sucesso!", "success");
     } catch (err) {
       showToast(err.message, "error");
@@ -1854,9 +1872,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("seasColSelect").addEventListener("change", runSeasonalityAnalysis);
   document.getElementById("btnExportSeasonality").addEventListener("click", () => {
     const col = document.getElementById("seasColSelect").value;
+    if (!col) {
+      showToast("Selecione uma variável antes de exportar.", "warning");
+      return;
+    }
     const sy = document.getElementById("seasStartYear").value;
     const ey = document.getElementById("seasEndYear").value;
-    window.location.href = `/api/seasonality/export?column=${encodeURIComponent(col)}&start_year=${sy}&end_year=${ey}`;
+    const sigma = document.getElementById("seasStlSigma").value || "2.0";
+    window.location.href = `/api/seasonality/export?column=${encodeURIComponent(col)}&start_year=${encodeURIComponent(sy)}&end_year=${encodeURIComponent(ey)}&stl_threshold_sigma=${encodeURIComponent(sigma)}`;
   });
 
   // Module 3: Advanced Editor events
@@ -1870,12 +1893,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("btnEdReset").addEventListener("click", async () => {
     const col = document.getElementById("edColSelect").value;
-    const res = await apiFetch(`/api/editor/reset?column=${encodeURIComponent(col)}`, { method: "POST" });
-    APP.editorResult = res;
-    APP.editorSelectedIndices = [];
-    updateEditorSelectionBadge();
-    renderEditorModule(res);
-    showToast("Série restaurada para os valores originais.", "info");
+    if (!col) return;
+    try {
+      const res = await apiFetch(`/api/editor/reset?column=${encodeURIComponent(col)}`, { method: "POST" });
+      APP.editorResult = res;
+      APP.editorSelectedIndices = [];
+      updateEditorSelectionBadge();
+      renderEditorModule(res);
+      showToast("Série restaurada para os valores originais.", "info");
+    } catch (err) {
+      showToast(err.message, "error");
+    }
   });
   document.getElementById("btnEdCommit").addEventListener("click", async () => {
     const col = document.getElementById("edColSelect").value;
@@ -1925,14 +1953,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.getElementById("btnRunArima").addEventListener("click", runArimaForecast);
   document.getElementById("btnExportArima").addEventListener("click", () => {
+    if (!APP.arimaResult) {
+      showToast("Execute os modelos ARIMA antes de exportar.", "warning");
+      return;
+    }
     const mod = document.getElementById("arimaExportModelSelect").value;
     window.location.href = `/api/forecast/export-arima?model=${encodeURIComponent(mod)}`;
   });
   document.getElementById("btnArimaToGrowth").addEventListener("click", () => {
-    if (!APP.arimaResult) return;
+    if (!APP.arimaResult) {
+      showToast("Execute os modelos ARIMA primeiro.", "warning");
+      return;
+    }
     document.getElementById("growthSourceSelect").value = "arima";
     populateGrowthTargets();
-    switchView("view-growth");
+    switchView("view-growth", { skipAutoInit: true });
     runGrowthAnalysis();
   });
 
@@ -1944,18 +1979,29 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("autotsFocusModel").addEventListener("change", renderAutoTSPlot);
   document.getElementById("autotsShowIntervals").addEventListener("change", renderAutoTSPlot);
   document.getElementById("btnExportAutoTSAll").addEventListener("click", () => {
+    if (!APP.autotsResult) {
+      showToast("Execute o benchmark AutoTS antes de exportar.", "warning");
+      return;
+    }
     window.location.href = `/api/forecast/export-autots?model=Todos`;
   });
   document.getElementById("btnExportAutoTSSel").addEventListener("click", () => {
+    if (!APP.autotsResult) {
+      showToast("Execute o benchmark AutoTS antes de exportar.", "warning");
+      return;
+    }
     const focus = document.getElementById("autotsFocusModel").value;
     const mod = focus === "all" ? (APP.autotsResult?.best_model || "Todos") : focus;
     window.location.href = `/api/forecast/export-autots?model=${encodeURIComponent(mod)}`;
   });
   document.getElementById("btnAutoTSToGrowth").addEventListener("click", () => {
-    if (!APP.autotsResult) return;
+    if (!APP.autotsResult) {
+      showToast("Execute o benchmark AutoTS primeiro.", "warning");
+      return;
+    }
     document.getElementById("growthSourceSelect").value = "autots";
     populateGrowthTargets();
-    switchView("view-growth");
+    switchView("view-growth", { skipAutoInit: true });
     runGrowthAnalysis();
   });
 
@@ -1974,6 +2020,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnExportGrowth").addEventListener("click", () => {
     const src = document.getElementById("growthSourceSelect").value;
     const target = document.getElementById("growthTargetSelect").value;
+    if (!target) {
+      showToast("Selecione uma série ou modelo válido antes de exportar.", "warning");
+      return;
+    }
     window.location.href = `/api/growth/export?source=${encodeURIComponent(src)}&model_or_col=${encodeURIComponent(target)}`;
   });
   document.querySelectorAll("#growthTablesTabBar .tab-btn").forEach((btn) => {

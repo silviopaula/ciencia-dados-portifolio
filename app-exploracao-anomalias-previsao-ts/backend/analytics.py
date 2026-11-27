@@ -2,10 +2,9 @@
 Core Data Processing, Outliers, Seasonality, XmR, and Multi-Resolution Growth Analytics
 for the Unified Time Series Analytics & Forecasting Platform.
 """
-import io
 import math
 import warnings
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -15,8 +14,6 @@ from sklearn.neighbors import LocalOutlierFactor
 from sklearn.svm import OneClassSVM
 from statsmodels.tsa.seasonal import STL
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-
-warnings.filterwarnings("ignore")
 
 MESES_PT = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -84,7 +81,7 @@ def compute_descriptive_stats(arr: np.ndarray) -> Dict[str, Optional[float]]:
 
 
 # ==============================================================================
-# MODULE 1: OUTLIER IDENTIFICATION & CORRECTION (app_10_correcao_outliers)
+# MODULE 1: OUTLIER IDENTIFICATION & CORRECTION
 # ==============================================================================
 
 def identify_outliers(
@@ -94,7 +91,7 @@ def identify_outliers(
     threshold: Optional[float] = None
 ) -> np.ndarray:
     """
-    Identifies outliers in `column` using one of 6 methods from the original R app:
+    Identifies outliers in `column` using one of 6 statistical/ML methods:
     - zscore (default threshold 3.0)
     - iqr (1.5 * IQR)
     - mahalanobis (multivariate if >1 numeric col, else univariate, chi2 0.95)
@@ -132,6 +129,7 @@ def identify_outliers(
             c for c in df.select_dtypes(include=[np.number]).columns
             if df[c].notna().sum() > 3
         ]
+        multivariate_computed = False
         if len(num_cols) > 1:
             num_df = df[num_cols].apply(pd.to_numeric, errors="coerce")
             complete_mask = num_df.notna().all(axis=1).to_numpy()
@@ -146,9 +144,10 @@ def identify_outliers(
                     md = np.sum(diff @ cov_inv * diff, axis=1)
                     chi_thresh = stats.chi2.ppf(0.95, df=mat.shape[1])
                     is_outlier[complete_mask] = md > chi_thresh
+                    multivariate_computed = True
                 except Exception:
-                    pass
-        if not is_outlier.any():
+                    multivariate_computed = False
+        if not multivariate_computed:
             var_val = np.var(x_clean, ddof=1)
             if var_val > 0:
                 md = ((x_clean - np.mean(x_clean)) ** 2) / var_val
@@ -244,24 +243,32 @@ def correct_outliers(
             corrected[mid_mask] = np.median(valid_non_outliers)
 
     elif method == "arima":
+        temp_s = pd.Series(x)
+        temp_s[out_mask] = np.nan
+        fallback_interp = temp_s.interpolate(method="linear").bfill().ffill().to_numpy()
         try:
-            temp_s = pd.Series(x)
-            temp_s[out_mask] = np.nan
             # Fit state space SARIMAX(1,1,1) which natively interpolates missing observations via Kalman filter
-            mod = SARIMAX(temp_s.to_numpy(), order=(1, 1, 1), enforce_stationarity=False, enforce_invertibility=False)
-            res = mod.fit(disp=False)
-            fitted = res.fittedvalues
-            corrected[out_mask] = fitted[out_mask]
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                mod = SARIMAX(temp_s.to_numpy(), order=(1, 1, 1), enforce_stationarity=False, enforce_invertibility=False)
+                res = mod.fit(disp=False)
+            fitted = np.asarray(res.fittedvalues, dtype=float)
+            # Guard against d=1 burn-in zero artifact at leading index (index 0 / before first non-outlier)
+            first_valid_pos = int(np.where((~out_mask) & (~np.isnan(x)))[0][0])
+            burn_in_mask = np.arange(len(x)) <= max(0, first_valid_pos)
+            bad_fit = (~np.isfinite(fitted)) | burn_in_mask
+            fitted_safe = np.where(bad_fit, fallback_interp, fitted)
+            corrected[out_mask] = fitted_safe[out_mask]
         except Exception:
-            temp_s = pd.Series(x)
-            temp_s[out_mask] = np.nan
-            corrected[out_mask] = temp_s.interpolate(method="linear").bfill().ffill().to_numpy()[out_mask]
+            corrected[out_mask] = fallback_interp[out_mask]
 
     elif method == "seasonal_decomp":
         try:
             temp_s = pd.Series(x).interpolate(method="linear").bfill().ffill()
             p = max(2, period if len(temp_s) >= period * 2 else 4)
-            stl = STL(temp_s.to_numpy(), period=p, robust=True).fit()
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                stl = STL(temp_s.to_numpy(), period=p, robust=True).fit()
             corrected[out_mask] = stl.trend[out_mask]
         except Exception:
             corrected[out_mask] = np.mean(valid_non_outliers)
@@ -270,7 +277,7 @@ def correct_outliers(
 
 
 # ==============================================================================
-# MODULE 2: SEASONALITY TESTS, PARTICIPATION, XmR & STL ANOMALIES (app_5)
+# MODULE 2: SEASONALITY TESTS, PARTICIPATION, XmR & STL ANOMALIES
 # ==============================================================================
 
 def run_seasonality_and_spc_analysis(
@@ -282,7 +289,7 @@ def run_seasonality_and_spc_analysis(
     stl_threshold_sigma: float = 2.0
 ) -> Dict[str, Any]:
     """
-    Implements all analyses from `Shinny-eqt_app (page 5- Testes sazonalidade).R`:
+    Runs comprehensive seasonality and statistical process control diagnostics:
     1. Monthly participation & control limits (+/- 1 SD) over [start_year, end_year]
     2. Yearly monthly participation breakdown across all years
     3. XmR Statistical Process Control Chart (Individual X and Moving Range MR with 2.66*MR_bar and 3.0*MR_bar)
@@ -392,7 +399,9 @@ def run_seasonality_and_spc_analysis(
     seasonality_strength = None
     if len(work) >= 12:
         period = 12 if len(work) >= 24 else max(2, len(work) // 3)
-        stl_res = STL(work["Valor"].to_numpy(), period=period, robust=True).fit()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            stl_res = STL(work["Valor"].to_numpy(), period=period, robust=True).fit()
         rem = stl_res.resid
         trend = stl_res.trend
         seas = stl_res.seasonal
@@ -427,10 +436,12 @@ def run_seasonality_and_spc_analysis(
     if len(month_groups) >= 2 and all(len(g) >= 1 for g in month_groups):
         try:
             if any(len(g) > 1 for g in month_groups):
-                f_res = stats.f_oneway(*month_groups)
-                f_stat, f_p = safe_float(f_res.statistic), safe_float(f_res.pvalue)
-                kw_res = stats.kruskal(*month_groups)
-                kw_stat, kw_p = safe_float(kw_res.statistic), safe_float(kw_res.pvalue)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    f_res = stats.f_oneway(*month_groups)
+                    f_stat, f_p = safe_float(f_res.statistic), safe_float(f_res.pvalue)
+                    kw_res = stats.kruskal(*month_groups)
+                    kw_stat, kw_p = safe_float(kw_res.statistic), safe_float(kw_res.pvalue)
         except Exception:
             pass
 
@@ -459,7 +470,7 @@ def run_seasonality_and_spc_analysis(
 
 
 # ==============================================================================
-# MODULE 3: MULTI-RESOLUTION GROWTH & VARIATION ENGINE (generate_df_visoes)
+# MODULE 3: MULTI-RESOLUTION GROWTH & VARIATION ENGINE
 # ==============================================================================
 
 def generate_multi_resolution_views(
@@ -468,14 +479,13 @@ def generate_multi_resolution_views(
     value_col: str
 ) -> Dict[str, Any]:
     """
-    Replicates `generate_df_visoes` from the R apps (Editor Avançado, ARIMA, AutoTS):
-    Aggregates time series into:
+    Aggregates time series into multiple temporal resolutions:
     - Mensal (Jan..Dez)
     - Trimestral (Q1..Q4)
     - Semestral (S1, S2)
     - Anual (Valor_Anual)
-    And computes YoY Growth Rates (%) and YoY Absolute Variations for both wide tables and long series.
-    Also computes MoM (month-over-month) and YoY (month-over-year) comparisons for the Advanced Editor.
+    Computes YoY Growth Rates (%) and YoY Absolute Variations for both wide tables and long series,
+    plus MoM (month-over-month) and YoY (month-over-year) comparisons for the Advanced Editor.
     """
     work = df[[date_col, value_col]].copy()
     work["Data"] = pd.to_datetime(work[date_col], errors="coerce")
@@ -511,7 +521,7 @@ def generate_multi_resolution_views(
         piv = piv[ordered_labels].sort_index()
 
         # YoY growth rate (%) per period column across consecutive years
-        piv_growth = piv.pct_change() * 100.0
+        piv_growth = piv.pct_change(fill_method=None) * 100.0
         piv_growth = piv_growth.replace([np.inf, -np.inf], np.nan)
         # YoY absolute difference per period column
         piv_diff = piv.diff()
@@ -582,9 +592,9 @@ def generate_multi_resolution_views(
     # Also compute MoM (month-over-month) and YoY (lag 12) series for the Editor
     mom_yoy_series = []
     s_df = work.groupby("Data", as_index=False)["Valor"].sum().sort_values("Data").reset_index(drop=True)
-    s_df["MoM_Growth"] = s_df["Valor"].pct_change(1).replace([np.inf, -np.inf], np.nan) * 100.0
+    s_df["MoM_Growth"] = s_df["Valor"].pct_change(1, fill_method=None).replace([np.inf, -np.inf], np.nan) * 100.0
     s_df["MoM_Diff"] = s_df["Valor"].diff(1)
-    s_df["YoY_Growth"] = s_df["Valor"].pct_change(12).replace([np.inf, -np.inf], np.nan) * 100.0
+    s_df["YoY_Growth"] = s_df["Valor"].pct_change(12, fill_method=None).replace([np.inf, -np.inf], np.nan) * 100.0
     s_df["YoY_Diff"] = s_df["Valor"].diff(12)
 
     for _, r in s_df.iterrows():

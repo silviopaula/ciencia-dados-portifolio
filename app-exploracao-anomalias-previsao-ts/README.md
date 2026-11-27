@@ -14,7 +14,7 @@ Construída com arquitetura desacoplada:
 app-exploracao-anomalias-previsao-ts/
 ├── backend/
 │   ├── __init__.py
-│   ├── main.py             # API REST FastAPI, gerenciamento de sessão e exportação Excel
+│   ├── main.py             # API REST FastAPI (lifespan, /api/health), sessão e exportação Excel
 │   ├── analytics.py        # Outliers (6+7 métodos), Sazonalidade, Controle XmR, STL e Visões YoY/MoM
 │   └── forecasting.py      # Motores ARIMA/SARIMAX (Uni & Multivariado) e AutoTS (7 modelos)
 ├── frontend/
@@ -23,14 +23,15 @@ app-exploracao-anomalias-previsao-ts/
 │   └── app.js              # Controlador SPA, gráficos interativos Plotly e eventos
 ├── data/
 │   └── ei_total_(PA).xlsx  # Base histórica e de variáveis exógenas para demonstração imediata
-├── iniciar_app.bat         # Inicializador automático para Windows (encerra sessões antigas e abre o app)
+├── tests/
+│   ├── __init__.py
+│   └── test_app.py         # Suíte automatizada (9 testes unitários e de integração da API)
+├── iniciar_app.bat         # Inicializador Windows (porta dedicada 8055 + healthcheck /api/health)
 ├── run.py                  # Script de inicialização do servidor Uvicorn (porta 8055)
 ├── requirements.txt        # Dependências Python do projeto
 ├── .gitignore              # Regras de exclusão para controle de versão Git
 └── README.md               # Documentação técnica e guia de uso
 ```
-
-*(Nota: Os antigos aplicativos separados em R/Shiny foram movidos para a pasta `arquivos_para_excluir/`, que já está listada no `.gitignore` e pode ser deletada com segurança).*
 
 ---
 
@@ -49,9 +50,9 @@ Dê um duplo clique no arquivo:
 iniciar_app.bat
 ```
 O script irá automaticamente:
-1. Verificar e encerrar qualquer sessão anterior que esteja ocupando a porta;
+1. Liberar apenas a porta dedicada `8055` (caso já esteja ocupada por uma sessão anterior);
 2. Iniciar o servidor FastAPI em `http://127.0.0.1:8055`;
-3. Abrir o navegador diretamente na interface do **TimeSeries Studio Pro**.
+3. Aguardar a confirmação de saúde em `GET /api/health` antes de abrir o navegador diretamente na interface do **TimeSeries Studio Pro**.
 
 ### 3. Inicialização Manual via Terminal
 ```bash
@@ -59,12 +60,19 @@ python run.py
 ```
 Acesse no navegador: **http://127.0.0.1:8055**
 
+### 4. Testes Automatizados
+Execute a suíte completa de testes unitários e de integração (`FastAPI TestClient`, cobrindo todos os 7 módulos, casos extremos e exportações `.xlsx`):
+
+```bash
+python -m unittest discover -s tests -v
+```
+
 ---
 
 ## 🧩 Guia Completo dos Módulos
 
 ### 1. 📁 Central de Dados & Configuração
-- **Upload Drag-and-Drop**: Suporta planilhas Excel (`.xlsx`, `.xls`) com múltiplas abas e arquivos `.csv` com detecção automática de delimitador (`,` ou `;`).
+- **Upload Drag-and-Drop**: Suporta planilhas Excel (`.xlsx`, `.xls`) com múltiplas abas e arquivos `.csv` com detecção automática de delimitador (`,` ou `;`), padrão numérico brasileiro (decimal `,`, milhar `.`) e codificação (`UTF-8` / `UTF-8-BOM` / `Latin-1`).
 - **Indexação Temporal Inteligente**: Detecta automaticamente colunas candidatas a data e converte formatos `YMD`, `DMY`, `MDY`, `YDM` ou datas seriais do Excel, padronizando a série temporal para todos os módulos.
 - **Diagnóstico de Variáveis**: Exibe contagem de observações válidas, valores ausentes (`NA`), média, mínimo, máximo e cobertura temporal de cada coluna numérica.
 
@@ -159,6 +167,7 @@ Oferece gráficos interativos (Combinado Barras + Linha, Linhas ou Barras Colori
 
 Com o servidor rodando, a documentação interativa OpenAPI (Swagger UI) também fica disponível em `http://127.0.0.1:8055/docs`:
 
+- `GET  /api/health` — Verificação de saúde da API e status do dataset ativo
 - `GET  /api/dataset/info` — Metadados, estatísticas e preview do dataset ativo
 - `POST /api/dataset/upload` — Upload de arquivo `.xlsx`, `.xls` ou `.csv`
 - `POST /api/dataset/configure` — Seleção de aba, coluna de data e formato
